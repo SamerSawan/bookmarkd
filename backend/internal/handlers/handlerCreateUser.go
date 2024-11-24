@@ -38,7 +38,16 @@ func (cfg *ApiConfig) CreateUser(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Failed to hash password.", err)
 		return
 	}
+	_, err = cfg.Db.GetUserByEmail(r.Context(), params.Email)
+	if err == nil {
+		respondWithError(w, http.StatusConflict, "Email already in use!", err)
+		return
+	}
 	user, err := cfg.Db.CreateUser(r.Context(), database.CreateUserParams{Email: params.Email, Password: hashed_password})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to create new user.", err)
+		return
+	}
 	respondWithJSON(w, http.StatusCreated, User{ID: user.ID, Email: user.Email, CreatedAt: user.CreatedAt, UpdatedAt: user.UpdatedAt})
 
 }

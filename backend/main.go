@@ -7,12 +7,14 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/samersawan/bookmarkd/backend/internal/database"
 	"github.com/samersawan/bookmarkd/backend/internal/handlers"
 )
 
 func main() {
+	godotenv.Load()
 	serveMux := http.NewServeMux()
 	server := http.Server{Handler: serveMux, Addr: ":8080"}
 	dbURL := os.Getenv("DB_URL")
