@@ -28,6 +28,10 @@ func CheckPasswordStrength(password string) bool {
 }
 
 func HashPassword(password string) (string, error) {
+	ok := CheckPasswordStrength(password)
+	if !ok {
+		return "", fmt.Errorf("Your password is not strong enough!")
+	}
 	hashed_pass, err := bcrypt.GenerateFromPassword([]byte(password), 0)
 	if err != nil {
 		return "", fmt.Errorf("Unable to hash password: %w", err)
