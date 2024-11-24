@@ -9,11 +9,8 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/samersawan/bookmarkd/backend/internal/database"
+	"github.com/samersawan/bookmarkd/backend/internal/handlers"
 )
-
-type apiConfig struct {
-	db *database.Queries
-}
 
 func main() {
 	serveMux := http.NewServeMux()
@@ -26,17 +23,16 @@ func main() {
 	}
 	dbQueries := database.New(db)
 
-	apiCfg := apiConfig{db: dbQueries}
-	fmt.Println(apiCfg)
+	apiCfg := handlers.ApiConfig{Db: dbQueries}
 
-	//serveMux.HandleFunc("POST /api/users", apiCfg.handlerCreateUser)
+	serveMux.HandleFunc("POST /api/users", apiCfg.CreateUser)
 
 	fmt.Println(" __          __  _                            _          ____              _                         _       _\n",
 		"\\ \\        / / | |                          | |        |  _ \\            | |                       | |     | |\n",
 		" \\ \\  /\\  / /__| | ___ ___  _ __ ___   ___  | |_ ___   | |_) | ___   ___ | | ___ __ ___   __ _ _ __| | ____| |\n",
 		"  \\ \\/  \\/ / _ \\ |/ __/ _ \\| '_ ` _ \\ / _ \\ | __/ _ \\  |  _ < / _ \\ / _ \\| |/ / '_ ` _ \\ / _` | '__| |/ / _` |\n",
 		"   \\  /\\  /  __/ | (_| (_) | | | | | |  __/ | || (_) | | |_) | (_) | (_) |   <| | | | | | (_| | |  |   < (_| |\n",
-		"    \\/  \\/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/  |____/ \\___/ \\___/|_|\\_\\_| |_| |_|\\__,_|_|  |_|\\_\\__,_|\n",
+		"    \\/  \\/ \\___|_|\\___\\___/|_| |_| |_|\\___|  \\__\\___/  |____/ \\___/ \\___/|_|\\_\\_| |_| |_|\\__,_|_|  |_|\\_\\__,_|",
 	)
 	server.ListenAndServe()
 }
