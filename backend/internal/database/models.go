@@ -5,6 +5,7 @@
 package database
 
 import (
+	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
@@ -28,4 +29,16 @@ type User struct {
 	UpdatedAt time.Time
 	Email     string
 	Password  string
+}
+
+type UserBook struct {
+	ID         uuid.UUID
+	UserID     uuid.UUID
+	Isbn       string
+	Status     string
+	Progress   sql.NullInt32
+	StartedAt  sql.NullTime
+	FinishedAt sql.NullTime
+	LentTo     sql.NullString
+	UpdatedAt  sql.NullTime
 }

@@ -8,7 +8,6 @@ import (
 	"github.com/samersawan/bookmarkd/backend/internal/database"
 )
 
-// TODO: Handle checking for existence before creation to return appropriate error
 // TODO: Handle invalid publish date input (only the year without a day or a month)
 
 func (cfg *ApiConfig) CreateBook(w http.ResponseWriter, r *http.Request) {
