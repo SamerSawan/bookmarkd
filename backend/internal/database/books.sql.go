@@ -59,3 +59,24 @@ func (q *Queries) CreateBook(ctx context.Context, arg CreateBookParams) (Book, e
 	)
 	return i, err
 }
+
+const getBook = `-- name: GetBook :one
+SELECT isbn, created_at, updated_at, title, author, cover_image_url, publish_date, pages, description FROM books WHERE isbn = $1
+`
+
+func (q *Queries) GetBook(ctx context.Context, isbn string) (Book, error) {
+	row := q.db.QueryRowContext(ctx, getBook, isbn)
+	var i Book
+	err := row.Scan(
+		&i.Isbn,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.Title,
+		&i.Author,
+		&i.CoverImageUrl,
+		&i.PublishDate,
+		&i.Pages,
+		&i.Description,
+	)
+	return i, err
+}

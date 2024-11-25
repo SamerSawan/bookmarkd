@@ -11,3 +11,6 @@ VALUES (
     $6,
     $7
     ) RETURNING *;
+
+-- name: GetBook :one
+SELECT * FROM books WHERE isbn = $1;

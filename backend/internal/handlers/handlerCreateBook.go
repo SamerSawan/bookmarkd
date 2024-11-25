@@ -18,6 +18,11 @@ func (cfg *ApiConfig) CreateBook(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Failed to decode parameters", err)
 		return
 	}
+	_, err := cfg.Db.GetBook(r.Context(), params.IndustryIdentifiers[1].Identifier)
+	if err == nil {
+		respondWithError(w, http.StatusConflict, "Book already exists!", err)
+		return
+	}
 	parsedTime, err := time.Parse("2006-01-02", params.PublishedDate)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Failed to parse date into time", err)
