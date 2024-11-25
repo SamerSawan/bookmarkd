@@ -13,6 +13,10 @@ import (
 	"github.com/samersawan/bookmarkd/backend/internal/handlers"
 )
 
+// TODO: Add Book To User Endpoint
+// TODO: Update Progress Endpoint
+// TODO: Update Status Endpoint
+
 func main() {
 	godotenv.Load()
 	serveMux := http.NewServeMux()
@@ -30,6 +34,7 @@ func main() {
 
 	serveMux.HandleFunc("POST /api/books", apiCfg.CreateBook)
 	serveMux.HandleFunc("POST /api/users", apiCfg.CreateUser)
+	serveMux.HandleFunc("POST /api/users/{user_id}/books", apiCfg.AddBookToUser)
 	serveMux.HandleFunc("GET /api/books/search", apiCfg.Search)
 
 	fmt.Println(" __          __  _                            _          ____              _                         _       _\n",

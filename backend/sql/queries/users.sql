@@ -11,6 +11,9 @@ VALUES (
 -- name: GetUserByEmail :one
 SELECT * FROM users WHERE email = $1;
 
+-- name: GetUserByID :one
+SELECT * FROM users WHERE id = $1;
+
 -- name: AddBookToUser :one
 INSERT INTO user_books ( id, user_id, isbn, status, updated_at )
 VALUES (
