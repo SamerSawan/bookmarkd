@@ -7,7 +7,8 @@ CREATE TABLE books (
     author TEXT NOT NULL,
     isbn TEXT UNIQUE NOT NULL,
     cover_image_url TEXT NOT NULL,
-    publish_date DATE,
+    publish_date DATE NOT NULL,
+    pages INT NOT NULL,
     description TEXT NOT NULL,
 );
 
