@@ -10,6 +10,18 @@ import (
 	"github.com/google/uuid"
 )
 
+type Book struct {
+	Isbn          string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
+	Title         string
+	Author        string
+	CoverImageUrl string
+	PublishDate   time.Time
+	Pages         int32
+	Description   string
+}
+
 type User struct {
 	ID        uuid.UUID
 	CreatedAt time.Time

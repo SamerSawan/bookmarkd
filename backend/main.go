@@ -28,8 +28,9 @@ func main() {
 
 	apiCfg := handlers.ApiConfig{Db: dbQueries, ApiKey: apiKey}
 
+	serveMux.HandleFunc("POST /api/books", apiCfg.CreateBook)
 	serveMux.HandleFunc("POST /api/users", apiCfg.CreateUser)
-	serveMux.HandleFunc("GET /books/search", apiCfg.Search)
+	serveMux.HandleFunc("GET /api/books/search", apiCfg.Search)
 
 	fmt.Println(" __          __  _                            _          ____              _                         _       _\n",
 		"\\ \\        / / | |                          | |        |  _ \\            | |                       | |     | |\n",
