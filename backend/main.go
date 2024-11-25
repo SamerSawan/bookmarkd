@@ -18,6 +18,7 @@ func main() {
 	serveMux := http.NewServeMux()
 	server := http.Server{Handler: serveMux, Addr: ":8080"}
 	dbURL := os.Getenv("DB_URL")
+	apiKey := os.Getenv("API_KEY")
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -25,9 +26,10 @@ func main() {
 	}
 	dbQueries := database.New(db)
 
-	apiCfg := handlers.ApiConfig{Db: dbQueries}
+	apiCfg := handlers.ApiConfig{Db: dbQueries, ApiKey: apiKey}
 
 	serveMux.HandleFunc("POST /api/users", apiCfg.CreateUser)
+	serveMux.HandleFunc("GET /books/search", apiCfg.Search)
 
 	fmt.Println(" __          __  _                            _          ____              _                         _       _\n",
 		"\\ \\        / / | |                          | |        |  _ \\            | |                       | |     | |\n",
