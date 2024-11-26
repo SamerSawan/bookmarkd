@@ -34,8 +34,13 @@ func (cfg *ApiConfig) AddBookToUser(w http.ResponseWriter, r *http.Request) {
 	}
 	_, err = cfg.Db.GetBook(r.Context(), params.ISBN)
 	if err != nil {
-		insertBook(params.ISBN, cfg, r)
+		err = insertBook(params.ISBN, cfg, r)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "Failed to insert book", err)
+			return
+		}
 	}
+
 	user_book, err := cfg.Db.AddBookToUser(r.Context(), database.AddBookToUserParams{
 		UserID: user_id,
 		Isbn:   params.ISBN,

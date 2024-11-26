@@ -17,9 +17,10 @@ func parseTime(publish_date string) (time.Time, error) {
 	return parsedTime, nil
 }
 
+// TODO: fix race condition
 func insertBook(isbn string, cfg *ApiConfig, r *http.Request) error {
 	baseURL := "https://www.googleapis.com/books/v1/volumes"
-	fullURL := fmt.Sprintf("%s?q=%s&key=%s", baseURL, isbn, cfg.ApiKey)
+	fullURL := fmt.Sprintf("%s?q=isbn:%s&key=%s", baseURL, isbn, cfg.ApiKey)
 	resp, err := http.Get(fullURL)
 	if err != nil {
 		return fmt.Errorf("Failed to fetch books from GoogleBooks")
@@ -29,10 +30,25 @@ func insertBook(isbn string, cfg *ApiConfig, r *http.Request) error {
 	if err := decoder.Decode(&params); err != nil {
 		return fmt.Errorf("Failed to decode response")
 	}
+	if len(params.Items) == 0 {
+		return fmt.Errorf("Invalid ISBN")
+	}
 	bookParams := params.Items[0].VolumeInfo
+
+	isbn13 := ""
+	for _, identifier := range bookParams.IndustryIdentifiers {
+		if identifier.Type == "ISBN_13" {
+			isbn13 = identifier.Identifier
+			break
+		}
+	}
+	if isbn13 == "" {
+		return fmt.Errorf("ISBN_13 not found for book with provided ISBN: %s", isbn)
+	}
+
 	parsedTime, err := parseTime(bookParams.PublishedDate)
 	_, err = cfg.Db.CreateBook(r.Context(), database.CreateBookParams{
-		Isbn:          bookParams.IndustryIdentifiers[0].Identifier,
+		Isbn:          isbn13,
 		Title:         bookParams.Title,
 		Author:        bookParams.Authors[0],
 		CoverImageUrl: bookParams.ImageLinks.Thumbnail,

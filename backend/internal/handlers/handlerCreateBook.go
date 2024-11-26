@@ -16,6 +16,16 @@ func (cfg *ApiConfig) CreateBook(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Failed to decode parameters", err)
 		return
 	}
+	isbn13 := ""
+	for _, identifier := range params.IndustryIdentifiers {
+		if identifier.Type == "ISBN_13" {
+			isbn13 = identifier.Identifier
+			break
+		}
+	}
+	if isbn13 == "" {
+		respondWithError(w, http.StatusBadRequest, "Invalid ISBN. Expected ISBN 13. Got nothing.", nil)
+	}
 	_, err := cfg.Db.GetBook(r.Context(), params.IndustryIdentifiers[1].Identifier)
 	if err == nil {
 		respondWithError(w, http.StatusConflict, "Book already exists!", err)
