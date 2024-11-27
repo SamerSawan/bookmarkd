@@ -33,7 +33,7 @@ type UserBookTest struct {
 	expected int
 }
 
-var passwordTests = []UserBookTest{
+var UserBookTests = []UserBookTest{
 	UserBookTest{"9781250621184", 201},
 	UserBookTest{"9781429926584", 201},
 	UserBookTest{"9781019379219", 201},
@@ -64,7 +64,7 @@ func TestAddBookToUserEndpoint(t *testing.T) {
 	}
 
 	// Test cases
-	for _, test := range passwordTests {
+	for _, test := range UserBookTests {
 		book := BookParameters{
 			Title:   "Test Book",
 			Authors: []string{"Test Author"},

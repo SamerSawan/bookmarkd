@@ -23,8 +23,8 @@ func (cfg *ApiConfig) AddBookToUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type parameters struct {
-		Book   BookParameters
-		Status string `json:"status"`
+		Book   BookParameters `json:"book"`
+		Status string         `json:"status"`
 	}
 	params := parameters{}
 	decoder := json.NewDecoder(r.Body)

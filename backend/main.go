@@ -36,6 +36,7 @@ func main() {
 	serveMux.HandleFunc("POST /api/users", apiCfg.CreateUser)
 	serveMux.HandleFunc("POST /api/users/{user_id}/books", apiCfg.AddBookToUser)
 	serveMux.HandleFunc("GET /api/books/search", apiCfg.Search)
+	serveMux.HandleFunc("PUT /api/users/{user_id}/books/{isbn}/progress", apiCfg.UpdateBookProgress)
 
 	fmt.Println(" __          __  _                            _          ____              _                         _       _\n",
 		"\\ \\        / / | |                          | |        |  _ \\            | |                       | |     | |\n",
