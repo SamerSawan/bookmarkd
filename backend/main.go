@@ -9,18 +9,15 @@ import (
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"github.com/rs/cors"
 	"github.com/samersawan/bookmarkd/backend/internal/database"
 	"github.com/samersawan/bookmarkd/backend/internal/handlers"
 )
 
-// TODO: Add Book To User Endpoint
-// TODO: Update Progress Endpoint
-// TODO: Update Status Endpoint
-
 func main() {
 	godotenv.Load()
 	serveMux := http.NewServeMux()
-	server := http.Server{Handler: serveMux, Addr: ":8080"}
+
 	dbURL := os.Getenv("DB_URL")
 	apiKey := os.Getenv("API_KEY")
 
@@ -38,6 +35,13 @@ func main() {
 	serveMux.HandleFunc("GET /api/books/search", apiCfg.Search)
 	serveMux.HandleFunc("PUT /api/users/{user_id}/books/{isbn}/progress", apiCfg.UpdateBookProgress)
 
+	handler := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3000"},        // Allow your frontend
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"}, // Allowed HTTP methods
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
+	}).Handler(serveMux)
+	server := http.Server{Handler: handler, Addr: ":8080"}
 	fmt.Println(" __          __  _                            _          ____              _                         _       _\n",
 		"\\ \\        / / | |                          | |        |  _ \\            | |                       | |     | |\n",
 		" \\ \\  /\\  / /__| | ___ ___  _ __ ___   ___  | |_ ___   | |_) | ___   ___ | | ___ __ ___   __ _ _ __| | ____| |\n",
