@@ -25,6 +25,7 @@ func (cfg *ApiConfig) CreateBook(w http.ResponseWriter, r *http.Request) {
 	}
 	if isbn13 == "" {
 		respondWithError(w, http.StatusBadRequest, "Invalid ISBN. Expected ISBN 13. Got nothing.", nil)
+		return
 	}
 	_, err := cfg.Db.GetBook(r.Context(), params.IndustryIdentifiers[1].Identifier)
 	if err == nil {
@@ -37,7 +38,7 @@ func (cfg *ApiConfig) CreateBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	book, err := cfg.Db.CreateBook(r.Context(), database.CreateBookParams{
-		Isbn:          params.IndustryIdentifiers[0].Identifier,
+		Isbn:          isbn13,
 		Title:         params.Title,
 		Author:        params.Authors[0],
 		CoverImageUrl: params.ImageLinks.Thumbnail,

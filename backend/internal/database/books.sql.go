@@ -80,3 +80,12 @@ func (q *Queries) GetBook(ctx context.Context, isbn string) (Book, error) {
 	)
 	return i, err
 }
+
+const resetBooks = `-- name: ResetBooks :exec
+DELETE FROM books
+`
+
+func (q *Queries) ResetBooks(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, resetBooks)
+	return err
+}

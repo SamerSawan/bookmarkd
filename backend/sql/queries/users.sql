@@ -40,3 +40,6 @@ RETURNING *;
 
 -- name: DeleteUserBookEntry :exec
 DELETE FROM user_books WHERE user_id = $1 AND isbn = $2;
+
+-- name: ResetUsers :exec
+DELETE FROM users;

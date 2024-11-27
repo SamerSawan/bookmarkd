@@ -23,7 +23,7 @@ func (cfg *ApiConfig) AddBookToUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type parameters struct {
-		ISBN   string `json:"isbn"`
+		Book   BookParameters
 		Status string `json:"status"`
 	}
 	params := parameters{}
@@ -32,18 +32,40 @@ func (cfg *ApiConfig) AddBookToUser(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Failed to decode parameters", err)
 		return
 	}
-	_, err = cfg.Db.GetBook(r.Context(), params.ISBN)
+	isbn13 := ""
+	for _, identifier := range params.Book.IndustryIdentifiers {
+		if identifier.Type == "ISBN_13" {
+			isbn13 = identifier.Identifier
+			break
+		}
+	}
+	if isbn13 == "" {
+		respondWithError(w, http.StatusBadRequest, "Invalid ISBN. Expected ISBN 13. Got nothing.", nil)
+		return
+	}
+	parsedTime, err := parseTime(params.Book.PublishedDate)
 	if err != nil {
-		err = insertBook(params.ISBN, cfg, r)
+		respondWithError(w, http.StatusInternalServerError, "Failed to parse time.", err)
+	}
+	_, err = cfg.Db.GetBook(r.Context(), isbn13)
+	if err != nil {
+		_, err := cfg.Db.CreateBook(r.Context(), database.CreateBookParams{
+			Isbn:          isbn13,
+			Title:         params.Book.Title,
+			Author:        params.Book.Authors[0],
+			CoverImageUrl: params.Book.ImageLinks.Thumbnail,
+			PublishDate:   parsedTime,
+			Pages:         int32(params.Book.PageCount),
+			Description:   params.Book.Description})
 		if err != nil {
-			respondWithError(w, http.StatusInternalServerError, "Failed to insert book", err)
+			respondWithError(w, http.StatusInternalServerError, "Failed to create book", err)
 			return
 		}
 	}
 
 	user_book, err := cfg.Db.AddBookToUser(r.Context(), database.AddBookToUserParams{
 		UserID: user_id,
-		Isbn:   params.ISBN,
+		Isbn:   isbn13,
 		Status: params.Status,
 	})
 	if err != nil {

@@ -14,3 +14,6 @@ VALUES (
 
 -- name: GetBook :one
 SELECT * FROM books WHERE isbn = $1;
+
+-- name: ResetBooks :exec
+DELETE FROM books;
