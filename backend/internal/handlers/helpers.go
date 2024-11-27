@@ -17,10 +17,11 @@ func parseTime(publish_date string) (time.Time, error) {
 	return parsedTime, nil
 }
 
-// TODO: fix race condition
+// TODO: Add a way to make sure that we're getting the right ISBN from the response from the API. Limit response to top 10 related searches
+// TODO: Test search with multiple different ISBNs to ensure that if the ISBN exists, itll be in the top 10 results.
 func insertBook(isbn string, cfg *ApiConfig, r *http.Request) error {
 	baseURL := "https://www.googleapis.com/books/v1/volumes"
-	fullURL := fmt.Sprintf("%s?q=isbn:%s&key=%s", baseURL, isbn, cfg.ApiKey)
+	fullURL := fmt.Sprintf("%s?q=%s&key=%s", baseURL, isbn, cfg.ApiKey)
 	resp, err := http.Get(fullURL)
 	if err != nil {
 		return fmt.Errorf("Failed to fetch books from GoogleBooks")

@@ -37,3 +37,6 @@ UPDATE user_books SET
     finished_at = CASE WHEN $1 = 100 THEN CURRENT_DATE ELSE finished_at END 
 WHERE user_id = $2 AND isbn = $3
 RETURNING *;
+
+-- name: DeleteUserBookEntry :exec
+DELETE FROM user_books WHERE user_id = $1 AND isbn = $2;
