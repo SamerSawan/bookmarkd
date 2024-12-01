@@ -12,7 +12,7 @@ const DailyQuestCard: React.FC<DailyQuestCardProps> = ({
   onComplete,
 }) => {
   return (
-    <div className="bg-[#334155] rounded-lg shadow-lg p-6 flex flex-col justify-between w-[100%] h-[100%]">
+    <div className="bg-[#F7F5FA] rounded-lg shadow-lg p-6 flex flex-col justify-between w-[100%] h-[100%]">
       {/* Card Header */}
       <h3 className="text-xl font-bold mb-4 self-center">Daily Quest</h3>
       
@@ -22,7 +22,7 @@ const DailyQuestCard: React.FC<DailyQuestCardProps> = ({
       {/* Progress Bar */}
       <div className="w-full bg-gray-700 rounded-full h-4 mb-4">
         <div
-          className="bg-gradient-to-r from-[#FEB737] to-[#ea544b] h-4 rounded-full"
+          className="bg-gradient-to-r from-[#ea544b] to-[#8E13FF] h-4 rounded-full"
           style={{ width: `${progress}%` }}
         ></div>
       </div>
@@ -36,7 +36,7 @@ const DailyQuestCard: React.FC<DailyQuestCardProps> = ({
       {/* Complete Button */}
       <button
         onClick={onComplete}
-        className="bg-[#64748b] text-white py-2 px-4 rounded hover:bg-blue-600 transition"
+        className="bg-[#8E13FF] text-white py-2 px-4 rounded hover:bg-blue-600 transition"
       >
         Complete Quest
       </button>

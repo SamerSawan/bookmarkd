@@ -51,10 +51,10 @@ const Home: React.FC = () => {
 
   // NOTE: Most of the text here is place holder until I set up users and logging in to the website with either home built auth or firebase auth
   return (
-    <div className="flex flex-col  min-h-screen items-center bg-[#1e293b] text-[#f1f5f9] px-20 py-10">
+    <div className="flex flex-col  min-h-screen items-center bg-[#FFFFFF] text-[#2C1A3D] px-20 py-10">
       <div className="flex justify-between w-[80%]">
         <div>
-          <p className="font-bold text-3xl text-[#FEB737]">BOOKMARKD</p>
+          <p className="font-bold text-3xl text-[#8E13FF]">BOOKMARKD</p>
         </div>
         <div className="flex flex-row gap-16 text-2xl">
           <p>Shelves</p>
@@ -72,46 +72,23 @@ const Home: React.FC = () => {
         </p>
       </div>
       {/* Dashboard */}
-      <div className="grid grid-cols-3 w-[60%] pt-10 gap-4">
-        <div className="w-[100%] h-[100%]">
+      <div className="grid grid-cols-5 w-[60%] pt-10 gap-4">
+        <div className="w-[100%] h-[100%] col-span-3">
         <CurrentlyReadingCard
           title="Gardens of the Moon"
           author="Steven Erikson"
           coverImage="http://books.google.com/books/content?id=Jgth_BYe7V8C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
-          currentProgress={20} // this is a placeholder
+          currentProgress={20}
           totalPages={600}
           onUpdateProgress={handleCompleteQuest} // this is a placeholder
         />
         </div>
-        <div className="w-[100%] h-[100%]">
-        <ReadingStatsCard
-          streak={10}
-          booksReadThisMonth={4}
-          booksReadThisYear={12}
-          pagesReadToday={45}
-          yearlyGoal={20} // Example: Goal to read 20 books this year
-        />
-        </div>
-        <div>
+        <div className="col-span-2">
           <DailyQuestCard
           quest="Read 20 pages today!"
-          progress={75} // Example: 75% progress
+          progress={75}
           onComplete={() => alert("Quest completed! 🎉")}
           />
-        </div>
-        <div>
-          <YourNextBookCard
-            title="Deadhouse Gates"
-            author="Steven Erikson"
-            coverImage="http://books.google.com/books/content?id=YHJCM5gF8vEC&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
-            onMarkAsCurrentlyReading={handleCompleteQuest} // this is a placeholder
-          />
-        </div>
-        <div>
-          <BookshelvesCard/>
-        </div>
-        <div>
-          <BorrowedBooksCard books={borrowedBooks} />
         </div>
       </div>
       

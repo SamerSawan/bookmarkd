@@ -30,18 +30,18 @@ const CurrentlyReadingCard: React.FC<CurrentlyReadingCardProps> = ({
   };
 
   return (
-    <div className="flex flex-col bg-[#334155] rounded-lg shadow-lg p-6">
+    <div className="flex flex-col bg-[#F7F5FA] rounded-lg shadow-lg p-6">
       <h3 className="text-xl font-bold mb-4 self-center">Currently Reading</h3>
-      <div className="flex items-center justify-between px-8">
+      <div className="flex items-center justify-evenly px-8">
         {/* Book Cover */}
         <img
           src={coverImage}
           alt={title}
-          className="w-32 h-50 object-cover rounded"
+          className="w-30 h-48 object-cover rounded"
         />
         {/* Book Info */}
-        <div className="flex flex-col">
-          <div className="self-center">
+        <div className="flex flex-col items-center">
+          <div className="text-center">
             <h4 className="text-lg font-semibold">{title}</h4>
             <p className="text-sm text-gray-400">By {author}</p>
             <p className="text-sm mt-2">
@@ -76,13 +76,14 @@ const CurrentlyReadingCard: React.FC<CurrentlyReadingCardProps> = ({
               <div className="flex items-center justify-center">
                   <button
                   onClick={() => setIsEditing(true)}
-                  className="bg-[#64748b] text-white py-2 px-4 rounded mt-4 hover:bg-[#475569] transition"
+                  className="bg-[#8E13FF] text-white py-2 px-4 rounded mt-4 hover:bg-[#475569] transition"
                   >
                   Update Progress
                   </button>
               </div>
             )}
         </div>
+        
       </div>
     </div>
   );
