@@ -1,12 +1,9 @@
 "use client"
 import React, { useState } from "react";
 import axiosInstance from "../utils/axiosInstance";
-import BookshelvesCard from "@/components/BookshelvesCard";
 import DailyQuestCard from "@/components/DailyQuest";
 import ReadingStatsCard from "@/components/ReadingStatsCard";
 import CurrentlyReadingCard from "@/components/CurrentlyReadingCard";
-import YourNextBookCard from "@/components/YourNextBookCard";
-import BorrowedBooksCard, { BorrowedBook } from "@/components/BorrowedBooksCard";
 
 const Home: React.FC = () => {
   const [userId, setUserId] = useState<string>("");
@@ -43,37 +40,34 @@ const Home: React.FC = () => {
   const handleCompleteQuest = () => {
     alert("Quest completed! 🎉");
   };
-  const borrowedBooks: BorrowedBook[] = [
-    { title: "Deadhouse Gates", person: "Jojo", type: "lent", dueDate: "2024-12-01" },
-    { title: "Toll the Hounds", person: "Dar", type: "borrowed" },
-  ];
   
 
   // NOTE: Most of the text here is place holder until I set up users and logging in to the website with either home built auth or firebase auth
   return (
-    <div className="flex flex-col  min-h-screen items-center bg-[#FFFFFF] text-[#2C1A3D] px-20 py-10">
+    <div className="flex flex-col  min-h-screen items-center bg-back text-secondary-weak px-20 py-10">
+      {/* Nav */}
       <div className="flex justify-between w-[80%]">
         <div>
-          <p className="font-bold text-3xl text-[#8E13FF]">BOOKMARKD</p>
+          <p className="font-bold text-3xl text-primary">BOOKMARKD</p>
         </div>
-        <div className="flex flex-row gap-16 text-2xl">
+        <div className="flex flex-row gap-16 text-2xl text-primary">
           <p>Shelves</p>
           <p>Stats</p>
           <p>Profile</p>
         </div>
       </div>
-      
+      {/* Welcome Text */}
       <div className="grid grid-cols-5 grid-rows-2 w-full items-start pt-10 text-lg">
-        <p className="col-start-2 text-2xl">
+        <p className="col-start-2 text-2xl text-secondary-strong">
           Welcome back, Samer!
         </p>
         <p className="col-start-2 row-start-2">
           You've read 4 books this month.
         </p>
       </div>
-      {/* Dashboard */}
-      <div className="grid grid-cols-5 w-[60%] pt-10 gap-4">
-        <div className="w-[100%] h-[100%] col-span-3">
+      {/* Cards */}
+      <div className="grid grid-cols-4 w-[60%] pt-10 gap-4">
+        <div className="w-[100%] h-[100%] col-start-2 row-span-2">
         <CurrentlyReadingCard
           title="Gardens of the Moon"
           author="Steven Erikson"
@@ -83,12 +77,15 @@ const Home: React.FC = () => {
           onUpdateProgress={handleCompleteQuest} // this is a placeholder
         />
         </div>
-        <div className="col-span-2">
+        <div>
           <DailyQuestCard
           quest="Read 20 pages today!"
           progress={75}
           onComplete={() => alert("Quest completed! 🎉")}
           />
+        </div>
+        <div className="col-start-3 row-start-2">
+          <ReadingStatsCard streak={0} booksReadThisMonth={0} booksReadThisYear={0} pagesReadToday={0} yearlyGoal={0}/>
         </div>
       </div>
       

@@ -11,14 +11,20 @@ export default {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
-        'primary': '#8E13FF',
-        'text-strong': "#2C1A3D",
-        'text-weak': "#6A597A",
-        'stroke-strong': "#9380A6",
-        'stroke-weak': "#EAE4F0",
-        'fill': "#F7F5FA",
-        'back': "#FFFFFF"
-      },
+        'primary': '#A3C2FF',
+        'secondary-dark': "#000D26",
+        'secondary-strong': "#FFFFFF",
+        'secondary-weak': "#C7C7C7",
+        'stroke-strong': "#999999",
+        'stroke-weak': "#9999991F",
+        'fill': "#9999990F",
+        'back': {
+          'base': '#12121A',
+          'raised': '#1D1D26',
+          'overlay': '#2A2933',
+        },
+        
+      }
     },
   },
   plugins: [],
