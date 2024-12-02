@@ -1,4 +1,5 @@
 import React from "react";
+import { IconFlame, IconBook, IconBooks, IconBook2 } from '@tabler/icons-react';
 
 interface ReadingStatsCardProps {
   streak: number;
@@ -28,10 +29,10 @@ const ReadingStatsCard: React.FC<ReadingStatsCardProps> = ({
 
       {/* Stats */}
       <ul className="space-y-2 text-sm text-secondary-weak">
-        <li>📅 Streak: {streak} days</li>
-        <li>📘 Books Read This Month: {booksReadThisMonth}</li>
-        <li>📚 Books Read This Year: {booksReadThisYear}</li>
-        <li>📖 Pages Read Today: {pagesReadToday}</li>
+        <li className="flex flex-row items-center justify-center gap-1"><IconFlame/> Streak: {streak} days</li>
+        <li className="flex flex-row items-center justify-center gap-1"><IconBook2/> Books Read This Month: {booksReadThisMonth}</li>
+        <li className="flex flex-row items-center justify-center gap-1"><IconBooks/> Books Read This Year: {booksReadThisYear}</li>
+        <li className="flex flex-row items-center justify-center gap-1"><IconBook/> Pages Read Today: {pagesReadToday}</li>
       </ul>
     </div>
   );
