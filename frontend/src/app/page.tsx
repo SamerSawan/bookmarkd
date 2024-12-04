@@ -4,9 +4,9 @@ import axiosInstance from "../utils/axiosInstance";
 import DailyQuestCard from "@/components/DailyQuest";
 import ReadingStatsCard from "@/components/ReadingStatsCard";
 import CurrentlyReadingCard from "@/components/CurrentlyReadingCard";
+import FavoriteBooks from "@/components/FavouriteBooks";
 
 const Home: React.FC = () => {
-  const [userId, setUserId] = useState<string>("");
   const [query, setQuery] = useState<string>("");
   const [books, setBooks] = useState<any[]>([]);
   const [selectedBook, setSelectedBook] = useState<any>(null);
@@ -88,6 +88,7 @@ const Home: React.FC = () => {
           <ReadingStatsCard streak={0} booksReadThisMonth={0} booksReadThisYear={0} pagesReadToday={0} yearlyGoal={0}/>
         </div>
       </div>
+      <FavoriteBooks></FavoriteBooks>
       
       
     </div>
