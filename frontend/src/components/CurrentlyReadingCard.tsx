@@ -5,9 +5,9 @@ interface CurrentlyReadingCardProps {
   title: string;
   author: string;
   coverImage: string;
-  currentProgress: number; // Current progress in pages
-  totalPages: number; // Total number of pages
-  onUpdateProgress: (newProgress: number) => void; // Callback to update progress
+  currentProgress: number;
+  totalPages: number;
+  onUpdateProgress: (newProgress: number) => void;
 }
 
 const CurrentlyReadingCard: React.FC<CurrentlyReadingCardProps> = ({
@@ -31,7 +31,7 @@ const CurrentlyReadingCard: React.FC<CurrentlyReadingCardProps> = ({
   };
 
   return (
-    <div className="flex flex-col bg-back-raised rounded-lg shadow-lg overflow-hidden max-w-xs">
+    <div className="flex flex-col bg-back-raised rounded-lg shadow-lg overflow-hidden max-w-full">
       {/* Top Section: Book Cover */}
       <div className="relative h-60 w-full">
         <img
