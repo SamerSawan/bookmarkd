@@ -7,7 +7,7 @@ const FavouriteBooks = () => {
     ];
   
     return (
-      <div className="mt-8">
+      <div className="mt-8 border-4 border-back-raised p-2 rounded-lg">
         <h2 className="text-xl font-bold text-secondary-strong mb-4">Favourite Books</h2>
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {favouriteBooks.map((book, index) => (

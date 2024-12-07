@@ -53,7 +53,7 @@ const Home: React.FC = () => {
         </div>
         <div className="flex flex-row gap-16 text-2xl text-primary">
           <p>Shelves</p>
-          <p>Stats</p>
+          <p>Activity</p>
           <p>Profile</p>
         </div>
       </div>
@@ -67,8 +67,8 @@ const Home: React.FC = () => {
         </p>
       </div>
       {/* Cards */}
-      <div className="grid grid-cols-2 2xl:grid-cols-4 w-[60%] pt-10 gap-4">
-        <div className="w-[100%] h-[100%] row-span-2 2xl:col-start-2">
+      <div className="grid grid-cols-2 2xl:grid-cols-2 md:w-[60%] pt-10 gap-4">
+        <div className="w-[100%] h-[100%] row-span-2 2xl:col-span-1">
           <CurrentlyReadingCard
             title="Gardens of the Moon"
             author="Steven Erikson"
@@ -78,7 +78,7 @@ const Home: React.FC = () => {
             onUpdateProgress={handleCompleteQuest} // this is a placeholder
           />
         </div>
-        <div>
+        <div className="2xl:col-start-3">
           <DailyQuestCard
           quest="Read 20 pages today!"
           progress={75}
