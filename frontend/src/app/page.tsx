@@ -54,7 +54,7 @@ const Home: React.FC = () => {
         <div className="flex flex-row gap-16 text-2xl text-primary">
           <p>Shelves</p>
           <p>Activity</p>
-          <p>Profile</p>
+          <p>Search</p>
         </div>
       </div>
       {/* Welcome Text */}
