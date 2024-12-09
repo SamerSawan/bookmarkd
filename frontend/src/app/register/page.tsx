@@ -2,11 +2,11 @@
 import Button from "@/components/util/Button";
 import React, { useState } from "react";
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("")
 
-  const handleLogin = () => {
+  const handleRegister = () => {
     // Placeholder for login logic
     alert(`Login with email: ${email}`);
   };
@@ -16,7 +16,7 @@ const Login: React.FC = () => {
      bg-[url('/background_art.jpg')] bg-cover bg-center">
         
         <div className="flex flex-col self-center items-center bg-back-raised w-80 p-6 rounded-lg shadow-lg">
-            <h3 className="text-xl font-bold text-primary mb-6">Login</h3>
+            <h3 className="text-xl font-bold text-primary mb-6">Register</h3>
             <input
             type="email"
             placeholder="Enter your email"
@@ -31,11 +31,11 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 mb-4 text-secondary-weak bg-fill rounded-md outline-none focus:ring-2 focus:ring-primary"
             />
-            <p className="text-primary text-sm">Don't have an account? Create one here</p>
-            <Button Text={"Login"} onPress={handleLogin}/>
+            <p className="text-primary text-sm">Already have an account? Login here</p>
+            <Button Text={"Login"} onPress={handleRegister}/>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default Register;

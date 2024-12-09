@@ -67,8 +67,8 @@ const Home: React.FC = () => {
         </p>
       </div>
       {/* Cards */}
-      <div className="grid grid-cols-2 2xl:grid-cols-2 md:w-[60%] pt-10 gap-4">
-        <div className="w-[100%] h-[100%] row-span-2 2xl:col-span-1">
+      <div className="grid grid-cols-2 md:w-[60%] 2xl:w-[40%] pt-10 gap-4">
+        <div className="2xl:w-full row-span-2">
           <CurrentlyReadingCard
             title="Gardens of the Moon"
             author="Steven Erikson"
@@ -78,14 +78,14 @@ const Home: React.FC = () => {
             onUpdateProgress={handleCompleteQuest} // this is a placeholder
           />
         </div>
-        <div className="2xl:col-start-3">
+        <div className="2xl:w-full">
           <DailyQuestCard
           quest="Read 20 pages today!"
           progress={75}
           onComplete={() => alert("Quest completed! 🎉")}
           />
         </div>
-        <div className="col-start-2 2xl:col-start-3 row-start-2">
+        <div className="col-start-2 row-start-2 2xl:w-full">
           <ReadingStatsCard streak={0} booksReadThisMonth={0} booksReadThisYear={0} pagesReadToday={0} yearlyGoal={0}/>
         </div>
       </div>
