@@ -1,5 +1,6 @@
 "use client";
 import Button from "@/components/util/Button";
+import Link from "next/link";
 import React, { useState } from "react";
 
 const Register: React.FC = () => {
@@ -31,7 +32,7 @@ const Register: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 mb-4 text-secondary-weak bg-fill rounded-md outline-none focus:ring-2 focus:ring-primary"
             />
-            <p className="text-primary text-sm">Already have an account? Login here</p>
+            <Link href="/login" className="text-primary text-sm hover:underline">Already have an account? Login here</Link>
             <Button Text={"Login"} onPress={handleRegister}/>
       </div>
     </div>

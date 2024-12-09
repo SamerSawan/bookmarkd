@@ -1,5 +1,6 @@
 "use client";
 import Button from "@/components/util/Button";
+import Link from "next/link";
 import React, { useState } from "react";
 
 const Login: React.FC = () => {
@@ -31,7 +32,7 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 mb-4 text-secondary-weak bg-fill rounded-md outline-none focus:ring-2 focus:ring-primary"
             />
-            <p className="text-primary text-sm">Don't have an account? Create one here</p>
+            <Link href="/register" className="text-primary text-sm hover:underline">Don't have an account? Create one here</Link>
             <Button Text={"Login"} onPress={handleLogin}/>
       </div>
     </div>
