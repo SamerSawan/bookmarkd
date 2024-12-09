@@ -33,7 +33,7 @@ const Login: React.FC = () => {
             className="w-full px-4 py-2 mb-4 text-secondary-weak bg-fill rounded-md outline-none focus:ring-2 focus:ring-primary"
             />
             <Link href="/register" className="text-primary text-sm hover:underline">Don't have an account? Create one here</Link>
-            <Button Text={"Login"} onPress={handleLogin}/>
+            <div className="mt-2"><Button Text={"Login"} onPress={handleLogin}/></div>
       </div>
     </div>
   );
