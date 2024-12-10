@@ -1,26 +1,101 @@
 "use client";
+import axiosInstance from '@/utils/axiosInstance';
 import { IconSearch } from '@tabler/icons-react';
 import React, { useState } from "react";
 
-const Register: React.FC = () => {
+const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
+  const [books, setBooks] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>("");
+
+  const handleSearch = async () => {
+    // replace spaces with underscore
+    const processedQuery = query.replace(/\s+/g, "_").toLowerCase();
+    setLoading(true)
+    setError("");
+    setBooks([])
+
+    try {
+        const res = await axiosInstance.get(`/books/search?q=${encodeURIComponent(processedQuery)}`);
+
+        const transformedBooks = res.data.map((item: any) => {
+            const volumeInfo = item.VolumeInfo;
+            return {
+                title: volumeInfo.title,
+                authors: volumeInfo.authors || ["Unknown Author"],
+                isbn: volumeInfo.industryIdentifiers?.find((id: any) => id.type === "ISBN_13")?.identifier || "Unknown ISBN",
+                cover: volumeInfo.imageLinks?.thumbnail || "",
+                description: volumeInfo.description || "No description available.",
+            };
+        });
+
+        
+
+        setBooks(transformedBooks);
+    } catch (error) {
+        console.error(error);
+        setError("Failed to fetch search results.");
+    } finally {
+        setLoading(false)
+    }
+  };
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (query.trim() !== "") {
+      handleSearch();
+    }
+  };
 
   return (
     <div className="flex flex-col min-h-screen items-center justify-center bg-back-base text-secondary-weak px-20 py-10">
-        <div className="relative w-full">
-            <input 
-                placeholder="Search by book title, author, isbn"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full bg-back-overlay rounded-lg py-4 pl-12 focus:ring-primary focus:ring-2 outline-none placeholder-secondary-weak" 
-            />
-            <IconSearch 
-                stroke={2} 
-                className="absolute top-1/2 left-4 transform -translate-y-1/2 text-secondary-weak" 
-            />
+        <form onSubmit={handleSubmit} className="w-full">
+            <div className="relative w-full">
+                <input 
+                    placeholder="Search by book title, author, isbn"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    className="w-full bg-back-overlay rounded-full py-4 pl-12 focus:ring-primary focus:ring-2 outline-none placeholder-secondary-weak" 
+                />
+                <IconSearch 
+                    stroke={2} 
+                    className="absolute top-1/2 left-4 transform -translate-y-1/2 text-secondary-weak" 
+                />
+            </div>
+        </form>
+        {loading && <p>Loading...</p>}
+        {error && <p className="text-red-500">{error}</p>}
+
+        <div className="mb-12">
+            <h2 className="text-primary text-3xl font-bold mb-6">Results</h2>
+            <div className="grid grid-cols-1 gap-8">
+                {books.map((book) => (
+                    <div
+                    key={book.isbn}
+                    className="flex bg-back-raised p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all"
+                    >
+                        {/* Book Cover */}
+                        <img
+                            src={book.cover}
+                            alt={book.title}
+                            className="w-32 h-48 rounded-lg object-cover"
+                        />
+                        {/* Book Info */}
+                        <div className="ml-6 flex flex-col justify-between">
+                            <div>
+                            <h3 className="text-xl font-bold text-primary">{book.title}</h3>
+                            <p className="text-sm text-secondary-weak italic">{book.author}</p>
+                            <p className="text-sm text-secondary mt-4">
+                                {book.description || "No description available."}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+          ))}
         </div>
+      </div>
     </div>
   );
 };
 
-export default Register;
+export default Search;

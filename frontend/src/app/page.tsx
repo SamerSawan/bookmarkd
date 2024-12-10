@@ -9,39 +9,10 @@ import TBRList from "@/components/ToBeRead";
 
 const Home: React.FC = () => {
   const [query, setQuery] = useState<string>("");
-  const [books, setBooks] = useState<any[]>([]);
-  const [selectedBook, setSelectedBook] = useState<any>(null);
-  const [status, setStatus] = useState<string>("Currently Reading");
-  const [response, setResponse] = useState<string>("");
-
-  const handleSearch = async () => {
-    // replace spaces with underscore
-    const processedQuery = query.replace(/\s+/g, "_").toLowerCase();
-
-    try {
-        const res = await axiosInstance.get(`/books/search?q=${encodeURIComponent(processedQuery)}`);
-
-        const transformedBooks = res.data.map((item: any) => {
-            const volumeInfo = item.VolumeInfo;
-            return {
-                title: volumeInfo.title,
-                authors: volumeInfo.authors || ["Unknown Author"],
-                isbn: volumeInfo.industryIdentifiers?.find((id: any) => id.type === "ISBN_13")?.identifier || "Unknown ISBN",
-                thumbnail: volumeInfo.imageLinks?.thumbnail || "",
-                description: volumeInfo.description || "No description available.",
-            };
-        });
-
-        setBooks(transformedBooks);
-    } catch (error) {
-        console.error(error);
-        setBooks([]);
-    }
-  };
+  
   const handleCompleteQuest = () => {
     alert("Quest completed! 🎉");
   };
-  
 
   // NOTE: Most of the text here is place holder until I set up users and logging in to the website with either home built auth or firebase auth
   return (
