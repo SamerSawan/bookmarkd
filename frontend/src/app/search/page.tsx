@@ -2,6 +2,7 @@
 import axiosInstance from '@/utils/axiosInstance';
 import { IconSearch } from '@tabler/icons-react';
 import React, { useState } from "react";
+import { motion } from "framer-motion";
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -48,53 +49,90 @@ const Search: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col min-h-screen items-center justify-center bg-back-base text-secondary-weak px-20 py-10">
-        <form onSubmit={handleSubmit} className="w-full">
-            <div className="relative w-full">
-                <input 
-                    placeholder="Search by book title, author, isbn"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    className="w-full bg-back-overlay rounded-full py-4 pl-12 focus:ring-primary focus:ring-2 outline-none placeholder-secondary-weak" 
-                />
-                <IconSearch 
-                    stroke={2} 
-                    className="absolute top-1/2 left-4 transform -translate-y-1/2 text-secondary-weak" 
-                />
-            </div>
-        </form>
-        {loading && <p>Loading...</p>}
-        {error && <p className="text-red-500">{error}</p>}
-
-        <div className="mb-12">
-            <h2 className="text-primary text-3xl font-bold mb-6">Results</h2>
-            <div className="grid grid-cols-1 gap-8">
-                {books.map((book) => (
-                    <div
-                    key={book.isbn}
-                    className="flex bg-back-raised p-6 rounded-lg shadow-lg hover:shadow-2xl transition-all"
-                    >
-                        {/* Book Cover */}
-                        <img
-                            src={book.cover}
-                            alt={book.title}
-                            className="w-32 h-48 rounded-lg object-cover"
-                        />
-                        {/* Book Info */}
-                        <div className="ml-6 flex flex-col justify-between">
-                            <div>
-                            <h3 className="text-xl font-bold text-primary">{book.title}</h3>
-                            <p className="text-sm text-secondary-weak italic">{book.author}</p>
-                            <p className="text-sm text-secondary mt-4">
-                                {book.description || "No description available."}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-          ))}
+    <motion.div
+      className="flex flex-col min-h-screen items-center justify-center bg-back-base text-secondary-weak px-20 py-10"
+      layout
+    >
+      <motion.form
+        onSubmit={handleSubmit}
+        className="w-full"
+        layout
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.25 }}
+      >
+        <div className="relative w-full">
+          <input
+            placeholder="Search by book title, author, isbn"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className="w-full bg-back-overlay rounded-full py-4 pl-12 focus:ring-primary focus:ring-2 outline-none placeholder-secondary-weak"
+          />
+          <IconSearch
+            stroke={2}
+            className="absolute top-1/2 left-4 transform -translate-y-1/2 text-secondary-weak"
+          />
         </div>
-      </div>
-    </div>
+      </motion.form>
+
+      {/* Loading and Error States */}
+      {loading && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-sm mt-4"
+        >
+          Loading...
+        </motion.p>
+      )}
+      {error && (
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-sm mt-4 text-red-500"
+        >
+          {error}
+        </motion.p>
+      )}
+
+      {/* Book Results */}
+      <motion.div
+        className="mt-8 grid grid-cols-1 gap-8 w-full"
+        layout
+        initial={{ opacity: 0 }}
+        animate={{ opacity: books.length > 0 ? 1 : 0 }}
+        transition={{ duration: 0.25 }}
+      >
+        {books.map((book, index) => (
+          <motion.div
+            key={book.isbn || index}
+            className="flex bg-back-raised p-6 rounded-lg shadow-lg hover:shadow-2xl"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1, duration: 0.5 }}
+          >
+            {/* Book Cover */}
+            <img
+              src={book.cover}
+              alt={book.title}
+              className="w-32 h-48 rounded-lg object-cover"
+            />
+            {/* Book Info */}
+            <div className="ml-6 flex flex-col justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-primary">{book.title}</h3>
+                <p className="text-sm text-secondary-weak italic">
+                  {book.authors.join(", ")}
+                </p>
+                <p className="text-sm text-secondary mt-4">
+                  {book.description}
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </motion.div>
+    </motion.div>
   );
 };
 

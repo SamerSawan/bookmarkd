@@ -9,8 +9,9 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@tabler/icons-react": "^3.23.0",
+    "@tabler/icons-react": "^3.24.0",
     "axios": "^1.7.8",
+    "framer-motion": "^11.13.3",
     "next": "15.0.3",
     "react": "19.0.0-rc-66855b96-20241106",
     "react-circular-progressbar": "^2.1.0",
