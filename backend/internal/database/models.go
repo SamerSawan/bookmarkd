@@ -24,16 +24,16 @@ type Book struct {
 }
 
 type User struct {
-	ID        uuid.UUID
+	ID        string
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	Email     string
-	Password  string
+	Username  string
 }
 
 type UserBook struct {
 	ID         uuid.UUID
-	UserID     uuid.UUID
+	UserID     string
 	Isbn       string
 	Status     string
 	Progress   sql.NullInt32

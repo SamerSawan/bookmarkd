@@ -8,8 +8,6 @@ package database
 import (
 	"context"
 	"database/sql"
-
-	"github.com/google/uuid"
 )
 
 const addBookToUser = `-- name: AddBookToUser :one
@@ -24,7 +22,7 @@ VALUES (
 `
 
 type AddBookToUserParams struct {
-	UserID uuid.UUID
+	UserID string
 	Isbn   string
 	Status string
 }
@@ -47,30 +45,31 @@ func (q *Queries) AddBookToUser(ctx context.Context, arg AddBookToUserParams) (U
 }
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users ( id, created_at, updated_at, email, password )
+INSERT INTO users ( id, created_at, updated_at, email, username )
 VALUES (
-    gen_random_uuid(),
-    NOW(),
-    NOW(),
     $1,
-    $2
-) RETURNING id, created_at, updated_at, email, password
+    NOW(),
+    NOW(),
+    $2,
+    $3
+) RETURNING id, created_at, updated_at, email, username
 `
 
 type CreateUserParams struct {
+	ID       string
 	Email    string
-	Password string
+	Username string
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser, arg.Email, arg.Password)
+	row := q.db.QueryRowContext(ctx, createUser, arg.ID, arg.Email, arg.Username)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
-		&i.Password,
+		&i.Username,
 	)
 	return i, err
 }
@@ -80,7 +79,7 @@ DELETE FROM user_books WHERE user_id = $1 AND isbn = $2
 `
 
 type DeleteUserBookEntryParams struct {
-	UserID uuid.UUID
+	UserID string
 	Isbn   string
 }
 
@@ -90,7 +89,7 @@ func (q *Queries) DeleteUserBookEntry(ctx context.Context, arg DeleteUserBookEnt
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, created_at, updated_at, email, password FROM users WHERE email = $1
+SELECT id, created_at, updated_at, email, username FROM users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -101,16 +100,16 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
-		&i.Password,
+		&i.Username,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, created_at, updated_at, email, password FROM users WHERE id = $1
+SELECT id, created_at, updated_at, email, username FROM users WHERE id = $1
 `
 
-func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
+func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
 	row := q.db.QueryRowContext(ctx, getUserByID, id)
 	var i User
 	err := row.Scan(
@@ -118,7 +117,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.Email,
-		&i.Password,
+		&i.Username,
 	)
 	return i, err
 }
@@ -142,7 +141,7 @@ RETURNING id, user_id, isbn, status, progress, started_at, finished_at, lent_to,
 
 type UpdateBookProgressParams struct {
 	Progress sql.NullInt32
-	UserID   uuid.UUID
+	UserID   string
 	Isbn     string
 }
 
@@ -173,7 +172,7 @@ RETURNING id, user_id, isbn, status, progress, started_at, finished_at, lent_to,
 
 type UpdateBookStatusParams struct {
 	Status string
-	UserID uuid.UUID
+	UserID string
 	Isbn   string
 }
 

@@ -10,12 +10,7 @@ import (
 )
 
 func (cfg *ApiConfig) UpdateBookStatus(w http.ResponseWriter, r *http.Request) {
-	user_id_string := r.PathValue("user_id")
-	user_id, err := uuid.Parse(user_id_string)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to parse user_id into uuid", err)
-		return
-	}
+	user_id := r.PathValue("user_id")
 
 	isbn := r.PathValue("isbn")
 	if isbn == "" {

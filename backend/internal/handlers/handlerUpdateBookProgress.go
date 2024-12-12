@@ -11,12 +11,7 @@ import (
 )
 
 func (cfg *ApiConfig) UpdateBookProgress(w http.ResponseWriter, r *http.Request) {
-	user_id_string := r.PathValue("user_id")
-	user_id, err := uuid.Parse(user_id_string)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to parse user_id into uuid", err)
-		return
-	}
+	user_id := r.PathValue("user_id")
 
 	isbn := r.PathValue("isbn")
 	if isbn == "" {
@@ -47,7 +42,7 @@ func (cfg *ApiConfig) UpdateBookProgress(w http.ResponseWriter, r *http.Request)
 
 	type response struct {
 		ID         uuid.UUID `json:"id"`
-		UserID     uuid.UUID `json:"user_id"`
+		UserID     string    `json:"user_id"`
 		ISBN       string    `json:"isbn"`
 		Status     string    `json:"status"`
 		Progress   int       `json:"progress"`
@@ -58,7 +53,7 @@ func (cfg *ApiConfig) UpdateBookProgress(w http.ResponseWriter, r *http.Request)
 	respondWithJSON(w, http.StatusOK, response{
 		ID:         user_book.ID,
 		ISBN:       user_book.Isbn,
-		UserID:     user_book.ID,
+		UserID:     user_book.UserID,
 		Status:     user_book.Status,
 		Progress:   int(user_book.Progress.Int32),
 		StartedAt:  user_book.StartedAt.Time,
