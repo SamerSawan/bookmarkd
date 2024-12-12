@@ -19,16 +19,22 @@ func (cfg *ApiConfig) CreateUser(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Failed to decode user parameters", err)
 		return
 	}
-
-	_, err := cfg.Db.GetUserByEmail(r.Context(), params.Email)
-	if err == nil {
-		respondWithError(w, http.StatusConflict, "Email already in use!", err)
+	client, err := cfg.Firebase.Auth(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to initialize Firebase Auth client", err)
 		return
 	}
+
+	_, err = client.VerifyIDToken(r.Context(), params.ID)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Invalid Firebase ID token", err)
+		return
+	}
+
 	user, err := cfg.Db.CreateUser(r.Context(), database.CreateUserParams{Email: params.Email, Username: params.Username, ID: params.ID})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Failed to create new user.", err)
 		return
 	}
-	respondWithJSON(w, http.StatusCreated, User{ID: user.ID, Email: user.Email, CreatedAt: user.CreatedAt, UpdatedAt: user.UpdatedAt})
+	respondWithJSON(w, http.StatusCreated, User{ID: user.ID, Email: user.Email, CreatedAt: user.CreatedAt, UpdatedAt: user.UpdatedAt, Username: params.Username})
 }

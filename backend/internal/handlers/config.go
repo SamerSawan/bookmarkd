@@ -1,8 +1,12 @@
 package handlers
 
-import "github.com/samersawan/bookmarkd/backend/internal/database"
+import (
+	firebase "firebase.google.com/go"
+	"github.com/samersawan/bookmarkd/backend/internal/database"
+)
 
 type ApiConfig struct {
-	Db     *database.Queries
-	ApiKey string
+	Db       *database.Queries
+	ApiKey   string
+	Firebase *firebase.App
 }

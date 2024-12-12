@@ -1,17 +1,20 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
 
+	firebase "firebase.google.com/go"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"github.com/rs/cors"
 	"github.com/samersawan/bookmarkd/backend/internal/database"
 	"github.com/samersawan/bookmarkd/backend/internal/handlers"
+	"google.golang.org/api/option"
 )
 
 func main() {
@@ -27,7 +30,13 @@ func main() {
 	}
 	dbQueries := database.New(db)
 
-	apiCfg := handlers.ApiConfig{Db: dbQueries, ApiKey: apiKey}
+	opt := option.WithCredentialsFile("./serviceAccountKey.json")
+	app, err := firebase.NewApp(context.Background(), nil, opt)
+	if err != nil {
+		log.Fatalf("Error initializing Firebase Admin SDK: %v", err)
+	}
+
+	apiCfg := handlers.ApiConfig{Db: dbQueries, ApiKey: apiKey, Firebase: app}
 
 	serveMux.HandleFunc("POST /api/books", apiCfg.CreateBook)
 	serveMux.HandleFunc("POST /api/users", apiCfg.CreateUser)
