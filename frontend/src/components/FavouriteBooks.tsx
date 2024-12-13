@@ -1,9 +1,9 @@
 const FavouriteBooks = () => {
     const favouriteBooks = [
-      { id: 1, title: "Lessons in Stoicism", cover: "http://books.google.com/books/content?id=y5GIDwAAQBAJ&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
-      { id: 2, title: "Hardship and Happiness", cover: "http://books.google.com/books/content?id=bgjGAgAAQBAJ&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
-      { id: 3, title: "Between Two Fires", cover: "http://books.google.com/books/content?id=2PO1MtB7E_0C&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
-      { id: 4, title: "Orientalism", cover: "http://books.google.com/books/content?id=npF5BAAAQBAJ&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
+      { id: 1, title: "Lessons in Stoicism", cover: "https://books.google.com/books/content?id=y5GIDwAAQBAJ&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
+      { id: 2, title: "Hardship and Happiness", cover: "https://books.google.com/books/content?id=bgjGAgAAQBAJ&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
+      { id: 3, title: "Between Two Fires", cover: "https://books.google.com/books/content?id=2PO1MtB7E_0C&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
+      { id: 4, title: "Orientalism", cover: "https://books.google.com/books/content?id=npF5BAAAQBAJ&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
     ];
   
     return (

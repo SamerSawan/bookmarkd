@@ -1,9 +1,9 @@
 const TBRList = () => {
     const toReadBooks = [
-      { title: "Deadhouse Gates", cover: "http://books.google.com/books/content?id=YHJCM5gF8vEC&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
-      { title: "The Blacktongue Thief", cover: "http://books.google.com/books/content?id=dvb4DwAAQBAJ&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
-      { title: "Piranesi", cover: "http://books.google.com/books/content?id=B7U8EAAAQBAJ&printsec=frontcover&img=1&zoom=3&source=gbs_api" },
-      { title: "The Design of Everyday Things", cover: "http://books.google.com/books/content?id=qBfRDQAAQBAJ&printsec=frontcover&img=1&zoom=3&source=gbs_api" },
+      { title: "Deadhouse Gates", cover: "https://books.google.com/books/content?id=YHJCM5gF8vEC&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
+      { title: "The Blacktongue Thief", cover: "https://books.google.com/books/content?id=dvb4DwAAQBAJ&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api" },
+      { title: "Piranesi", cover: "https://books.google.com/books/content?id=B7U8EAAAQBAJ&printsec=frontcover&img=1&zoom=3&source=gbs_api" },
+      { title: "The Design of Everyday Things", cover: "https://books.google.com/books/content?id=qBfRDQAAQBAJ&printsec=frontcover&img=1&zoom=3&source=gbs_api" },
     ];
   
     return (

@@ -43,7 +43,7 @@ const Home: React.FC = () => {
           <CurrentlyReadingCard
             title="Gardens of the Moon"
             author="Steven Erikson"
-            coverImage="http://books.google.com/books/content?id=Jgth_BYe7V8C&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api"
+            coverImage="https://books.google.com/books/content?id=Jgth_BYe7V8C&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api"
             currentProgress={20}
             totalPages={600}
             onUpdateProgress={handleCompleteQuest} // this is a placeholder
