@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { auth } from "../../../firebase";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import axiosInstance from "@/utils/axiosInstance";
 
 const Register: React.FC = () => {
     const router = useRouter();
@@ -32,21 +33,27 @@ const Register: React.FC = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
-      router.push("/");
+      const id = await user.getIdToken();
+      console.log(id)
+      console.log("token")
+
+      const res = await axiosInstance.post("/users", {
+        username,
+        email,
+        id
+      })
+
+      if (res.status == 201) {
+        router.push("/");
+      }
+
+      
     } catch (err: any) {
       console.log(err.code)
-      switch (err.code) {
-        case "auth/email-already-in-use":
-          setError("This email is already in use.");
-          break;
-        case "auth/invalid-email":
-          setError("Invalid email address.");
-          break;
-        case "auth/weak-password":
-          setError("Password should be at least 6 characters.");
-          break;
-        default:
-          setError("Failed to register. Please try again.");
+      if (err.response && err.response.data && err.response.data.message) {
+        setError(err.response.data.message);
+      } else {
+        setError("An error occurred during registration.");
       }
     }
   };
