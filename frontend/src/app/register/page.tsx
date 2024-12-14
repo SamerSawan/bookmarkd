@@ -27,13 +27,11 @@ const Register: React.FC = () => {
       setError("Passwords do not match.");
       return;
     }
-
-    try {
-      
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      const id = await user.getIdToken();
+    createUserWithEmailAndPassword(auth, email, password)
+      .then(async (userCredential) => {
+        
+        const user = userCredential.user;
+        const id = await user.getIdToken();
       console.log(id)
       console.log("token")
 
@@ -46,16 +44,15 @@ const Register: React.FC = () => {
       if (res.status == 201) {
         router.push("/");
       }
-
-      
-    } catch (err: any) {
-      console.log(err.code)
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message);
-      } else {
-        setError("An error occurred during registration.");
-      }
-    }
+      })
+      .catch((err) => {
+        console.log(err.code)
+        if (err.response && err.response.data && err.response.data.message) {
+          setError(err.response.data.message);
+        } else {
+          setError("An error occurred during registration.");
+        }
+      });
   };
 
   return (
