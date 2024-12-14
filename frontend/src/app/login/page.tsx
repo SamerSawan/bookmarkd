@@ -2,14 +2,31 @@
 import Button from "@/components/util/Button";
 import Link from "next/link";
 import React, { useState } from "react";
+import { auth } from "../../../firebase";
+import { useRouter } from "next/navigation";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 const Login: React.FC = () => {
+  const router = useRouter()
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("")
+  const [error, setError] = useState<string>("")
 
   const handleLogin = () => {
-    // Placeholder for login logic
-    alert(`Login with email: ${email}`);
+    setError("")
+
+    if (!email || !password) {
+      setError("All fields are required.")
+      return;
+    }
+    signInWithEmailAndPassword(auth, email, password)
+    .then((userCredential) => {
+      const user = userCredential.user;
+      router.push("/")
+    })
+    .catch((error) => {
+      setError(error.message);
+    });
   };
 
   return (
