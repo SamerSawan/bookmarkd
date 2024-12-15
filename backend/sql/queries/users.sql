@@ -41,5 +41,15 @@ RETURNING *;
 -- name: DeleteUserBookEntry :exec
 DELETE FROM user_books WHERE user_id = $1 AND isbn = $2;
 
+-- name: AddShelfToUser :one
+INSERT INTO user_shelves (id, created_at, updated_at, user_id, shelf_id)
+VALUES (
+    gen_random_uuid(),
+    NOW(),
+    NOW(),
+    $1,
+    $2
+) RETURNING *;
+
 -- name: ResetUsers :exec
 DELETE FROM users;

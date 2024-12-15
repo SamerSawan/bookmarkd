@@ -4,7 +4,7 @@ CREATE TABLE shelf_books (
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     shelf_id uuid NOT NULL,
-    book_isbn INT NOT NULL,
+    book_isbn TEXT NOT NULL,
     FOREIGN KEY (shelf_id) REFERENCES shelves(id) ON DELETE CASCADE,
     FOREIGN KEY (book_isbn) REFERENCES books(isbn) ON DELETE CASCADE
 );

@@ -1,6 +1,6 @@
 -- +goose Up
 CREATE TABLE books (
-    isbn INT PRIMARY KEY,
+    isbn TEXT PRIMARY KEY,
     created_at TIMESTAMP NOT NULL,
     updated_at TIMESTAMP NOT NULL,
     title TEXT NOT NULL,

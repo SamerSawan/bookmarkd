@@ -23,6 +23,21 @@ type Book struct {
 	Description   string
 }
 
+type Shelf struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	Name      string
+}
+
+type ShelfBook struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	ShelfID   uuid.UUID
+	BookIsbn  string
+}
+
 type User struct {
 	ID        string
 	CreatedAt time.Time
@@ -41,4 +56,12 @@ type UserBook struct {
 	FinishedAt sql.NullTime
 	LentTo     sql.NullString
 	UpdatedAt  sql.NullTime
+}
+
+type UserShelf struct {
+	ID        uuid.UUID
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	UserID    string
+	ShelfID   uuid.UUID
 }

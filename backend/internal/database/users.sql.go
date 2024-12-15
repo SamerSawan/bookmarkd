@@ -8,6 +8,8 @@ package database
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const addBookToUser = `-- name: AddBookToUser :one
@@ -40,6 +42,35 @@ func (q *Queries) AddBookToUser(ctx context.Context, arg AddBookToUserParams) (U
 		&i.FinishedAt,
 		&i.LentTo,
 		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const addShelfToUser = `-- name: AddShelfToUser :one
+INSERT INTO user_shelves (id, created_at, updated_at, user_id, shelf_id)
+VALUES (
+    gen_random_uuid(),
+    NOW(),
+    NOW(),
+    $1,
+    $2
+) RETURNING id, created_at, updated_at, user_id, shelf_id
+`
+
+type AddShelfToUserParams struct {
+	UserID  string
+	ShelfID uuid.UUID
+}
+
+func (q *Queries) AddShelfToUser(ctx context.Context, arg AddShelfToUserParams) (UserShelf, error) {
+	row := q.db.QueryRowContext(ctx, addShelfToUser, arg.UserID, arg.ShelfID)
+	var i UserShelf
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.UserID,
+		&i.ShelfID,
 	)
 	return i, err
 }
