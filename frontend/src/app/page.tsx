@@ -1,22 +1,51 @@
 "use client"
-import React, { useState } from "react";
-import axiosInstance from "../utils/axiosInstance";
+import React, { useEffect, useState } from "react";
 import DailyQuestCard from "@/components/DailyQuest";
 import ReadingStatsCard from "@/components/ReadingStatsCard";
 import CurrentlyReadingCard from "@/components/CurrentlyReadingCard";
 import FavouriteBooks from "@/components/FavouriteBooks";
 import TBRList from "@/components/ToBeRead";
+import { auth } from "../../firebase";
+import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { IconLogout } from '@tabler/icons-react';
 
 const Home: React.FC = () => {
-  const [query, setQuery] = useState<string>("");
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        router.push("/login");
+      }
+    });
+    return () => unsubscribe();
+  }, [router]);
   
   const handleCompleteQuest = () => {
     alert("Quest completed! 🎉");
   };
 
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth); // Sign out the user
+      setUser(null); // Clear the local user state
+      router.push("/login"); // Redirect to login page
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  if (!user) {
+    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  }
+
   // NOTE: Most of the text here is place holder until I set up users and logging in to the website with either home built auth or firebase auth
   return (
-    <div className="flex flex-col  min-h-screen items-center bg-back text-secondary-weak px-20 py-10">
+    <div className="flex flex-col min-h-screen items-center bg-back-base text-secondary-weak px-20 py-10">
       {/* Nav */}
       <div className="flex justify-between w-[80%]">
         <div>
@@ -26,6 +55,12 @@ const Home: React.FC = () => {
           <p>Shelves</p>
           <p>Activity</p>
           <p>Search</p>
+          <button
+          onClick={handleSignOut}
+          className="bg-primary text-secondary-dark px-4 py-2 rounded-md hover:bg-primary-dark"
+        >
+          <IconLogout stroke={2}/>
+        </button>
         </div>
       </div>
       {/* Welcome Text */}
