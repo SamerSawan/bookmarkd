@@ -2,7 +2,7 @@
 CREATE TABLE user_books (
     id uuid PRIMARY KEY,
     user_id VARCHAR(128) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    isbn TEXT NOT NULL REFERENCES books(isbn) ON DELETE CASCADE,
+    isbn INT NOT NULL REFERENCES books(isbn) ON DELETE CASCADE,
     status TEXT NOT NULL CHECK (status IN ('To Be Read', 'Currently Reading', 'Read')),
     progress INTEGER DEFAULT 0,
     started_at DATE,

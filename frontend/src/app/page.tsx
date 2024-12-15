@@ -6,18 +6,40 @@ import CurrentlyReadingCard from "@/components/CurrentlyReadingCard";
 import FavouriteBooks from "@/components/FavouriteBooks";
 import TBRList from "@/components/ToBeRead";
 import { auth } from "../../firebase";
-import { onAuthStateChanged, signOut, User } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { IconLogout } from '@tabler/icons-react';
+import axiosInstance from "@/utils/axiosInstance";
+
+type User = {
+  id: string;
+  email: string;
+  username: string;
+};
 
 const Home: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
-        setUser(currentUser);
+        const id = currentUser.uid;
+        console.log("Username is")
+        try {
+          const res = await axiosInstance.get(`/users/${id}`);
+          console.log(res.data)
+          const { id: userId, email, username } = res.data;
+          console.log(username)
+
+          setUser({
+            id: id,
+            email: email,
+            username: username,
+          });
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
       } else {
         router.push("/login");
       }
@@ -31,9 +53,9 @@ const Home: React.FC = () => {
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth); // Sign out the user
-      setUser(null); // Clear the local user state
-      router.push("/login"); // Redirect to login page
+      await signOut(auth);
+      setUser(null);
+      router.push("/login");
     } catch (error) {
       console.error("Error signing out:", error);
     }
@@ -65,8 +87,8 @@ const Home: React.FC = () => {
       </div>
       {/* Welcome Text */}
       <div className="grid grid-cols-5 grid-rows-2 w-full items-start pt-10 text-lg">
-        <p className="col-start-2 text-2xl text-secondary-strong">
-          Welcome back, Samer!
+        <p className="col-start-2 col-span-2 text-2xl text-secondary-strong">
+          Welcome back, {user.username}!
         </p>
         <p className="col-start-2 row-start-2">
           You've read 4 books this month.

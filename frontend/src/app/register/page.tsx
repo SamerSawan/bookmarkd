@@ -32,8 +32,6 @@ const Register: React.FC = () => {
         
         const user = userCredential.user;
         const id = await user.getIdToken();
-      console.log(id)
-      console.log("token")
 
       const res = await axiosInstance.post("/users", {
         username,
