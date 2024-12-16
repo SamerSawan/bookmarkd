@@ -10,6 +10,7 @@ import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { IconLogout } from '@tabler/icons-react';
 import axiosInstance from "@/utils/axiosInstance";
+import Link from "next/link";
 
 type User = {
   id: string;
@@ -74,9 +75,11 @@ const Home: React.FC = () => {
           <p className="font-bold text-3xl text-primary">BOOKMARKD</p>
         </div>
         <div className="flex flex-row gap-16 text-2xl text-primary">
-          <p>Shelves</p>
+          <Link href="/shelves" className="hover:underline">
+            Shelves
+          </Link>
           <p>Activity</p>
-          <p>Search</p>
+          <Link href="/search" className="hover:underline">Search</Link>
           <button
           onClick={handleSignOut}
           className="bg-primary text-secondary-dark px-4 py-2 rounded-md hover:bg-primary-dark"
