@@ -3,6 +3,7 @@ import axiosInstance from '@/utils/axiosInstance';
 import { IconPlus, IconSearch } from '@tabler/icons-react';
 import React, { useState } from "react";
 import { motion } from "framer-motion";
+import Dropdown from './Dropdown';
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -129,12 +130,7 @@ const Search: React.FC = () => {
                 </p>
               </div>
               <div className="flex items-center justify-end gap-2 mt-4">
-                <button
-                className="flex items-center gap-1 text-secondary-dark bg-primary px-3 py-1 rounded-md hover:opacity-80 transition"
-                >
-                  <IconPlus stroke={2}/>
-                  <span>Add to Shelf</span>
-                </button>
+                <Dropdown/>
 
               </div>
             </div>
