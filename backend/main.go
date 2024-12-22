@@ -44,6 +44,7 @@ func main() {
 	serveMux.HandleFunc("GET /api/books/search", apiCfg.Search)
 	serveMux.HandleFunc("PUT /api/users/{user_id}/books/{isbn}/progress", apiCfg.UpdateBookProgress)
 	serveMux.HandleFunc("GET /api/users/{user_id}", apiCfg.GetUser)
+	serveMux.HandleFunc("GET /api/users/{user_id}/shelves", apiCfg.GetShelves)
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},        // Allow your frontend

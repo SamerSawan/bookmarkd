@@ -1,10 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { IconPlus } from '@tabler/icons-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const Dropdown = () => {
+interface Shelf {
+  id: string;
+  name: string;
+}
+
+interface DropdownProps {
+  shelves: Shelf[];
+}
+
+const Dropdown: React.FC<DropdownProps> = ({ shelves }) => {
   const [isOpen, setIsOpen] = useState(false);
+  
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
   const notifySuccess = () => {
@@ -24,14 +34,11 @@ const Dropdown = () => {
         setIsOpen(false);
       }
     };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
-  const shelves = ["Currently Reading", "Want to Read", "Read"];
 
   return (
     <div className="relative inline-block" ref={dropdownRef}>
@@ -50,7 +57,7 @@ const Dropdown = () => {
           <ul className="py-1 text-secondary-strong">
             {shelves.map((shelf) => (
               <li
-                key={shelf}
+                key={shelf.id}
                 className="px-4 py-2 hover:opacity-40 cursor-pointer"
                 onClick={() => {
                   console.log(`Added to ${shelf}`); // placeholder
@@ -58,7 +65,7 @@ const Dropdown = () => {
                   notifyFailure()
                 }}
               >
-                {shelf}
+                {shelf.name}
               </li>
             ))}
           </ul>
