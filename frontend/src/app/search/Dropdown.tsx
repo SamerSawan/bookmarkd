@@ -1,9 +1,19 @@
 import { useState, useEffect, useRef } from "react";
 import { IconPlus } from '@tabler/icons-react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Dropdown = () => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement | null>(null);
+
+  const notifySuccess = () => {
+    toast.success("Successfully added {book} to {shelf}")
+  }
+
+  const notifyFailure = () => {
+    toast.error("Failed to add {book} to {shelf}: {err}")
+  }
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -45,6 +55,7 @@ const Dropdown = () => {
                 onClick={() => {
                   console.log(`Added to ${shelf}`); // placeholder
                   setIsOpen(false);
+                  notifyFailure()
                 }}
               >
                 {shelf}
