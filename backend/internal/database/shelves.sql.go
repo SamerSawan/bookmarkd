@@ -11,6 +11,35 @@ import (
 	"github.com/google/uuid"
 )
 
+const addBookToShelf = `-- name: AddBookToShelf :one
+INSERT INTO shelf_books (id, created_at, updated_at, shelf_id, book_isbn)
+VALUES (
+    gen_random_uuid(),
+    NOW(),
+    NOW(),
+    $1,
+    $2
+) RETURNING id, created_at, updated_at, shelf_id, book_isbn
+`
+
+type AddBookToShelfParams struct {
+	ShelfID  uuid.UUID
+	BookIsbn string
+}
+
+func (q *Queries) AddBookToShelf(ctx context.Context, arg AddBookToShelfParams) (ShelfBook, error) {
+	row := q.db.QueryRowContext(ctx, addBookToShelf, arg.ShelfID, arg.BookIsbn)
+	var i ShelfBook
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ShelfID,
+		&i.BookIsbn,
+	)
+	return i, err
+}
+
 const createShelf = `-- name: CreateShelf :one
 INSERT INTO shelves (id, created_at, updated_at, name) 
 VALUES (

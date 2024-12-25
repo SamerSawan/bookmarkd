@@ -1,17 +1,11 @@
 "use client";
 import axiosInstance from '@/utils/axiosInstance';
-import { IconPlus, IconSearch } from '@tabler/icons-react';
-import React, { useEffect, useState } from "react";
+import { IconSearch } from '@tabler/icons-react';
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Dropdown from './Dropdown';
 import { toast, ToastContainer } from 'react-toastify';
-import { auth } from '../../../firebase';
 import {useUser} from '../context/UserContext';
-
-interface Shelf {
-  id: string;
-  name: string;
-}
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -21,7 +15,7 @@ const Search: React.FC = () => {
   const [error, setError] = useState<string>("");
 
   const handleSearch = async () => {
-    // replace spaces with underscore
+    // replace spaces with plus sign
     const processedQuery = query.replace(/\s+/g, "+").toLowerCase();
     setLoading(true)
     setError("");
@@ -55,6 +49,19 @@ const Search: React.FC = () => {
     e.preventDefault();
     if (query.trim() !== "") {
       handleSearch();
+    }
+  };
+
+  const addToShelf = async (book: any, shelfId: string, shelfName: string) => {
+    try {
+      // PLACEHOLDER
+      await axiosInstance.post(`/shelves/${shelfId}/add`, { book });
+  
+      toast.success(`Successfully added "${book.title}" to ${shelfName}!`);
+    } catch (err) {
+      
+      console.error(err);
+      toast.error(`Failed to add "${book.title}" to ${shelfName}`);
     }
   };
 
@@ -139,7 +146,7 @@ const Search: React.FC = () => {
                 </p>
               </div>
               <div className="flex items-center justify-end gap-2 mt-4">
-                <Dropdown shelves={shelves} />
+                <Dropdown shelves={shelves} onSelect={(shelfID: string, shelfName: string) => addToShelf(book, shelfID, shelfName)} />
               </div>
             </div>
           </motion.div>

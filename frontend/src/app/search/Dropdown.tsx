@@ -10,20 +10,15 @@ interface Shelf {
 
 interface DropdownProps {
   shelves: Shelf[];
+  onSelect: (shelfID: string, shelfName: string) => void;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ shelves }) => {
+const Dropdown: React.FC<DropdownProps> = ({ shelves, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
   
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  const notifySuccess = () => {
-    toast.success("Successfully added {book} to {shelf}")
-  }
-
-  const notifyFailure = () => {
-    toast.error("Failed to add {book} to {shelf}: {err}")
-  }
+  
 
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
@@ -60,9 +55,8 @@ const Dropdown: React.FC<DropdownProps> = ({ shelves }) => {
                 key={shelf.id}
                 className="px-4 py-2 hover:opacity-40 cursor-pointer"
                 onClick={() => {
-                  console.log(`Added to ${shelf}`); // placeholder
+                  onSelect(shelf.id, shelf.name)
                   setIsOpen(false);
-                  notifyFailure()
                 }}
               >
                 {shelf.name}

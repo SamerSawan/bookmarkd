@@ -13,6 +13,7 @@ func (cfg *ApiConfig) Search(w http.ResponseWriter, r *http.Request) {
 
 	if query == "" {
 		respondWithError(w, http.StatusBadRequest, "Missing query parameter", nil)
+		fmt.Println("Search query is empty")
 		return
 	}
 
@@ -21,6 +22,7 @@ func (cfg *ApiConfig) Search(w http.ResponseWriter, r *http.Request) {
 	resp, err := http.Get(fullURL)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Failed to make GET request (search books): %w", err)
+		fmt.Println(err)
 		return
 	}
 	defer resp.Body.Close()
@@ -28,6 +30,7 @@ func (cfg *ApiConfig) Search(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(resp.Body)
 	if err := decoder.Decode(&result); err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Failed to decode response: %w", err)
+		fmt.Println(err)
 		return
 	}
 	respondWithJSON(w, http.StatusOK, result.Items)
