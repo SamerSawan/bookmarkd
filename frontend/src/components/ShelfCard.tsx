@@ -1,13 +1,15 @@
+import Link from 'next/link';
 import React from 'react';
 
 type ShelfCardProps = {
+  id: string;
   title: string;
   bookCount: number;
   books: { id: number; image: string }[];
   description?: string;
 };
 
-const ShelfCard: React.FC<ShelfCardProps> = ({ title, bookCount, books, description }) => {
+const ShelfCard: React.FC<ShelfCardProps> = ({ id, title, bookCount, books, description }) => {
   return (
     <div className="flex flex-col col-span-2 w-full p-4 py-6 rounded-lg">
       <div className='flex flex-row gap-6'>
@@ -27,6 +29,11 @@ const ShelfCard: React.FC<ShelfCardProps> = ({ title, bookCount, books, descript
             <h3 className="text-white font-semibold text-lg">{title}</h3>
             {books.length == 1 ? <p className="text-md text-secondary-weak">{bookCount} book</p> : <p className="text-md text-secondary-weak">{bookCount} books</p>}
             {description && <p className="text-secondary-weak text-sm">{description}</p>}
+        </div>
+        <div>
+          <Link href={`/shelves/${id}`} className="hover:underline">
+            View Shelf
+          </Link>
         </div>
         
       </div>

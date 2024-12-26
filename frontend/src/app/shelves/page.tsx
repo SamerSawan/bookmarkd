@@ -54,8 +54,6 @@ const EmptyShelfPlaceholder: React.FC<{ shelfName: string }> = ({ shelfName }) =
 const Shelves: React.FC = () => {
   const { shelves } = useUser();
 
-  
-  console.log(`shelves are`, shelves);
 
   if (!shelves || shelves.length === 0) {
       return (
@@ -94,6 +92,7 @@ const Shelves: React.FC = () => {
                           ) : (
                               
                               <ShelfCard
+                                  id={shelf.id}
                                   title={shelf.name}
                                   bookCount={shelf.bookCount || 0}
                                   books={shelf.books.map((book, index) => (
