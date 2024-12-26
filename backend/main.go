@@ -45,10 +45,13 @@ func main() {
 	serveMux.HandleFunc("PUT /api/users/{user_id}/books/{isbn}/progress", apiCfg.UpdateBookProgress)
 	serveMux.HandleFunc("GET /api/users/{user_id}", apiCfg.GetUser)
 	serveMux.HandleFunc("GET /api/users/{user_id}/shelves", apiCfg.GetShelves)
+	serveMux.HandleFunc("POST /api/shelves/{shelf_id}", apiCfg.AddBookToShelf)
+	serveMux.HandleFunc("GET /api/books", apiCfg.GetBook)
+	serveMux.HandleFunc("GET /api/books/exists", apiCfg.CheckBookExists)
 
 	handler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},        // Allow your frontend
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"}, // Allowed HTTP methods
+		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	}).Handler(serveMux)

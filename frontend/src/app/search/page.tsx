@@ -29,9 +29,17 @@ const Search: React.FC = () => {
             return {
                 title: volumeInfo.title,
                 authors: volumeInfo.authors || ["Unknown Author"],
+                publisher: volumeInfo.publisher,
+                publishedDate: volumeInfo.publishedDate,
+                description: volumeInfo.description || "No description available.",
                 isbn: volumeInfo.industryIdentifiers?.find((id: any) => id.type === "ISBN_13")?.identifier || "Unknown ISBN",
                 cover: volumeInfo.imageLinks?.thumbnail || "",
-                description: volumeInfo.description || "No description available.",
+                industryIdentifiers: volumeInfo.industryIdentifiers,
+                pageCount: volumeInfo.pageCount,
+                categories: volumeInfo.categories,
+                imageLinks: volumeInfo.imageLinks,
+                language: volumeInfo.language
+                
             };
         });
 
@@ -54,8 +62,30 @@ const Search: React.FC = () => {
 
   const addToShelf = async (book: any, shelfId: string, shelfName: string) => {
     try {
-      // PLACEHOLDER
-      await axiosInstance.post(`/shelves/${shelfId}/add`, { book });
+      const checkBookExists = await axiosInstance.get(`/books/exists?isbn=${book.isbn}`)
+
+      let bookExists = checkBookExists.data.exists;
+
+      if (!bookExists) {
+        await axiosInstance.post("/books", {
+          title: book.title,
+          authors: book.authors,
+          publisher: book.publisher,
+          publishedDate: book.publishedDate,
+          description: book.description,
+          industryIdentifiers: book.industryIdentifiers,
+          pageCount: book.pageCount,
+          categories: book.categories,
+          imageLinks: book.imageLinks,
+          language: book.language
+        });
+
+        console.log(`${book.title} created successfully`);
+      }
+
+      await axiosInstance.post(`/shelves/${shelfId}`, {
+        isbn: book.isbn,
+      });
   
       toast.success(`Successfully added "${book.title}" to ${shelfName}!`);
     } catch (err) {
