@@ -17,3 +17,6 @@ SELECT * FROM books WHERE isbn = $1;
 
 -- name: ResetBooks :exec
 DELETE FROM books;
+
+-- name: GetBooksInShelf :many
+SELECT book_isbn FROM shelf_books WHERE shelf_id = $1;

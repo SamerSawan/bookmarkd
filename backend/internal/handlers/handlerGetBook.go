@@ -7,7 +7,7 @@ import (
 
 func (cfg *ApiConfig) GetBook(w http.ResponseWriter, r *http.Request) {
 	type parameters struct {
-		ISBN string `json="isbn"`
+		ISBN string `json:"isbn"`
 	}
 
 	params := parameters{}

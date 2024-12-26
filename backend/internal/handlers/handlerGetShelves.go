@@ -6,8 +6,10 @@ import (
 )
 
 type Shelf struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID        string `json:"id"`
+	Name      string `json:"name"`
+	BookCount int    `json:"book_count"`
+	Books     []Book `json:"books"`
 }
 
 func (cfg ApiConfig) GetShelves(w http.ResponseWriter, r *http.Request) {
@@ -44,7 +46,21 @@ func (cfg ApiConfig) GetShelves(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 			return
 		}
-		shelfList = append(shelfList, Shelf{ID: shelf.ID.String(), Name: shelf.Name})
+
+		booksInShelf, err := cfg.Db.GetBooksInShelf(r.Context(), s.ShelfID)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, fmt.Sprintf("Failed to fetch books in the %s shelf", s.ShelfID), err)
+			return
+		}
+
+		var bookList []Book
+		for _, bookItem := range booksInShelf {
+			book, _ := cfg.Db.GetBook(r.Context(), bookItem)
+
+			bookList = append(bookList, Book{ISBN: book.Isbn, Title: book.Title, Author: book.Author, CoverImageURL: book.CoverImageUrl, PublishDate: book.PublishDate, Pages: book.Pages, Description: book.Description})
+		}
+
+		shelfList = append(shelfList, Shelf{ID: shelf.ID.String(), Name: shelf.Name, BookCount: len(bookList), Books: bookList})
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]interface{}{

@@ -8,6 +8,8 @@ package database
 import (
 	"context"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 const createBook = `-- name: CreateBook :one
@@ -79,6 +81,33 @@ func (q *Queries) GetBook(ctx context.Context, isbn string) (Book, error) {
 		&i.Description,
 	)
 	return i, err
+}
+
+const getBooksInShelf = `-- name: GetBooksInShelf :many
+SELECT book_isbn FROM shelf_books WHERE shelf_id = $1
+`
+
+func (q *Queries) GetBooksInShelf(ctx context.Context, shelfID uuid.UUID) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getBooksInShelf, shelfID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var book_isbn string
+		if err := rows.Scan(&book_isbn); err != nil {
+			return nil, err
+		}
+		items = append(items, book_isbn)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const resetBooks = `-- name: ResetBooks :exec

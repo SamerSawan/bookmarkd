@@ -18,8 +18,6 @@ const Dropdown: React.FC<DropdownProps> = ({ shelves, onSelect }) => {
   
   const dropdownRef = useRef<HTMLDivElement | null>(null);
 
-  
-
   const toggleDropdown = () => {
     setIsOpen(!isOpen);
   };
