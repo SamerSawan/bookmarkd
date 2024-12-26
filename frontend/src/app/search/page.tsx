@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import Dropdown from './Dropdown';
 import { toast, ToastContainer } from 'react-toastify';
 import {useUser} from '../context/UserContext';
+import Link from 'next/link';
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -96,6 +97,19 @@ const Search: React.FC = () => {
   };
 
   return (
+    <div className="flex flex-col bg-back-base">
+      <div className="flex self-start justify-between w-full px-20 py-10">
+              <div>
+                  <Link href="/" className="font-bold text-3xl text-primary hover:underline">BOOKMARKD</Link>
+              </div>
+              <div className="flex flex-row gap-16 text-2xl text-primary">
+                  <Link href="/shelves" className="hover:underline">
+                      Shelves
+                  </Link>
+                  <p>Activity</p>
+                  <Link href="/search" className="hover:underline">Search</Link>
+              </div>
+          </div>
     <motion.div
       className="flex flex-col min-h-screen items-center justify-center bg-back-base text-secondary-weak px-20 py-10"
       layout
@@ -186,6 +200,7 @@ const Search: React.FC = () => {
         />
       </motion.div>
     </motion.div>
+    </div>
   );
 };
 
