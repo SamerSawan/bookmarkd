@@ -17,7 +17,6 @@ const TBRList = () => {
       .replace(/zoom=\d+/, "zoom=3");
   };
 
-  // Handle empty shelf
   if (!toReadShelf || toReadShelf.books.length === 0) {
     return (
       <div className="mt-8 bg-back-raised rounded-lg p-4 flex flex-col items-center">
@@ -33,7 +32,6 @@ const TBRList = () => {
     );
   }
 
-  // Render books in the shelf
   return (
     <div className="mb-12">
           <h2 className="text-primary text-2xl font-bold mb-4">To Be Read</h2>

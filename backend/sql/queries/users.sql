@@ -34,7 +34,8 @@ RETURNING *;
 -- name: UpdateBookProgress :one
 UPDATE user_books SET 
     progress = $1,
-    finished_at = CASE WHEN $1 = 100 THEN CURRENT_DATE ELSE finished_at END 
+    finished_at = CASE WHEN $1 = 100 THEN CURRENT_DATE ELSE finished_at END,
+    status = CASE WHEN $1 = 100 THEN "Read" ELSE status END
 WHERE user_id = $2 AND isbn = $3
 RETURNING *;
 
@@ -50,6 +51,9 @@ VALUES (
     $1,
     $2
 ) RETURNING *;
+
+-- name: GetUserBook :one
+SELECT * FROM user_books WHERE user_id = $1 AND isbn = $2;
 
 -- name: ResetUsers :exec
 DELETE FROM users;

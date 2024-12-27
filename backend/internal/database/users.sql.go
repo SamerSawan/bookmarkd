@@ -119,6 +119,32 @@ func (q *Queries) DeleteUserBookEntry(ctx context.Context, arg DeleteUserBookEnt
 	return err
 }
 
+const getUserBook = `-- name: GetUserBook :one
+SELECT id, user_id, isbn, status, progress, started_at, finished_at, lent_to, updated_at FROM user_books WHERE user_id = $1 AND isbn = $2
+`
+
+type GetUserBookParams struct {
+	UserID string
+	Isbn   string
+}
+
+func (q *Queries) GetUserBook(ctx context.Context, arg GetUserBookParams) (UserBook, error) {
+	row := q.db.QueryRowContext(ctx, getUserBook, arg.UserID, arg.Isbn)
+	var i UserBook
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Isbn,
+		&i.Status,
+		&i.Progress,
+		&i.StartedAt,
+		&i.FinishedAt,
+		&i.LentTo,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
 const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, created_at, updated_at, email, username FROM users WHERE email = $1
 `
@@ -165,7 +191,8 @@ func (q *Queries) ResetUsers(ctx context.Context) error {
 const updateBookProgress = `-- name: UpdateBookProgress :one
 UPDATE user_books SET 
     progress = $1,
-    finished_at = CASE WHEN $1 = 100 THEN CURRENT_DATE ELSE finished_at END 
+    finished_at = CASE WHEN $1 = 100 THEN CURRENT_DATE ELSE finished_at END,
+    status = CASE WHEN $1 = 100 THEN "Read" ELSE status END
 WHERE user_id = $2 AND isbn = $3
 RETURNING id, user_id, isbn, status, progress, started_at, finished_at, lent_to, updated_at
 `

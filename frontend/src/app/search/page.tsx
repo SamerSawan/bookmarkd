@@ -7,6 +7,7 @@ import Dropdown from './Dropdown';
 import { toast, ToastContainer } from 'react-toastify';
 import {useUser} from '../context/UserContext';
 import Link from 'next/link';
+import { auth } from '../../../firebase';
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -63,6 +64,13 @@ const Search: React.FC = () => {
 
   const addToShelf = async (book: any, shelfId: string, shelfName: string) => {
     try {
+      const user = auth.currentUser;
+      if (!user) {
+        toast.error("You need to be logged in to add books.");
+        return;
+      }
+      const idToken = await user.getIdToken();
+    
       const checkBookExists = await axiosInstance.get(`/books/exists?isbn=${book.isbn}`)
 
       let bookExists = checkBookExists.data.exists;
@@ -79,6 +87,11 @@ const Search: React.FC = () => {
           categories: book.categories,
           imageLinks: book.imageLinks,
           language: book.language
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
         });
 
         console.log(`${book.title} created successfully`);
@@ -86,6 +99,11 @@ const Search: React.FC = () => {
 
       await axiosInstance.post(`/shelves/${shelfId}`, {
         isbn: book.isbn,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
       });
   
       toast.success(`Successfully added "${book.title}" to ${shelfName}!`);
