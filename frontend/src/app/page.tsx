@@ -66,7 +66,6 @@ const Home: React.FC = () => {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   }
 
-  // NOTE: Most of the text here is place holder until I set up users and logging in to the website with either home built auth or firebase auth
   return (
     <div className="flex flex-col min-h-screen items-center bg-back-base text-secondary-weak px-20 py-10">
       {/* Nav */}

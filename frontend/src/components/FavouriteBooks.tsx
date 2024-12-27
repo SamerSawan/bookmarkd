@@ -20,7 +20,7 @@ const FavouriteBooks = () => {
                 <img
                   src={book.cover}
                   alt={book.title}
-                  className="rounded-md object-cover"
+                  className="rounded-md object-cover w-48 h-72"
                 />
                 <div className="absolute inset-0 bg-back-overlay bg-opacity-50 opacity-0 rounded-md group-hover:opacity-100 flex items-center justify-center transition-opacity">
                   <p className="text-white text-sm font-bold">{book.title}</p>
