@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react';
 import axiosInstance from '@/utils/axiosInstance';
 import { auth } from '../../../firebase';
 import { toast } from 'react-toastify';
@@ -25,6 +25,7 @@ interface Shelf {
 interface UserContextType {
   shelves: Shelf[];
   loading: boolean;
+  refreshShelves: () => void;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -71,6 +72,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false); 
     }
   };
+  const refreshShelves = useCallback(() => {
+    setLoading(true); 
+    fetchShelves();  
+  }, [fetchShelves]);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -86,7 +91,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <UserContext.Provider value={{ shelves, loading }}>
+    <UserContext.Provider value={{ shelves, loading, refreshShelves }}>
       {children}
     </UserContext.Provider>
   );

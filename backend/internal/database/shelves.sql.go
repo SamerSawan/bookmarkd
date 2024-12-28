@@ -110,3 +110,17 @@ func (q *Queries) GetUsersShelves(ctx context.Context, userID string) ([]UserShe
 	}
 	return items, nil
 }
+
+const removeBookFromShelf = `-- name: RemoveBookFromShelf :exec
+DELETE FROM shelf_books WHERE shelf_id = $1 AND book_isbn = $2
+`
+
+type RemoveBookFromShelfParams struct {
+	ShelfID  uuid.UUID
+	BookIsbn string
+}
+
+func (q *Queries) RemoveBookFromShelf(ctx context.Context, arg RemoveBookFromShelfParams) error {
+	_, err := q.db.ExecContext(ctx, removeBookFromShelf, arg.ShelfID, arg.BookIsbn)
+	return err
+}

@@ -22,3 +22,6 @@ VALUES (
     $1,
     $2
 ) RETURNING *;
+
+-- name: RemoveBookFromShelf :exec
+DELETE FROM shelf_books WHERE shelf_id = $1 AND book_isbn = $2;

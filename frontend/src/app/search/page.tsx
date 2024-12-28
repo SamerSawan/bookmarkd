@@ -12,7 +12,7 @@ import { auth } from '../../../firebase';
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
   const [books, setBooks] = useState<any[]>([]);
-  const { shelves } = useUser()
+  const { shelves, refreshShelves } = useUser()
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
 
@@ -105,6 +105,8 @@ const Search: React.FC = () => {
           Authorization: `Bearer ${idToken}`,
         },
       });
+
+      refreshShelves();
   
       toast.success(`Successfully added "${book.title}" to ${shelfName}!`);
     } catch (err) {
@@ -115,7 +117,7 @@ const Search: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col bg-back-base">
+    <div className="flex flex-col bg-back-base min-h-screen">
       <div className="flex self-start justify-between w-full px-20 py-10">
               <div>
                   <Link href="/" className="font-bold text-3xl text-primary hover:underline">BOOKMARKD</Link>
@@ -129,7 +131,7 @@ const Search: React.FC = () => {
               </div>
           </div>
     <motion.div
-      className="flex flex-col min-h-screen items-center justify-center bg-back-base text-secondary-weak px-20 py-10"
+      className="flex flex-col items-center justify-center bg-back-base text-secondary-weak px-20 py-10"
       layout
     >
       <motion.form
