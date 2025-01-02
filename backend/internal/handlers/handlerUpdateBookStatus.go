@@ -63,7 +63,7 @@ func (cfg *ApiConfig) UpdateBookStatus(w http.ResponseWriter, r *http.Request) {
 		ISBN:       user_book.Isbn,
 		UserID:     user_book.ID,
 		Status:     user_book.Status,
-		Progress:   int(user_book.Progress.Int32),
+		Progress:   int(user_book.Progress),
 		StartedAt:  user_book.StartedAt.Time,
 		FinishedAt: user_book.FinishedAt.Time})
 }

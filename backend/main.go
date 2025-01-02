@@ -48,6 +48,7 @@ func main() {
 	serveMux.HandleFunc("POST /api/shelves/{shelf_id}", apiCfg.AddBookToShelf)
 	serveMux.HandleFunc("GET /api/books", apiCfg.GetBook)
 	serveMux.HandleFunc("GET /api/books/exists", apiCfg.CheckBookExists)
+	serveMux.HandleFunc("GET /api/users/me/currently-reading", apiCfg.GetCurrentlyReading)
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},

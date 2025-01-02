@@ -100,12 +100,6 @@ const Home: React.FC = () => {
       <div className="grid grid-cols-2 md:w-[60%] 2xl:w-[40%] pt-10 gap-4">
         <div className="2xl:w-full row-span-2">
           <CurrentlyReadingCard
-            title="Gardens of the Moon"
-            author="Steven Erikson"
-            coverImage="https://books.google.com/books/content?id=Jgth_BYe7V8C&printsec=frontcover&img=1&zoom=3&edge=curl&source=gbs_api"
-            currentProgress={20}
-            totalPages={600}
-            onUpdateProgress={handleCompleteQuest} // this is a placeholder
           />
         </div>
         <div className="2xl:w-full">

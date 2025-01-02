@@ -7,7 +7,7 @@ package database
 
 import (
 	"context"
-	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -119,6 +119,70 @@ func (q *Queries) DeleteUserBookEntry(ctx context.Context, arg DeleteUserBookEnt
 	return err
 }
 
+const getLatestCurrentlyReadingBook = `-- name: GetLatestCurrentlyReadingBook :many
+SELECT 
+    b.isbn,
+    b.title,
+    b.author,
+    b.cover_image_url,
+    b.publish_date,
+    b.pages,
+    b.description,
+    ub.progress
+FROM
+    user_books ub
+JOIN
+    books b ON ub.isbn = b.isbn
+WHERE
+    ub.user_id = $1
+    AND ub.status = 'Currently Reading'
+ORDER BY
+    ub.updated_at DESC
+`
+
+type GetLatestCurrentlyReadingBookRow struct {
+	Isbn          string
+	Title         string
+	Author        string
+	CoverImageUrl string
+	PublishDate   time.Time
+	Pages         int32
+	Description   string
+	Progress      int32
+}
+
+func (q *Queries) GetLatestCurrentlyReadingBook(ctx context.Context, userID string) ([]GetLatestCurrentlyReadingBookRow, error) {
+	rows, err := q.db.QueryContext(ctx, getLatestCurrentlyReadingBook, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetLatestCurrentlyReadingBookRow
+	for rows.Next() {
+		var i GetLatestCurrentlyReadingBookRow
+		if err := rows.Scan(
+			&i.Isbn,
+			&i.Title,
+			&i.Author,
+			&i.CoverImageUrl,
+			&i.PublishDate,
+			&i.Pages,
+			&i.Description,
+			&i.Progress,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getUserBook = `-- name: GetUserBook :one
 SELECT id, user_id, isbn, status, progress, started_at, finished_at, lent_to, updated_at FROM user_books WHERE user_id = $1 AND isbn = $2
 `
@@ -192,13 +256,13 @@ const updateBookProgress = `-- name: UpdateBookProgress :one
 UPDATE user_books SET 
     progress = $1,
     finished_at = CASE WHEN $1 = 100 THEN CURRENT_DATE ELSE finished_at END,
-    status = CASE WHEN $1 = 100 THEN "Read" ELSE status END
+    status = CASE WHEN $1 = 100 THEN 'Read' ELSE status END
 WHERE user_id = $2 AND isbn = $3
 RETURNING id, user_id, isbn, status, progress, started_at, finished_at, lent_to, updated_at
 `
 
 type UpdateBookProgressParams struct {
-	Progress sql.NullInt32
+	Progress int32
 	UserID   string
 	Isbn     string
 }

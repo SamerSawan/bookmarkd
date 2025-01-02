@@ -15,6 +15,17 @@ interface Book {
   description: string;
 }
 
+interface CurrentlyReadingBook {
+  Isbn: string;
+  Title: string;
+  Author: string;
+  CoverImageUrl: string;
+  PublishDate: string;
+  Pages: number;
+  Description: string;
+  Progress: number;
+}
+
 interface Shelf {
   id: string;
   name: string;
@@ -24,8 +35,11 @@ interface Shelf {
 
 interface UserContextType {
   shelves: Shelf[];
+  currentlyReading: CurrentlyReadingBook[] | null;
   loading: boolean;
   refreshShelves: () => void;
+  fetchCurrentlyReading: () => void;
+  updateProgress: ( isbn: string, progress: number ) => Promise<void>;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -33,6 +47,7 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [shelves, setShelves] = useState<Shelf[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [currentlyReading, setCurrentlyReading] = useState<CurrentlyReadingBook[] | null>(null);
 
   const normalizeBooks = (books: any[]): Book[] => {
     return books.map((book) => ({
@@ -74,13 +89,50 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   const refreshShelves = useCallback(() => {
     setLoading(true); 
-    fetchShelves();  
+    fetchShelves();
+    fetchCurrentlyReading();  
   }, [fetchShelves]);
+
+  const fetchCurrentlyReading = async () => {
+    setCurrentlyReading((prev) => prev || []); // Preserve current data until new data is fetched
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+      const idToken = await user.getIdToken();
+
+      const res = await axiosInstance.get("/users/me/currently-reading", {
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+  
+      setCurrentlyReading(res.data); // Update state
+    } catch (error) {
+      console.error("Failed to fetch currently reading book:", error);
+    }
+  };
+
+  const updateProgress = async (isbn: string, progress: number) => {
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+      const idToken = await user.getIdToken();
+  
+      await axiosInstance.put(
+        `/books/${isbn}/progress`,
+        { progress },
+        { headers: { Authorization: `Bearer ${idToken}` } }
+      );
+  
+      await fetchCurrentlyReading(); // Refresh the currently reading book
+    } catch (error) {
+      console.error("Failed to update progress:", error);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         fetchShelves();
+        fetchCurrentlyReading();
       } else {
         setShelves([]);
         setLoading(false);
@@ -91,7 +143,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <UserContext.Provider value={{ shelves, loading, refreshShelves }}>
+    <UserContext.Provider value={{ shelves, currentlyReading, loading, refreshShelves, fetchCurrentlyReading, updateProgress }}>
       {children}
     </UserContext.Provider>
   );

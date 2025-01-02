@@ -35,7 +35,7 @@ RETURNING *;
 UPDATE user_books SET 
     progress = $1,
     finished_at = CASE WHEN $1 = 100 THEN CURRENT_DATE ELSE finished_at END,
-    status = CASE WHEN $1 = 100 THEN "Read" ELSE status END
+    status = CASE WHEN $1 = 100 THEN 'Read' ELSE status END
 WHERE user_id = $2 AND isbn = $3
 RETURNING *;
 
@@ -54,6 +54,26 @@ VALUES (
 
 -- name: GetUserBook :one
 SELECT * FROM user_books WHERE user_id = $1 AND isbn = $2;
+
+-- name: GetLatestCurrentlyReadingBook :many
+SELECT 
+    b.isbn,
+    b.title,
+    b.author,
+    b.cover_image_url,
+    b.publish_date,
+    b.pages,
+    b.description,
+    ub.progress
+FROM
+    user_books ub
+JOIN
+    books b ON ub.isbn = b.isbn
+WHERE
+    ub.user_id = $1
+    AND ub.status = 'Currently Reading'
+ORDER BY
+    ub.updated_at DESC;
 
 -- name: ResetUsers :exec
 DELETE FROM users;

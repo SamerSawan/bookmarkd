@@ -51,7 +51,7 @@ type UserBook struct {
 	UserID     string
 	Isbn       string
 	Status     string
-	Progress   sql.NullInt32
+	Progress   int32
 	StartedAt  sql.NullTime
 	FinishedAt sql.NullTime
 	LentTo     sql.NullString

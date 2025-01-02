@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"database/sql"
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,7 +11,20 @@ import (
 )
 
 func (cfg *ApiConfig) UpdateBookProgress(w http.ResponseWriter, r *http.Request) {
-	user_id := r.PathValue("user_id")
+
+	client, err := cfg.Firebase.Auth(r.Context())
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to initialize Firebase Auth client", err)
+		return
+	}
+
+	authHeader := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	token, err := client.VerifyIDToken(r.Context(), authHeader)
+	if err != nil {
+		respondWithError(w, http.StatusUnauthorized, "Invalid Firebase ID token", err)
+		return
+	}
+	user_id := token.UID
 
 	isbn := r.PathValue("isbn")
 	if isbn == "" {
@@ -34,7 +47,7 @@ func (cfg *ApiConfig) UpdateBookProgress(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	user_book, err := cfg.Db.UpdateBookProgress(r.Context(), database.UpdateBookProgressParams{UserID: user_id, Isbn: isbn, Progress: sql.NullInt32{Int32: int32(params.Progress), Valid: true}})
+	user_book, err := cfg.Db.UpdateBookProgress(r.Context(), database.UpdateBookProgressParams{UserID: user_id, Isbn: isbn, Progress: int32(params.Progress)})
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Failed to update book progress", err)
 		return
@@ -55,7 +68,7 @@ func (cfg *ApiConfig) UpdateBookProgress(w http.ResponseWriter, r *http.Request)
 		ISBN:       user_book.Isbn,
 		UserID:     user_book.UserID,
 		Status:     user_book.Status,
-		Progress:   int(user_book.Progress.Int32),
+		Progress:   int(user_book.Progress),
 		StartedAt:  user_book.StartedAt.Time,
 		FinishedAt: user_book.FinishedAt.Time})
 }

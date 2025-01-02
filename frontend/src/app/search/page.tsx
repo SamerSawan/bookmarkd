@@ -107,6 +107,7 @@ const Search: React.FC = () => {
       });
 
       refreshShelves();
+      
   
       toast.success(`Successfully added "${book.title}" to ${shelfName}!`);
     } catch (err) {
