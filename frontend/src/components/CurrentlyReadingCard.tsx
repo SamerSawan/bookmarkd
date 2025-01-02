@@ -4,36 +4,36 @@ import Button from "./util/Button";
 import { auth } from "../../firebase";
 import axiosInstance from "@/utils/axiosInstance";
 
-// Component
+
 const CurrentlyReadingCard: React.FC = () => {
-  // Context
+  
   const { currentlyReading, fetchCurrentlyReading, shelves, loading } = useUser();
 
-  // State
+  
   const [newProgress, setNewProgress] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-  const [isFinished, setIsFinished] = useState<boolean>(false); // Track if the book is finished
+  const [isFinished, setIsFinished] = useState<boolean>(false); 
 
-  // Get the current book
+  
   const book =
     currentlyReading && currentlyReading.length > 0
       ? currentlyReading[currentIndex]
       : null;
 
-  // Get the 'Read' shelf ID
+  
   const readShelf = shelves.find((shelf) => shelf.name === "Read");
 
-  // Update progress and percentage whenever the selected book changes
+  
   useEffect(() => {
     if (book) {
       const progress = Number(book.Progress) || 0;
       setNewProgress(progress);
-      setIsFinished(progress >= Number(book.Pages)); // Check if book is finished
+      setIsFinished(progress >= Number(book.Pages)); 
     }
   }, [currentIndex, book]);
 
-  // Handle edge cases where there's no data
+  
   if (loading) {
     return (
       <div className="flex flex-col bg-back-raised rounded-lg shadow-lg p-4 text-center">
@@ -55,12 +55,12 @@ const CurrentlyReadingCard: React.FC = () => {
     );
   }
 
-  // Calculate progress percentage, maxing out at 100%
-  const progress = Math.min(book.Progress || 0, Number(book.Pages)); // Cap progress at total pages
+  
+  const progress = Math.min(book.Progress || 0, Number(book.Pages)); 
   const pages = Number(book.Pages) || 0;
-  const progressPercentage = Math.min(100, Math.round((progress / pages) * 100)); // Cap at 100%
+  const progressPercentage = Math.min(100, Math.round((progress / pages) * 100)); 
 
-  // Move the book to 'Read' shelf
+  
   const moveToReadShelf = async () => {
     const user = auth.currentUser;
     if (!user) {
@@ -76,9 +76,9 @@ const CurrentlyReadingCard: React.FC = () => {
     try {
       const idToken = await user.getIdToken();
 
-      // Move the book to the "Read" shelf using its ID
+      
       await axiosInstance.post(
-        `/shelves/${readShelf.id}`, // Use the ID of the "Read" shelf
+        `/shelves/${readShelf.id}`, 
         { isbn: book.Isbn },
         {
           headers: {
@@ -87,7 +87,7 @@ const CurrentlyReadingCard: React.FC = () => {
         }
       );
 
-      // Refresh data
+      
       await fetchCurrentlyReading();
       
     } catch (err) {
@@ -96,7 +96,7 @@ const CurrentlyReadingCard: React.FC = () => {
     }
   };
 
-  // Handle progress update
+  
   const handleUpdate = async () => {
     const user = auth.currentUser;
     if (!user) {
@@ -108,7 +108,7 @@ const CurrentlyReadingCard: React.FC = () => {
       const idToken = await user.getIdToken();
       const bookISBN = book.Isbn;
 
-      // Backend call to update progress
+      
       await axiosInstance.put(
         `/users/${user.uid}/books/${bookISBN}/progress`,
         { progress: newProgress },
@@ -119,23 +119,23 @@ const CurrentlyReadingCard: React.FC = () => {
         }
       );
 
-      // If progress hits 100%, mark as finished and move to 'Read' shelf
+      
       if (newProgress >= pages) {
         setIsFinished(true);
-        await moveToReadShelf(); // Move the book to the "Read" shelf
+        await moveToReadShelf(); 
       }
 
-      // Refresh to fetch the latest data
+      
       await fetchCurrentlyReading();
       
-      setIsEditing(false); // Exit editing mode
+      setIsEditing(false); 
     } catch (err) {
       console.error("Failed to update progress:", err);
       
     }
   };
 
-  // Navigation for switching tabs
+  
   const handleNext = () => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % currentlyReading.length);
   };
@@ -146,7 +146,7 @@ const CurrentlyReadingCard: React.FC = () => {
     );
   };
 
-  // High-res cover image utility
+  
   const getHighResImage = (url: string) => {
     if (!url) return "https://via.placeholder.com/100x150";
 
