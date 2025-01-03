@@ -49,6 +49,9 @@ func main() {
 	serveMux.HandleFunc("GET /api/books", apiCfg.GetBook)
 	serveMux.HandleFunc("GET /api/books/exists", apiCfg.CheckBookExists)
 	serveMux.HandleFunc("GET /api/users/me/currently-reading", apiCfg.GetCurrentlyReading)
+	serveMux.HandleFunc("GET /api/users/me/favourites", apiCfg.GetFavourites)
+	serveMux.HandleFunc("POST /api/users/me/favourites", apiCfg.AddFavourite)
+	serveMux.HandleFunc("DELETE /api/users/me/favourites", apiCfg.RemoveFavourite)
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000"},

@@ -8,7 +8,7 @@ import axiosInstance from "@/utils/axiosInstance";
 const CurrentlyReadingCard: React.FC = () => {
   
   const { currentlyReading, fetchCurrentlyReading, shelves, loading } = useUser();
-
+  
   
   const [newProgress, setNewProgress] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
@@ -64,12 +64,9 @@ const CurrentlyReadingCard: React.FC = () => {
   const moveToReadShelf = async () => {
     const user = auth.currentUser;
     if (!user) {
-      
       return;
     }
-
     if (!readShelf) {
-      
       return;
     }
 
@@ -100,7 +97,6 @@ const CurrentlyReadingCard: React.FC = () => {
   const handleUpdate = async () => {
     const user = auth.currentUser;
     if (!user) {
-      
       return;
     }
 

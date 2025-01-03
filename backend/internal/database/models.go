@@ -23,6 +23,13 @@ type Book struct {
 	Description   string
 }
 
+type Favourite struct {
+	ID        uuid.UUID
+	UserID    string
+	Isbn      string
+	CreatedAt sql.NullTime
+}
+
 type Shelf struct {
 	ID        uuid.UUID
 	CreatedAt time.Time
