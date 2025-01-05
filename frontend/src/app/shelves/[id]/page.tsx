@@ -95,7 +95,7 @@ export default function ShelfPage() {
         </div>
         <div className="flex flex-row gap-16 text-2xl text-primary">
           <Link href="/shelves" className="hover:underline">Shelves</Link>
-          <p>Activity</p>
+          <Link href="/activity" className="hover:underline">Activity</Link>
           <Link href="/search" className="hover:underline">Search</Link>
         </div>
       </div>

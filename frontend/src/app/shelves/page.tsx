@@ -64,7 +64,9 @@ const Shelves: React.FC = () => {
                   <Link href="/shelves" className="hover:underline">
                       Shelves
                   </Link>
-                  <p>Activity</p>
+                  <Link href="/activity" className="hover:underline">
+                      Activity
+                  </Link>
                   <Link href="/search" className="hover:underline">Search</Link>
               </div>
           </div>
