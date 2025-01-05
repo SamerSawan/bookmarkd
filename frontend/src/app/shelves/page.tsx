@@ -1,5 +1,6 @@
 "use client";
 import EmptyShelfCard from "@/components/EmptyShelfCard";
+import Footer from "@/components/Footer";
 import QuickShelf from "@/components/QuickShelf";
 import ShelfCard from "@/components/ShelfCard";
 import Button from "@/components/util/Button";
@@ -99,12 +100,12 @@ const Shelves: React.FC = () => {
               </div>
 
               {/* Sidebar */}
-              <div className="flex flex-row justify-center border-l border-slate-600 col-start-9 px-32 col-span-4 gap-24 mt-16">
+              <div className="flex flex-row justify-center border-l border-slate-600 col-start-9 px-16 col-span-4 gap-24 mt-16">
                   <div className="flex flex-col justify-between">
                       <Button Text={"Create New Shelf"} onPress={() => console.log("Create New Shelf")} />
-                      <div className="">
+                      <div className="w-full">
                           <h4 className="text-secondary-strong font-bold">Quick Lists</h4>
-                          <p>Lists composed of books from "To Be Read" as well as "Read" with a common theme. This feature is coming soon.</p>
+                          <p>Lists composed of books from "To Be Read" as well as "Read" with a common theme. <span className="font-bold text-primary">This feature is coming soon</span></p>
                           <div>
                               {dummyQuickShelves.map((shelf) => (
                                   <div key={shelf.id} className="flex flex-col">
@@ -119,6 +120,10 @@ const Shelves: React.FC = () => {
                   </div>
               </div>
           </div>
+          <div className="mt-10">
+            <Footer/>
+          </div>
+          
       </div>
   );
 };

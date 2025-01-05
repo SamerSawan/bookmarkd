@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -42,7 +43,7 @@ func (cfg *ApiConfig) AddFavourite(w http.ResponseWriter, r *http.Request) {
 
 	// Enforce max limit
 	if len(favorites) >= 4 {
-		respondWithError(w, http.StatusBadRequest, "Max 4 favorites allowed. Remove one to add another.", nil)
+		respondWithError(w, http.StatusBadRequest, "Max 4 favorites allowed. Remove one to add another.", fmt.Errorf("Max 4 favorites allowed. Remove one to add another."))
 		return
 	}
 

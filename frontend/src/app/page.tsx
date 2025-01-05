@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import { IconLogout } from '@tabler/icons-react';
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
+import Footer from "@/components/Footer";
 
 type User = {
   id: string;
@@ -117,7 +118,7 @@ const Home: React.FC = () => {
         <FavouriteBooks />
         <TBRList />
       </div>
-      
+      <Footer/>
       
     </div>
   );

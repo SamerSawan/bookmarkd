@@ -1,12 +1,19 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation"; // Import useParams
+import { useParams } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
+import { IconStar, IconStarFilled } from "@tabler/icons-react";
+import { toast } from "react-toastify";
+import { auth } from "../../../../firebase";
+import axiosInstance from "@/utils/axiosInstance";
+import TooManyFavourites from "@/components/TooManyFavourites";
+import Footer from "@/components/Footer";
 
 export default function ShelfPage() {
-  const { shelves } = useUser(); // Access shelves from context
+  const [ showModal, setShowModal ] = useState(false)
+  const { shelves, favourites, refreshShelves } = useUser(); // Access shelves from context
   const params = useParams(); // Get params directly using useParams()
   const shelfId = params.id as string; // Extract the shelf ID
 
@@ -22,6 +29,50 @@ export default function ShelfPage() {
     );
   }
 
+  const handleFavourite = async (isbn: string) => {
+    const user = auth.currentUser;
+    if (!user) {
+      toast.error("You need to be logged in to manage favorites.");
+      return;
+    }
+    const idToken = await user.getIdToken();
+
+    const isFavourite = favourites?.some(fav => fav.isbn === isbn);
+
+    try {
+      if (isFavourite) {
+        // Remove from favourites
+        await axiosInstance.delete("/users/me/favourites", {
+          data: { isbn },
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
+        toast.success("Removed from favourites.");
+      } else {
+        // Add to favourites
+        if (favourites && favourites.length >= 4) {
+          setShowModal(true);
+          return;
+        }
+
+        await axiosInstance.post("/users/me/favourites", { isbn }, {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
+        toast.success("Added to favourites.");
+      }
+
+      // Refresh shelves after update
+      refreshShelves();
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update favourites.");
+    }
+  };
+
   // Empty shelf placeholder
   const EmptyShelfPlaceholder = () => (
     <div className="flex flex-col items-center justify-center p-8 bg-back-overlay rounded-lg shadow-lg">
@@ -34,7 +85,7 @@ export default function ShelfPage() {
   );
 
   return (
-    <div className="flex flex-col min-h-screen items-center bg-back-base text-secondary-weak px-20 py-10">
+    <div className="flex flex-col min-h-screen bg-back-base text-secondary-weak px-20 py-10">
       {/* Navbar */}
       <div className="flex justify-between w-[80%]">
         <div>
@@ -48,36 +99,47 @@ export default function ShelfPage() {
           <Link href="/search" className="hover:underline">Search</Link>
         </div>
       </div>
-
-      {/* Shelf Header */}
-      <div className="w-full max-w-4xl mt-16">
-        <h1 className="text-3xl font-bold text-primary">{shelf.name}</h1>
-        <p className="text-secondary mt-2">{shelf.bookCount} books</p>
+  
+      {/* Main Content */}
+      <div className="flex-grow flex flex-col items-center mt-10">
+        {/* Shelf Header */}
+        <div className="w-full max-w-4xl mt-16">
+          <h1 className="text-3xl font-bold text-primary">{shelf.name}</h1>
+          <p className="text-secondary mt-2">{shelf.bookCount} books</p>
+        </div>
+  
+        {/* Books Section */}
+        <div className="w-full max-w-4xl mt-8">
+          {shelf.books.length === 0 ? (
+            <EmptyShelfPlaceholder />
+          ) : (
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-8">
+              {shelf.books.map((book) => (
+                <div key={book.isbn} className="relative flex flex-col items-center">
+                  {/* Book Cover */}
+                  <img
+                    src={book.coverImageUrl || "https://via.placeholder.com/100x150"}
+                    alt={book.title}
+                    className="w-32 h-48 object-cover rounded-lg shadow-lg"
+                  />
+                  {/* Favourite Button */}
+                  <button onClick={() => handleFavourite(book.isbn)} className="absolute -top-2 right-2 text-yellow-400">
+                    {favourites?.some(fav => fav.isbn === book.isbn) ? <IconStarFilled size={24}/> : <IconStar size={24}/>}
+                  </button>
+                  {/* Book Title */}
+                  <h3 className="text-sm font-bold mt-2 text-primary text-center">{book.title}</h3>
+                  {/* Book Author */}
+                  <p className="text-xs text-secondary">{book.author}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
-
-      {/* Books Section */}
-      <div className="w-full max-w-4xl mt-8">
-        {shelf.books.length === 0 ? (
-          <EmptyShelfPlaceholder />
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-8">
-            {shelf.books.map((book) => (
-              <div key={book.isbn} className="flex flex-col items-center">
-                {/* Book Cover */}
-                <img
-                  src={book.coverImageUrl || "https://via.placeholder.com/100x150"}
-                  alt={book.title}
-                  className="w-32 h-48 object-cover rounded-lg shadow-lg"
-                />
-                {/* Book Title */}
-                <h3 className="text-sm font-bold mt-2 text-primary text-center">{book.title}</h3>
-                {/* Book Author */}
-                <p className="text-xs text-secondary">{book.author}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+  
+      {/* Footer */}
+      <Footer />
     </div>
   );
+  
 }

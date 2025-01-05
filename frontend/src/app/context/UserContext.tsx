@@ -4,6 +4,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import axiosInstance from '@/utils/axiosInstance';
 import { auth } from '../../../firebase';
 import { toast } from 'react-toastify';
+import { Stringifier } from 'postcss';
 
 interface Book {
   isbn: string;
@@ -40,6 +41,7 @@ interface UserContextType {
   refreshShelves: () => void;
   fetchCurrentlyReading: () => void;
   updateProgress: ( isbn: string, progress: number ) => Promise<void>;
+  favourites: Book[] | null;
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -48,6 +50,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [shelves, setShelves] = useState<Shelf[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentlyReading, setCurrentlyReading] = useState<CurrentlyReadingBook[] | null>(null);
+  const [favourites, setFavourites] = useState<Book[] | null>(null);
 
   const normalizeBooks = (books: any[]): Book[] => {
     return books.map((book) => ({
@@ -66,6 +69,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const user = auth.currentUser;
       if (user) {
         const idToken = await user.getIdToken();
+        console.log(idToken);
 
         const response = await axiosInstance.get(`/users/${idToken}/shelves`);
 
@@ -90,7 +94,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const refreshShelves = useCallback(() => {
     setLoading(true); 
     fetchShelves();
-    fetchCurrentlyReading();  
+    fetchCurrentlyReading();
+    fetchFavourites();
   }, [fetchShelves]);
 
   const fetchCurrentlyReading = async () => {
@@ -128,11 +133,43 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const fetchFavourites = async () => {
+    setFavourites((prev) => prev || [])
+    try {
+      const user = auth.currentUser;
+      if (!user) return;
+      const idToken = await user.getIdToken();
+
+      const res = await axiosInstance.get("/users/me/favourites", {
+        headers: { Authorization: `Bearer ${idToken}` },
+      });
+
+      const normalizeFavs = (books: any[]): Book[] => {
+        return books.map((book) => ({
+          isbn: book.Isbn,
+          title: book.Title,
+          author: book.Author,
+          coverImageUrl: book.CoverImageUrl || "https://via.placeholder.com/100x150", // Default if missing
+          publishDate: book.PublishDate,
+          pages: book.Pages,
+          description: book.Description || "No description available.", // Default description
+        }));
+      };
+
+      const normalizedFavs = normalizeFavs(res.data);
+  
+      setFavourites(normalizedFavs); // Update state
+    } catch (error) {
+      console.error("Failed to fetch favourites:", error);
+    }
+  }
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         fetchShelves();
         fetchCurrentlyReading();
+        fetchFavourites();
       } else {
         setShelves([]);
         setLoading(false);
@@ -143,7 +180,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   return (
-    <UserContext.Provider value={{ shelves, currentlyReading, loading, refreshShelves, fetchCurrentlyReading, updateProgress }}>
+    <UserContext.Provider value={{ shelves, currentlyReading, loading, refreshShelves, fetchCurrentlyReading, updateProgress, favourites }}>
       {children}
     </UserContext.Provider>
   );

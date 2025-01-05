@@ -1,6 +1,6 @@
 "use client";
 import axiosInstance from '@/utils/axiosInstance';
-import { IconSearch } from '@tabler/icons-react';
+import { IconSearch, IconStar, IconStarFilled } from '@tabler/icons-react';
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import Dropdown from './Dropdown';
@@ -8,20 +8,23 @@ import { toast, ToastContainer } from 'react-toastify';
 import {useUser} from '../context/UserContext';
 import Link from 'next/link';
 import { auth } from '../../../firebase';
+import TooManyFavourites from '@/components/TooManyFavourites';
+import Footer from '@/components/Footer';
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
   const [books, setBooks] = useState<any[]>([]);
-  const { shelves, refreshShelves } = useUser()
+  const { shelves, favourites, refreshShelves } = useUser();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
+  const [showModal, setShowModal] = useState<boolean>(false);
+  
 
   const handleSearch = async () => {
-    // replace spaces with plus sign
     const processedQuery = query.replace(/\s+/g, "+").toLowerCase();
-    setLoading(true)
+    setLoading(true);
     setError("");
-    setBooks([])
+    setBooks([]);
 
     try {
         const res = await axiosInstance.get(`/books/search?q=${encodeURIComponent(processedQuery)}`);
@@ -41,20 +44,18 @@ const Search: React.FC = () => {
                 categories: volumeInfo.categories,
                 imageLinks: volumeInfo.imageLinks,
                 language: volumeInfo.language
-                
             };
         });
-
-        
 
         setBooks(transformedBooks);
     } catch (error) {
         console.error(error);
         setError("Failed to fetch search results.");
     } finally {
-        setLoading(false)
+        setLoading(false);
     }
   };
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (query.trim() !== "") {
@@ -62,6 +63,49 @@ const Search: React.FC = () => {
     }
   };
 
+  const handleFavourite = async (isbn: string) => {
+    const user = auth.currentUser;
+    if (!user) {
+      toast.error("You need to be logged in to manage favorites.");
+      return;
+    }
+    const idToken = await user.getIdToken();
+
+    const isFavourite = favourites?.some(fav => fav.isbn === isbn);
+
+    try {
+      if (isFavourite) {
+        // Remove from favourites
+        await axiosInstance.delete("/users/me/favourites", {
+          data: { isbn },
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
+        toast.success("Removed from favourites.");
+      } else {
+        // Add to favourites
+        if (favourites && favourites.length >= 4) {
+          setShowModal(true);
+          return;
+        }
+
+        await axiosInstance.post("/users/me/favourites", { isbn }, {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+        });
+        toast.success("Added to favourites.");
+      }
+
+      // Refresh shelves after update
+      refreshShelves();
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update favourites.");
+    }
+  };
   const addToShelf = async (book: any, shelfId: string, shelfName: string) => {
     try {
       const user = auth.currentUser;
@@ -70,8 +114,8 @@ const Search: React.FC = () => {
         return;
       }
       const idToken = await user.getIdToken();
-    
-      const checkBookExists = await axiosInstance.get(`/books/exists?isbn=${book.isbn}`)
+
+      const checkBookExists = await axiosInstance.get(`/books/exists?isbn=${book.isbn}`);
 
       let bookExists = checkBookExists.data.exists;
 
@@ -108,10 +152,8 @@ const Search: React.FC = () => {
 
       refreshShelves();
       
-  
       toast.success(`Successfully added "${book.title}" to ${shelfName}!`);
     } catch (err) {
-      
       console.error(err);
       toast.error(`Failed to add "${book.title}" to ${shelfName}`);
     }
@@ -157,69 +199,37 @@ const Search: React.FC = () => {
         </div>
       </motion.form>
 
-      {/* Loading and Error States */}
-      {loading && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-sm mt-4"
-        >
-          Loading...
-        </motion.p>
-      )}
-      {error && (
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="text-sm mt-4 text-red-500"
-        >
-          {error}
-        </motion.p>
-      )}
+      {loading && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm mt-4">Loading...</motion.p>}
+      {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm mt-4 text-red-500">{error}</motion.p>}
 
-      {/* Book Results */}
-      <motion.div
-        className="mt-8 grid grid-cols-1 gap-8 w-full"
-        layout
-        initial={{ opacity: 0 }}
-        animate={{ opacity: books.length > 0 ? 1 : 0 }}
-        transition={{ duration: 0.25 }}
-      >
+      <motion.div className="mt-8 grid grid-cols-1 gap-8 w-full" layout>
         {books.map((book, index) => (
-          <motion.div
-            key={book.isbn || index}
-            className="flex bg-back-raised p-6 rounded-lg shadow-lg hover:shadow-2xl"
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1, duration: 0.5 }}
-          >
-            {/* Book Cover */}
-            <img
-              src={book.cover}
-              alt={book.title}
-              className="w-32 h-48 rounded-lg object-cover"
-            />
-            {/* Book Info */}
+          <motion.div key={book.isbn || index} className="relative flex bg-back-raised p-6 rounded-lg shadow-lg hover:shadow-2xl">
+            <img src={book.cover} alt={book.title} className="w-32 h-48 rounded-lg object-cover" />
             <div className="ml-6 flex flex-col justify-between">
               <div>
                 <h3 className="text-xl font-bold text-primary">{book.title}</h3>
-                <p className="text-sm text-secondary-weak italic">
-                  {book.authors.join(", ")}
-                </p>
-                <p className="text-sm text-secondary mt-4 line-clamp-4">
-                  {book.description}
-                </p>
+                <p className="text-sm text-secondary-weak italic">{book.authors.join(", ")}</p>
+                <p className="text-sm text-secondary mt-4 line-clamp-4">{book.description}</p>
               </div>
               <div className="flex items-center justify-end gap-2 mt-4">
                 <Dropdown shelves={shelves} onSelect={(shelfID: string, shelfName: string) => addToShelf(book, shelfID, shelfName)} />
               </div>
             </div>
+            <button onClick={() => handleFavourite(book.isbn)} className="absolute top-4 right-4 text-yellow-400">
+              {favourites?.some(fav => fav.isbn === book.isbn) ? <IconStarFilled size={24}/> : <IconStar size={24}/>}
+            </button>
           </motion.div>
         ))}
-        <ToastContainer
-        theme="colored"
-        />
+        <ToastContainer theme="colored" />
       </motion.div>
+      {showModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-secondary-strong">
+            <div className="bg-back-overlay p-6 rounded-lg shadow-lg">
+              <TooManyFavourites onClose={() => setShowModal(false)}/>
+            </div>
+          </div>
+        )}
     </motion.div>
     </div>
   );
