@@ -111,7 +111,7 @@ const Home: React.FC = () => {
           />
         </div>
         <div className="col-start-2 row-start-2 2xl:w-full">
-          <ReadingStatsCard streak={0} booksReadThisMonth={0} booksReadThisYear={0} pagesReadToday={0} yearlyGoal={0}/>
+          <ReadingStatsCard />
         </div>
       </div>
       <div className="mt-12 w-[60%] flex flex-col gap-8">
