@@ -4,9 +4,8 @@ import Footer from "@/components/Footer";
 import QuickShelf from "@/components/QuickShelf";
 import ShelfCard from "@/components/ShelfCard";
 import Button from "@/components/util/Button";
-import { IconLogout } from "@tabler/icons-react";
 import Link from "next/link";
-import React, { useState } from "react";
+import React from "react";
 import { useUser } from "../context/UserContext";
 
 const dummyQuickShelves = [
@@ -107,7 +106,7 @@ const Shelves: React.FC = () => {
                       <Button Text={"Create New Shelf"} onPress={() => console.log("Create New Shelf")} />
                       <div className="w-full">
                           <h4 className="text-secondary-strong font-bold">Quick Lists</h4>
-                          <p>Lists composed of books from "To Be Read" as well as "Read" with a common theme. <span className="font-bold text-primary">This feature is coming soon</span></p>
+                          <p>Lists composed of books from &quot;To Be Read&ldquo; as well as &quot;Read&quot; with a common theme. <span className="font-bold text-primary">This feature is coming soon</span></p>
                           <div>
                               {dummyQuickShelves.map((shelf) => (
                                   <div key={shelf.id} className="flex flex-col">

@@ -20,8 +20,7 @@ const Login: React.FC = () => {
       return;
     }
     signInWithEmailAndPassword(auth, email, password)
-    .then((userCredential) => {
-      const user = userCredential.user;
+    .then(() => {
       router.push("/")
     })
     .catch((error) => {
@@ -49,7 +48,12 @@ const Login: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className="w-full px-4 py-2 mb-4 text-secondary-weak bg-fill rounded-md outline-none focus:ring-2 focus:ring-primary"
             />
-            <Link href="/register" className="text-primary text-sm hover:underline">Don't have an account? Create one here</Link>
+            {error && (
+              <p className="text-red-500 text-sm mb-4 self-start">
+                {error}
+              </p>
+            )}
+            <Link href="/register" className="text-primary text-sm hover:underline">Don&apos;t have an account? Create one here</Link>
             <div className="mt-2"><Button Text={"Login"} onPress={handleLogin}/></div>
       </div>
     </div>

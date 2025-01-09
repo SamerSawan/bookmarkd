@@ -3,7 +3,7 @@ import Button from "@/components/util/Button";
 import Link from "next/link";
 import React, { useState } from "react";
 import { auth } from "../../../firebase";
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/utils/axiosInstance";
 

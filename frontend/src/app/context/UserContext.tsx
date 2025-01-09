@@ -4,7 +4,32 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import axiosInstance from '@/utils/axiosInstance';
 import { auth } from '../../../firebase';
 import { toast } from 'react-toastify';
-import { Stringifier } from 'postcss';
+
+interface RawBook {
+  isbn: string;
+  title: string;
+  author: string;
+  cover_image_url?: string;
+  publish_date: string;
+  pages: number;
+  description?: string;
+}
+
+interface RawShelf {
+  id: string;
+  name: string;
+  books?: RawBook[]; 
+}
+
+interface RawFav {
+  Isbn: string;
+  Title: string;
+  Author: string;
+  CoverImageUrl: string;
+  PublishDate: string;
+  Pages: number;
+  Description?: string;
+}
 
 interface Book {
   isbn: string;
@@ -52,19 +77,19 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [currentlyReading, setCurrentlyReading] = useState<CurrentlyReadingBook[] | null>(null);
   const [favourites, setFavourites] = useState<Book[] | null>(null);
 
-  const normalizeBooks = (books: any[]): Book[] => {
-    return books.map((book) => ({
-      isbn: book.isbn,
-      title: book.title,
-      author: book.author,
-      coverImageUrl: book.cover_image_url || "https://via.placeholder.com/100x150", // Default if missing
-      publishDate: book.publish_date,
-      pages: book.pages,
-      description: book.description || "No description available.", // Default description
-    }));
-  };
+  const fetchShelves = useCallback(async () => {
+    const normalizeBooks = (books: RawBook[]): Book[] => {
+      return books.map((book) => ({
+        isbn: book.isbn,
+        title: book.title,
+        author: book.author,
+        coverImageUrl: book.cover_image_url || "https://via.placeholder.com/100x150", // Default if missing
+        publishDate: book.publish_date,
+        pages: book.pages,
+        description: book.description || "No description available.", // Default description
+      }));
+    };
 
-  const fetchShelves = async () => {
     try {
       const user = auth.currentUser;
       if (user) {
@@ -73,7 +98,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const response = await axiosInstance.get(`/users/${idToken}/shelves`);
 
-        const normalizedShelves = response.data.shelves.map((shelf: any) => ({
+        const normalizedShelves = response.data.shelves.map((shelf: RawShelf) => ({
           id: shelf.id,
           name: shelf.name,
           bookCount: shelf.books?.length,
@@ -90,7 +115,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setLoading(false); 
     }
-  };
+  }, [setShelves, setLoading]);
+
   const refreshShelves = useCallback(() => {
     setLoading(true); 
     fetchShelves();
@@ -144,7 +170,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: { Authorization: `Bearer ${idToken}` },
       });
 
-      const normalizeFavs = (books: any[]): Book[] => {
+      const normalizeFavs = (books: RawFav[]): Book[] => {
         return books.map((book) => ({
           isbn: book.Isbn,
           title: book.Title,
@@ -177,7 +203,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [fetchShelves]);
 
   return (
     <UserContext.Provider value={{ shelves, currentlyReading, loading, refreshShelves, fetchCurrentlyReading, updateProgress, favourites }}>

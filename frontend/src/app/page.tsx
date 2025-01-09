@@ -94,7 +94,7 @@ const Home: React.FC = () => {
           Welcome back, {user.username}!
         </p>
         <p className="col-start-2 row-start-2">
-          You've read 4 books this month.
+          You&apos;ve read 4 books this month.
         </p>
       </div>
       {/* Cards */}

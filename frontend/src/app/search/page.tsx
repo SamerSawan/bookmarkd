@@ -9,7 +9,7 @@ import {useUser} from '../context/UserContext';
 import Link from 'next/link';
 import { auth } from '../../../firebase';
 import TooManyFavourites from '@/components/TooManyFavourites';
-import Footer from '@/components/Footer';
+import Image from 'next/image';
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -117,7 +117,7 @@ const Search: React.FC = () => {
 
       const checkBookExists = await axiosInstance.get(`/books/exists?isbn=${book.isbn}`);
 
-      let bookExists = checkBookExists.data.exists;
+      const bookExists = checkBookExists.data.exists;
 
       if (!bookExists) {
         await axiosInstance.post("/books", {
@@ -207,7 +207,7 @@ const Search: React.FC = () => {
       <motion.div className="mt-8 grid grid-cols-1 gap-8 w-full" layout>
         {books.map((book, index) => (
           <motion.div key={book.isbn || index} className="relative flex bg-back-raised p-6 rounded-lg shadow-lg hover:shadow-2xl">
-            <img src={book.cover} alt={book.title} className="w-32 h-48 rounded-lg object-cover" />
+            <Image src={book.cover} alt={book.title} className="w-32 h-48 rounded-lg object-cover" />
             <div className="ml-6 flex flex-col justify-between">
               <div>
                 <h3 className="text-xl font-bold text-primary">{book.title}</h3>

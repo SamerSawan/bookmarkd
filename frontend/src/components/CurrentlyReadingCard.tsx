@@ -49,7 +49,7 @@ const CurrentlyReadingCard: React.FC = () => {
           No books are currently being read!
         </h4>
         <p className="text-md text-secondary-weak mt-2">
-          Add a book to your "Currently Reading" shelf to see it here.
+          Add a book to your &quot;Currently Reading&ldquo; shelf to see it here.
         </p>
       </div>
     );

@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { IconPlus } from '@tabler/icons-react';
-import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 interface Shelf {
