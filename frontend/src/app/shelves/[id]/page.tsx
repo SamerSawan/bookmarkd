@@ -10,12 +10,13 @@ import { auth } from "../../../../firebase";
 import axiosInstance from "@/utils/axiosInstance";
 import TooManyFavourites from "@/components/TooManyFavourites";
 import Footer from "@/components/Footer";
+import Image from "next/image"
 
 export default function ShelfPage() {
   const [ showModal, setShowModal ] = useState(false)
-  const { shelves, favourites, refreshShelves } = useUser(); // Access shelves from context
-  const params = useParams(); // Get params directly using useParams()
-  const shelfId = params.id as string; // Extract the shelf ID
+  const { shelves, favourites, refreshShelves } = useUser();
+  const params = useParams();
+  const shelfId = params.id as string;
 
   // Find the shelf by ID
   const shelf = shelves.find((shelf) => shelf.id === shelfId);
@@ -117,7 +118,7 @@ export default function ShelfPage() {
               {shelf.books.map((book) => (
                 <div key={book.isbn} className="relative flex flex-col items-center">
                   {/* Book Cover */}
-                  <img
+                  <Image
                     src={book.coverImageUrl || "https://via.placeholder.com/100x150"}
                     alt={book.title}
                     className="w-32 h-48 object-cover rounded-lg shadow-lg"
@@ -135,6 +136,13 @@ export default function ShelfPage() {
             </div>
           )}
         </div>
+        {showModal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-secondary-strong">
+            <div className="bg-back-overlay p-6 rounded-lg shadow-lg">
+              <TooManyFavourites onClose={() => setShowModal(false)}/>
+            </div>
+          </div>
+        )}
       </div>
   
       {/* Footer */}

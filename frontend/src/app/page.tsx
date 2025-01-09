@@ -31,7 +31,7 @@ const Home: React.FC = () => {
         try {
           const res = await axiosInstance.get(`/users/${id}`);
           console.log(res.data)
-          const { id: userId, email, username } = res.data;
+          const { id: email, username } = res.data;
           console.log(username)
 
           setUser({
@@ -49,9 +49,9 @@ const Home: React.FC = () => {
     return () => unsubscribe();
   }, [router]);
   
-  const handleCompleteQuest = () => {
-    alert("Quest completed! 🎉");
-  };
+  // const handleCompleteQuest = () => {
+  //   alert("Quest completed! 🎉");
+  // };
 
   const handleSignOut = async () => {
     try {

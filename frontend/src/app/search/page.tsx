@@ -11,13 +11,57 @@ import { auth } from '../../../firebase';
 import TooManyFavourites from '@/components/TooManyFavourites';
 import Image from 'next/image';
 
+interface IndustryIdentifier {
+  type: string;
+  identifier: string;
+}
+
+interface ImageLinks {
+  thumbnail: string;
+  smallThumbnail?: string;
+}
+
+interface VolumeInfo {
+  title: string;
+  authors?: string[];
+  publisher?: string;
+  publishedDate?: string;
+  description?: string;
+  industryIdentifiers?: IndustryIdentifier[];
+  pageCount?: number;
+  categories?: string[];
+  imageLinks?: ImageLinks;
+  language?: string;
+}
+
+interface BookItem {
+  VolumeInfo: VolumeInfo;
+}
+
+interface Book {
+  title: string;
+  authors: string[];
+  publisher?: string;
+  publishedDate?: string;
+  description: string;
+  isbn: string;
+  cover: string;
+  industryIdentifiers?: IndustryIdentifier[];
+  pageCount?: number;
+  categories?: string[];
+  imageLinks?: ImageLinks;
+  language?: string;
+}
+
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
-  const [books, setBooks] = useState<any[]>([]);
+  const [books, setBooks] = useState<Book[]>([]);
   const { shelves, favourites, refreshShelves } = useUser();
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
+
+  
   
 
   const handleSearch = async () => {
@@ -29,7 +73,7 @@ const Search: React.FC = () => {
     try {
         const res = await axiosInstance.get(`/books/search?q=${encodeURIComponent(processedQuery)}`);
 
-        const transformedBooks = res.data.map((item: any) => {
+        const transformedBooks = res.data.map((item: BookItem) => {
             const volumeInfo = item.VolumeInfo;
             return {
                 title: volumeInfo.title,
@@ -37,7 +81,7 @@ const Search: React.FC = () => {
                 publisher: volumeInfo.publisher,
                 publishedDate: volumeInfo.publishedDate,
                 description: volumeInfo.description || "No description available.",
-                isbn: volumeInfo.industryIdentifiers?.find((id: any) => id.type === "ISBN_13")?.identifier || "Unknown ISBN",
+                isbn: volumeInfo.industryIdentifiers?.find((id: IndustryIdentifier) => id.type === "ISBN_13")?.identifier || "Unknown ISBN",
                 cover: volumeInfo.imageLinks?.thumbnail || "",
                 industryIdentifiers: volumeInfo.industryIdentifiers,
                 pageCount: volumeInfo.pageCount,
@@ -106,7 +150,7 @@ const Search: React.FC = () => {
       toast.error("Failed to update favourites.");
     }
   };
-  const addToShelf = async (book: any, shelfId: string, shelfName: string) => {
+  const addToShelf = async (book: Book, shelfId: string, shelfName: string) => {
     try {
       const user = auth.currentUser;
       if (!user) {

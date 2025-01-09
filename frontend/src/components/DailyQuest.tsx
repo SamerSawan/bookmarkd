@@ -8,8 +8,8 @@ interface DailyQuestCardProps {
 
 const DailyQuestCard: React.FC<DailyQuestCardProps> = ({
   quest,
-  progress,
-  onComplete,
+  //progress,
+  //onComplete,
 }) => {
   return (
     <div className="bg-back-raised rounded-lg shadow-lg p-6 flex flex-col justify-center items-center w-[100%] h-[100%]">
