@@ -2,8 +2,10 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics, isSupported } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 
+console.log(process.env.NEXT_PUBLIC_FIREBASE_KEY)
+
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_KEY,
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_KEY,
   authDomain: "bookmarkd-91642.firebaseapp.com",
   projectId: "bookmarkd-91642",
   storageBucket: "bookmarkd-91642.firebasestorage.app",
