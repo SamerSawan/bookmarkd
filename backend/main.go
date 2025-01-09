@@ -17,6 +17,18 @@ import (
 	"google.golang.org/api/option"
 )
 
+func handlePage(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	w.WriteHeader(200)
+	const page = `<html>
+<head></head>
+<body>
+	<p> Hello from Docker! I'm a Go server. </p>
+</body>
+</html>
+`
+	w.Write([]byte(page))
+}
 func main() {
 	godotenv.Load()
 	serveMux := http.NewServeMux()
@@ -38,6 +50,7 @@ func main() {
 
 	apiCfg := handlers.ApiConfig{Db: dbQueries, ApiKey: apiKey, Firebase: app}
 
+	serveMux.HandleFunc("/", handlePage)
 	serveMux.HandleFunc("POST /api/books", apiCfg.CreateBook)
 	serveMux.HandleFunc("POST /api/users", apiCfg.CreateUser)
 	serveMux.HandleFunc("POST /api/users/{user_id}/books", apiCfg.AddBookToUser)
