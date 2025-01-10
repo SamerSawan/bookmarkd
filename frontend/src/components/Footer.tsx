@@ -4,7 +4,7 @@ import { IconMail } from '@tabler/icons-react';
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-back-raised text-secondary-strong py-6 px-4 text-center rounded-lg">
+    <footer className="w-full bg-back-raised text-secondary-strong py-6 mt-10 px-4 text-center rounded-lg">
         <div className="flex justify-center gap-4">
         <a 
           href="https://github.com/samersawan/bookmarkd" 

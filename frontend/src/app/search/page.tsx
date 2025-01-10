@@ -9,7 +9,6 @@ import {useUser} from '../context/UserContext';
 import Link from 'next/link';
 import { auth } from '../../../firebase';
 import TooManyFavourites from '@/components/TooManyFavourites';
-import Image from 'next/image';
 
 interface IndustryIdentifier {
   type: string;
@@ -250,8 +249,8 @@ const Search: React.FC = () => {
 
       <motion.div className="mt-8 grid grid-cols-1 gap-8 w-full" layout>
         {books.map((book, index) => (
-          <motion.div key={book.isbn || index} className="relative flex bg-back-raised p-6 rounded-lg shadow-lg hover:shadow-2xl">
-            <Image src={book.cover} alt={book.title} className="w-32 h-48 rounded-lg object-cover" />
+          <motion.div key={index} className="relative flex bg-back-raised p-6 rounded-lg shadow-lg hover:shadow-2xl">
+            <img src={book.cover} alt={book.title} className="w-32 h-48 rounded-lg object-cover" />
             <div className="ml-6 flex flex-col justify-between">
               <div>
                 <h3 className="text-xl font-bold text-primary">{book.title}</h3>
