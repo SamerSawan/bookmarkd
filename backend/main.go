@@ -47,7 +47,7 @@ func main() {
 	if serviceAccountKey == "" {
 		log.Fatalf("Missing serviceAccountKey.json environment variable")
 	} else {
-		fmt.Printf("Service Account Key Loaded: %s...\n", serviceAccountKey[:50])
+		fmt.Println("Service Account Key Loaded: %s...\n", serviceAccountKey[:50])
 	}
 
 	opt := option.WithCredentialsJSON([]byte(serviceAccountKey))
@@ -57,6 +57,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error initializing Firebase Admin SDK: %v", err)
 	}
+	fmt.Println("Firebase app successfully created")
+	fmt.Println(opt)
+	fmt.Println(serviceAccountKey)
+	fmt.Println("---------------------------------")
 
 	apiCfg := handlers.ApiConfig{Db: dbQueries, ApiKey: apiKey, Firebase: app}
 
