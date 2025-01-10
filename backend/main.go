@@ -81,7 +81,7 @@ func main() {
 	serveMux.HandleFunc("DELETE /api/users/me/favourites", apiCfg.RemoveFavourite)
 
 	handler := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"},
+		AllowedOrigins:   []string{"http://localhost:3000", "https://bookmarkd-coral.vercel.app"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
