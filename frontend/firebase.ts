@@ -4,12 +4,12 @@ import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_KEY,
-  authDomain: "bookmarkd-91642.firebaseapp.com",
-  projectId: "bookmarkd-91642",
-  storageBucket: "bookmarkd-91642.firebasestorage.app",
-  messagingSenderId: "335917673625",
-  appId: "1:335917673625:web:fb1331b4b8b11fbad01c08",
-  measurementId: "G-X3NG99WSVJ"
+  authDomain: "clean-node-447315-e1.firebaseapp.com",
+  projectId: "clean-node-447315-e1",
+  storageBucket: "clean-node-447315-e1.firebasestorage.app",
+  messagingSenderId: "944068545949",
+  appId: "1:944068545949:web:059eb32c67a7fa23307374",
+  measurementId: "G-H9PPN2R588"
 };
 
 // Initialize Firebase
