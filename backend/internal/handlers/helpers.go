@@ -10,11 +10,25 @@ import (
 )
 
 func parseTime(publish_date string) (time.Time, error) {
+	// Attempt to parse with full date (YYYY-MM-DD)
 	parsedTime, err := time.Parse("2006-01-02", publish_date)
-	if err != nil {
-		return time.Time{}, fmt.Errorf("Failed to parse date into time object")
+	if err == nil {
+		return parsedTime, nil
 	}
-	return parsedTime, nil
+
+	// Attempt to parse with year and month (YYYY-MM)
+	parsedTime, err = time.Parse("2006-01", publish_date)
+	if err == nil {
+		return parsedTime, nil
+	}
+
+	// Attempt to parse with year only (YYYY)
+	parsedTime, err = time.Parse("2006", publish_date)
+	if err == nil {
+		return parsedTime, nil
+	}
+
+	return time.Time{}, fmt.Errorf("failed to parse publish date: %s", publish_date)
 }
 
 // TODO: Add a way to make sure that we're getting the right ISBN from the response from the API. Limit response to top 10 related searches
