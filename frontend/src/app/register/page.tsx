@@ -27,24 +27,26 @@ const Register: React.FC = () => {
       setError("Passwords do not match.");
       return;
     }
+    console.log(auth, email, password)
     createUserWithEmailAndPassword(auth, email, password)
       .then(async (userCredential) => {
         
         const user = userCredential.user;
         const id = await user.getIdToken();
-
+        console.log(id)
       const res = await axiosInstance.post("/users", {
         username,
         email,
         id
       })
+      console.log(res)
 
       if (res.status == 201) {
         router.push("/");
       }
       })
       .catch((err) => {
-        console.log(err.code)
+        console.log(err)
         if (err.response && err.response.data && err.response.data.message) {
           setError(err.response.data.message);
         } else {

@@ -4,6 +4,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import axiosInstance from '@/utils/axiosInstance';
 import { auth } from '../../../firebase';
 import { toast } from 'react-toastify';
+import { signOut } from "firebase/auth";
 
 interface RawBook {
   isbn: string;
@@ -69,6 +70,16 @@ interface UserContextType {
   favourites: Book[] | null;
 }
 
+// Forcefully sign the user out
+signOut(auth)
+  .then(() => {
+    console.log("User signed out and cache cleared.");
+  })
+  .catch((error) => {
+    console.error("Error signing out:", error);
+  });
+
+
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -94,7 +105,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const user = auth.currentUser;
       if (user) {
         const idToken = await user.getIdToken();
-        console.log(idToken);
 
         const response = await axiosInstance.get(`/users/${idToken}/shelves`);
 

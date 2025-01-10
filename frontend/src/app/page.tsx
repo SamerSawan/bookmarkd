@@ -27,12 +27,9 @@ const Home: React.FC = () => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (currentUser) {
         const id = currentUser.uid;
-        console.log("Username is")
         try {
           const res = await axiosInstance.get(`/users/${id}`);
-          console.log(res.data)
           const { id: email, username } = res.data;
-          console.log(username)
 
           setUser({
             id: id,
