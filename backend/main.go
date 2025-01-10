@@ -43,9 +43,11 @@ func main() {
 	dbQueries := database.New(db)
 
 	serviceAccountKey := os.Getenv("serviceAccountKey")
-	fmt.Println(serviceAccountKey)
+
 	if serviceAccountKey == "" {
 		log.Fatalf("Missing serviceAccountKey.json environment variable")
+	} else {
+		fmt.Printf("Service Account Key Loaded: %s...\n", serviceAccountKey[:50])
 	}
 
 	opt := option.WithCredentialsJSON([]byte(serviceAccountKey))
