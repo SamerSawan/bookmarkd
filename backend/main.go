@@ -42,7 +42,11 @@ func main() {
 	}
 	dbQueries := database.New(db)
 
-	opt := option.WithCredentialsFile("./serviceAccountKey.json")
+	serviceAccountKey := os.Getenv("serviceAccountKey.json")
+
+	opt := option.WithCredentialsJSON([]byte(serviceAccountKey))
+
+	//opt := option.WithCredentialsFile("./serviceAccountKey.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		log.Fatalf("Error initializing Firebase Admin SDK: %v", err)
