@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/samersawan/bookmarkd/backend/internal/database"
@@ -37,6 +38,7 @@ func (cfg *ApiConfig) CreateBook(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Failed to parse date into time", err)
 		return
 	}
+	fmt.Println("publish date successfully parsed")
 	book, err := cfg.Db.CreateBook(r.Context(), database.CreateBookParams{
 		Isbn:          isbn13,
 		Title:         params.Title,
