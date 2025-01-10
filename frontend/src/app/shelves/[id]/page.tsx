@@ -10,7 +10,6 @@ import { auth } from "../../../../firebase";
 import axiosInstance from "@/utils/axiosInstance";
 import TooManyFavourites from "@/components/TooManyFavourites";
 import Footer from "@/components/Footer";
-import Image from "next/image"
 
 export default function ShelfPage() {
   const [ showModal, setShowModal ] = useState(false)
@@ -118,7 +117,7 @@ export default function ShelfPage() {
               {shelf.books.map((book) => (
                 <div key={book.isbn} className="relative flex flex-col items-center">
                   {/* Book Cover */}
-                  <Image
+                  <img
                     src={book.coverImageUrl || "https://via.placeholder.com/100x150"}
                     alt={book.title}
                     className="w-32 h-48 object-cover rounded-lg shadow-lg"
