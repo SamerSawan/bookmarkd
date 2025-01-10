@@ -250,8 +250,8 @@ const Search: React.FC = () => {
       <motion.div className="mt-8 grid grid-cols-1 gap-8 w-full" layout>
         {books.map((book, index) => (
           <motion.div key={index} className="relative flex bg-back-raised p-6 rounded-lg shadow-lg hover:shadow-2xl">
-            <img src={book.cover} alt={book.title} className="w-32 h-48 rounded-lg object-cover" />
-            <div className="ml-6 flex flex-col justify-between">
+            <img src={book.cover || "https://via.placeholder.com/100x150"} alt={book.title} className="w-32 h-48 rounded-lg object-cover" />
+            <div className="ml-6 flex flex-col justify-between w-full">
               <div>
                 <h3 className="text-xl font-bold text-primary">{book.title}</h3>
                 <p className="text-sm text-secondary-weak italic">{book.authors.join(", ")}</p>
