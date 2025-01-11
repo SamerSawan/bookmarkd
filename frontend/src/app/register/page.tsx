@@ -6,6 +6,7 @@ import { auth } from "../../../firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import axiosInstance from "@/utils/axiosInstance";
+import { useUser } from "../context/UserContext";
 
 const Register: React.FC = () => {
     const router = useRouter();
@@ -14,6 +15,7 @@ const Register: React.FC = () => {
     const [password, setPassword] = useState<string>("");
     const [confirmPass, setConfirmed] = useState<string>("");
     const [error, setError] = useState<string>("");
+    const { refreshShelves } = useUser()
 
   const handleRegister = async () => {
     setError("");
@@ -42,6 +44,7 @@ const Register: React.FC = () => {
       console.log(res)
 
       if (res.status == 201) {
+        refreshShelves()
         router.push("/");
       }
       })

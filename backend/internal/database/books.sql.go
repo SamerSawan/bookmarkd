@@ -12,6 +12,28 @@ import (
 	"github.com/google/uuid"
 )
 
+const checkBookExistsInShelf = `-- name: CheckBookExistsInShelf :one
+SELECT id, created_at, updated_at, shelf_id, book_isbn FROM shelf_books WHERE book_isbn = $1 AND shelf_id = $2
+`
+
+type CheckBookExistsInShelfParams struct {
+	BookIsbn string
+	ShelfID  uuid.UUID
+}
+
+func (q *Queries) CheckBookExistsInShelf(ctx context.Context, arg CheckBookExistsInShelfParams) (ShelfBook, error) {
+	row := q.db.QueryRowContext(ctx, checkBookExistsInShelf, arg.BookIsbn, arg.ShelfID)
+	var i ShelfBook
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ShelfID,
+		&i.BookIsbn,
+	)
+	return i, err
+}
+
 const createBook = `-- name: CreateBook :one
 INSERT INTO books ( isbn, created_at, updated_at, title, author, cover_image_url, publish_date, pages, description)
 VALUES (

@@ -20,3 +20,6 @@ DELETE FROM books;
 
 -- name: GetBooksInShelf :many
 SELECT book_isbn FROM shelf_books WHERE shelf_id = $1;
+
+-- name: CheckBookExistsInShelf :one
+SELECT * FROM shelf_books WHERE book_isbn = $1 AND shelf_id = $2;
