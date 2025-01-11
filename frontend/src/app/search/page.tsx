@@ -72,23 +72,25 @@ const Search: React.FC = () => {
     try {
         const res = await axiosInstance.get(`/books/search?q=${encodeURIComponent(processedQuery)}`);
 
-        const transformedBooks = res.data.map((item: BookItem) => {
-            const volumeInfo = item.VolumeInfo;
-            return {
-                title: volumeInfo.title,
-                authors: volumeInfo.authors || ["Unknown Author"],
-                publisher: volumeInfo.publisher,
-                publishedDate: volumeInfo.publishedDate,
-                description: volumeInfo.description || "No description available.",
-                isbn: volumeInfo.industryIdentifiers?.find((id: IndustryIdentifier) => id.type === "ISBN_13")?.identifier || "Unknown ISBN",
-                cover: volumeInfo.imageLinks?.thumbnail || "",
-                industryIdentifiers: volumeInfo.industryIdentifiers,
-                pageCount: volumeInfo.pageCount,
-                categories: volumeInfo.categories,
-                imageLinks: volumeInfo.imageLinks,
-                language: volumeInfo.language
-            };
-        });
+        const transformedBooks = res.data
+            .map((item: BookItem) => {
+                const volumeInfo = item.VolumeInfo;
+                return {
+                    title: volumeInfo.title,
+                    authors: volumeInfo.authors || ["Unknown Author"],
+                    publisher: volumeInfo.publisher,
+                    publishedDate: volumeInfo.publishedDate,
+                    description: volumeInfo.description || "No description available.",
+                    isbn: volumeInfo.industryIdentifiers?.find((id: IndustryIdentifier) => id.type === "ISBN_13")?.identifier || null,
+                    cover: volumeInfo.imageLinks?.thumbnail || "",
+                    industryIdentifiers: volumeInfo.industryIdentifiers,
+                    pageCount: volumeInfo.pageCount,
+                    categories: volumeInfo.categories,
+                    imageLinks: volumeInfo.imageLinks,
+                    language: volumeInfo.language
+                };
+            })
+            .filter((book: Book) => book.isbn !== null);
 
         setBooks(transformedBooks);
     } catch (error) {
@@ -157,11 +159,9 @@ const Search: React.FC = () => {
         return;
       }
       const idToken = await user.getIdToken();
-
       const checkBookExists = await axiosInstance.get(`/books/exists?isbn=${book.isbn}`);
 
       const bookExists = checkBookExists.data.exists;
-
       if (!bookExists) {
         await axiosInstance.post("/books", {
           title: book.title,
@@ -184,6 +184,7 @@ const Search: React.FC = () => {
         console.log(`${book.title} created successfully`);
       }
 
+      console.log("Adding to shelf")
       await axiosInstance.post(`/shelves/${shelfId}`, {
         isbn: book.isbn,
       },

@@ -57,10 +57,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error initializing Firebase Admin SDK: %v", err)
 	}
-	fmt.Println("Firebase app successfully created")
-	fmt.Println(opt)
-	fmt.Println(serviceAccountKey)
-	fmt.Println("---------------------------------")
 
 	apiCfg := handlers.ApiConfig{Db: dbQueries, ApiKey: apiKey, Firebase: app}
 

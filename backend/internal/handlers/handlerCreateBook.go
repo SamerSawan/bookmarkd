@@ -25,7 +25,7 @@ func (cfg *ApiConfig) CreateBook(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if isbn13 == "" {
-		respondWithError(w, http.StatusBadRequest, "Invalid ISBN. Expected ISBN 13. Got nothing.", nil)
+		respondWithError(w, http.StatusBadRequest, "Invalid ISBN. Expected ISBN 13. Got nothing.", fmt.Errorf("No valid ISBN found"))
 		return
 	}
 	_, err := cfg.Db.GetBook(r.Context(), params.IndustryIdentifiers[1].Identifier)
@@ -38,7 +38,6 @@ func (cfg *ApiConfig) CreateBook(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Failed to parse date into time", err)
 		return
 	}
-	fmt.Println("publish date successfully parsed")
 	book, err := cfg.Db.CreateBook(r.Context(), database.CreateBookParams{
 		Isbn:          isbn13,
 		Title:         params.Title,
