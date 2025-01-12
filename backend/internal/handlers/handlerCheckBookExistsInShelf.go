@@ -15,6 +15,10 @@ func (cfg *ApiConfig) CheckBookExistsInShelf(w http.ResponseWriter, r *http.Requ
 	shelf_id_string := r.PathValue("shelf_id")
 
 	shelf_id, err := uuid.Parse(shelf_id_string)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to parse shelf Id into UUID", err)
+		return
+	}
 	query := r.URL.Query().Get("isbn")
 
 	_, err = cfg.Db.CheckBookExistsInShelf(r.Context(), database.CheckBookExistsInShelfParams{ShelfID: shelf_id, BookIsbn: query})

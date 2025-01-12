@@ -243,6 +243,20 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
 	return i, err
 }
 
+const removeUserBook = `-- name: RemoveUserBook :exec
+DELETE FROM user_books WHERE user_id = $1 AND isbn = $2
+`
+
+type RemoveUserBookParams struct {
+	UserID string
+	Isbn   string
+}
+
+func (q *Queries) RemoveUserBook(ctx context.Context, arg RemoveUserBookParams) error {
+	_, err := q.db.ExecContext(ctx, removeUserBook, arg.UserID, arg.Isbn)
+	return err
+}
+
 const resetUsers = `-- name: ResetUsers :exec
 DELETE FROM users
 `

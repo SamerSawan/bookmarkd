@@ -125,6 +125,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [fetchShelves]);
 
   const fetchCurrentlyReading = async () => {
+    console.log("fetching currently reading")
     setCurrentlyReading((prev) => prev || []); // Preserve current data until new data is fetched
     try {
       const user = auth.currentUser;
@@ -136,6 +137,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
   
       setCurrentlyReading(res.data); // Update state
+      console.log(res.data)
     } catch (error) {
       console.error("Failed to fetch currently reading book:", error);
     }

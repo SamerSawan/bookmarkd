@@ -75,5 +75,8 @@ WHERE
 ORDER BY
     ub.updated_at DESC;
 
+-- name: RemoveUserBook :exec
+DELETE FROM user_books WHERE user_id = $1 AND isbn = $2;
+
 -- name: ResetUsers :exec
 DELETE FROM users;

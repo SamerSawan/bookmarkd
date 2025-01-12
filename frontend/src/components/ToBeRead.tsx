@@ -24,7 +24,7 @@ const TBRList = () => {
         <p className="text-secondary-weak mb-4">Your To Be Read shelf is empty.</p>
         <Link
           href="/search"
-          className="px-4 py-2 bg-primary text-white rounded-md hover:opacity-80"
+          className="px-4 py-2 bg-primary text-secondary-strong rounded-md hover:opacity-80"
         >
           Search for Books
         </Link>

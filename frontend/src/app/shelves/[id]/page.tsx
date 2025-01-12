@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
-import { IconStar, IconStarFilled } from "@tabler/icons-react";
+import { IconStar, IconStarFilled, IconTrash } from "@tabler/icons-react";
 import { toast } from "react-toastify";
 import { auth } from "../../../../firebase";
 import axiosInstance from "@/utils/axiosInstance";
@@ -12,15 +12,14 @@ import TooManyFavourites from "@/components/TooManyFavourites";
 import Footer from "@/components/Footer";
 
 export default function ShelfPage() {
-  const [ showModal, setShowModal ] = useState(false)
+  const [showModal, setShowModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const { shelves, favourites, refreshShelves } = useUser();
   const params = useParams();
   const shelfId = params.id as string;
 
-  // Find the shelf by ID
   const shelf = shelves.find((shelf) => shelf.id === shelfId);
 
-  // Handle invalid shelf ID
   if (!shelf) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -28,6 +27,28 @@ export default function ShelfPage() {
       </div>
     );
   }
+
+  const toggleEditMode = () => setIsEditing((prev) => !prev);
+
+  const handleRemoveBook = async (isbn: string) => {
+    const user = auth.currentUser;
+    if (!user) {
+      toast.error("You need to be logged in to manage favorites.");
+      return;
+    }
+    const idToken = await user.getIdToken();
+
+    try {
+      await axiosInstance.delete(`/shelves/${shelfId}/books`, { data: { isbn }, headers: {
+        Authorization: `Bearer ${idToken}`,
+      }, });
+      toast.success("Book removed from shelf.");
+      refreshShelves();
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to remove book from shelf.");
+    }
+  };
 
   const handleFavourite = async (isbn: string) => {
     const user = auth.currentUser;
@@ -37,7 +58,7 @@ export default function ShelfPage() {
     }
     const idToken = await user.getIdToken();
 
-    const isFavourite = favourites?.some(fav => fav.isbn === isbn);
+    const isFavourite = favourites?.some((fav) => fav.isbn === isbn);
 
     try {
       if (isFavourite) {
@@ -56,17 +77,19 @@ export default function ShelfPage() {
           return;
         }
 
-        await axiosInstance.post("/users/me/favourites", { isbn }, {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        });
+        await axiosInstance.post(
+          "/users/me/favourites",
+          { isbn },
+          {
+            headers: {
+              Authorization: `Bearer ${idToken}`,
+            },
+          }
+        );
         toast.success("Added to favourites.");
       }
 
-      // Refresh shelves after update
       refreshShelves();
-
     } catch (error) {
       console.error(error);
       toast.error("Failed to update favourites.");
@@ -99,15 +122,24 @@ export default function ShelfPage() {
           <Link href="/search" className="hover:underline">Search</Link>
         </div>
       </div>
-  
+
       {/* Main Content */}
       <div className="flex-grow flex flex-col items-center mt-10">
         {/* Shelf Header */}
-        <div className="w-full max-w-4xl mt-16">
-          <h1 className="text-3xl font-bold text-primary">{shelf.name}</h1>
-          <p className="text-secondary mt-2">{shelf.bookCount} books</p>
+        <div className="w-full max-w-4xl mt-16 flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-primary">{shelf.name}</h1>
+            <p className="text-secondary mt-2">{shelf.bookCount} books</p>
+          </div>
+          {/* Edit Button */}
+          <button 
+            onClick={toggleEditMode} 
+            className="px-4 py-2 bg-primary text-secondary-dark rounded-md hover:opacity-80"
+          >
+            {isEditing ? "Done" : "Edit"}
+          </button>
         </div>
-  
+
         {/* Books Section */}
         <div className="w-full max-w-4xl mt-8">
           {shelf.books.length === 0 ? (
@@ -122,10 +154,22 @@ export default function ShelfPage() {
                     alt={book.title}
                     className="w-32 h-48 object-cover rounded-lg shadow-lg"
                   />
-                  {/* Favourite Button */}
-                  <button onClick={() => handleFavourite(book.isbn)} className="absolute -top-2 right-2 text-yellow-400">
-                    {favourites?.some(fav => fav.isbn === book.isbn) ? <IconStarFilled size={24}/> : <IconStar size={24}/>}
-                  </button>
+                  {/* Conditional Icon */}
+                  {isEditing ? (
+                    <button
+                      onClick={() => handleRemoveBook(book.isbn)}
+                      className="absolute -top-2 right-2 text-red-500 hover:opacity-80"
+                    >
+                      <IconTrash size={24} />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleFavourite(book.isbn)}
+                      className="absolute -top-2 right-2 text-yellow-400"
+                    >
+                      {favourites?.some((fav) => fav.isbn === book.isbn) ? <IconStarFilled size={24} /> : <IconStar size={24} />}
+                    </button>
+                  )}
                   {/* Book Title */}
                   <h3 className="text-sm font-bold mt-2 text-primary text-center">{book.title}</h3>
                   {/* Book Author */}
@@ -138,15 +182,14 @@ export default function ShelfPage() {
         {showModal && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-secondary-strong">
             <div className="bg-back-overlay p-6 rounded-lg shadow-lg">
-              <TooManyFavourites onClose={() => setShowModal(false)}/>
+              <TooManyFavourites onClose={() => setShowModal(false)} />
             </div>
           </div>
         )}
       </div>
-  
+
       {/* Footer */}
       <Footer />
     </div>
   );
-  
 }
