@@ -184,7 +184,15 @@ const Search: React.FC = () => {
         console.log(`${book.title} created successfully`);
       }
 
-      console.log("Adding to shelf")
+      const checkBookExistsInShelf = await axiosInstance.get(`/shelves/${shelfId}/exists?isbn=${book.isbn}`)
+
+      const bookIsInShelf = checkBookExistsInShelf.data.exists;
+      if (bookIsInShelf) {
+        console.log(`${book.title} already exists in target shelf!`)
+        toast.error(`${book.title} is already in ${shelfName}`)
+        return;
+      }
+
       await axiosInstance.post(`/shelves/${shelfId}`, {
         isbn: book.isbn,
       },
