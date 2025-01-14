@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"regexp"
 )
 
@@ -16,6 +17,7 @@ func (cfg *ApiConfig) Search(w http.ResponseWriter, r *http.Request) {
 	baseURL := "https://www.googleapis.com/books/v1/volumes"
 
 	query := r.URL.Query().Get("q")
+	encodedQuery := url.QueryEscape(query)
 	startIndex := r.URL.Query().Get("startIndex")
 	if startIndex == "" {
 		startIndex = "0"
@@ -32,7 +34,7 @@ func (cfg *ApiConfig) Search(w http.ResponseWriter, r *http.Request) {
 		query = fmt.Sprintf("isbn:%s", query)
 	}
 
-	fullURL := fmt.Sprintf("%s?q=%s&startIndex=%s&key=%s", baseURL, query, startIndex, cfg.ApiKey)
+	fullURL := fmt.Sprintf("%s?q=%s&startIndex=%s&key=%s", baseURL, encodedQuery, startIndex, cfg.ApiKey)
 	result := BookResponse{}
 	resp, err := http.Get(fullURL)
 	if err != nil {
@@ -52,7 +54,6 @@ func (cfg *ApiConfig) Search(w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, PaginatedBookResponse{result.TotalItems, result.Items})
 }
 
-// Helper function to check if the query is an ISBN-10 or ISBN-13
 func isISBN(query string) bool {
 	isbn10Pattern := `^\d{9}[0-9X]$` // 9 digits followed by a digit or 'X'
 	isbn13Pattern := `^\d{13}$`      // 13 digits
