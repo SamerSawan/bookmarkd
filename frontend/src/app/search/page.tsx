@@ -72,7 +72,7 @@ const Search: React.FC = () => {
     try {
         const res = await axiosInstance.get(`/books/search?q=${encodeURIComponent(processedQuery)}`);
 
-        const transformedBooks = res.data
+        const transformedBooks = res.data.items
             .map((item: BookItem) => {
                 const volumeInfo = item.VolumeInfo;
                 return {

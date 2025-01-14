@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/samersawan/bookmarkd/backend/internal/database"
 )
@@ -28,16 +29,25 @@ func (cfg *ApiConfig) CreateBook(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Invalid ISBN. Expected ISBN 13. Got nothing.", fmt.Errorf("No valid ISBN found"))
 		return
 	}
-	_, err := cfg.Db.GetBook(r.Context(), params.IndustryIdentifiers[1].Identifier)
+	_, err := cfg.Db.GetBook(r.Context(), isbn13)
 	if err == nil {
 		respondWithError(w, http.StatusConflict, "Book already exists!", err)
 		return
 	}
-	parsedTime, err := parseTime(params.PublishedDate)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to parse date into time", err)
-		return
+
+	var parsedTime time.Time
+	if params.PublishedDate == "" {
+		fmt.Println("No PublishedDate provided. Skipping date parsing.")
+	} else {
+		var err error
+		parsedTime, err = parseTime(params.PublishedDate)
+		if err != nil {
+			respondWithError(w, http.StatusInternalServerError, "Failed to parse date into time", err)
+			return
+		}
+		fmt.Println("Parsed Publish Date:", parsedTime)
 	}
+
 	book, err := cfg.Db.CreateBook(r.Context(), database.CreateBookParams{
 		Isbn:          isbn13,
 		Title:         params.Title,

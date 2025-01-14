@@ -23,7 +23,6 @@ func (cfg *ApiConfig) AddBookToShelf(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Failed to parse shelf_id into uuid", err)
 		return
 	}
-
 	// Get shelf details
 	shelf, err := cfg.Db.GetShelf(r.Context(), shelf_uuid)
 	if err != nil {
@@ -77,7 +76,6 @@ func (cfg *ApiConfig) AddBookToShelf(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		userID := token.UID
-
 		// Check if the book already has a status
 		userBook, err := cfg.Db.GetUserBook(r.Context(), database.GetUserBookParams{
 			UserID: userID,

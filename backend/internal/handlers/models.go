@@ -5,7 +5,8 @@ import (
 )
 
 type BookResponse struct {
-	Items []struct {
+	TotalItems int `json:"totalItems"`
+	Items      []struct {
 		VolumeInfo BookParameters
 	}
 }
