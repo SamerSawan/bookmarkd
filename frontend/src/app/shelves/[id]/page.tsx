@@ -10,6 +10,7 @@ import { auth } from "../../../../firebase";
 import axiosInstance from "@/utils/axiosInstance";
 import TooManyFavourites from "@/components/TooManyFavourites";
 import Footer from "@/components/Footer";
+import Navbar from "@/components/util/Navbar";
 
 export default function ShelfPage() {
   const [showModal, setShowModal] = useState(false);
@@ -109,19 +110,7 @@ export default function ShelfPage() {
 
   return (
     <div className="flex flex-col min-h-screen bg-back-base text-secondary-weak px-20 py-10">
-      {/* Navbar */}
-      <div className="flex justify-between w-[80%]">
-        <div>
-          <Link href="/" className="font-bold text-3xl text-primary hover:underline">
-            BOOKMARKD
-          </Link>
-        </div>
-        <div className="flex flex-row gap-16 text-2xl text-primary">
-          <Link href="/shelves" className="hover:underline">Shelves</Link>
-          <Link href="/activity" className="hover:underline">Activity</Link>
-          <Link href="/search" className="hover:underline">Search</Link>
-        </div>
-      </div>
+      <Navbar/>
 
       {/* Main Content */}
       <div className="flex-grow flex flex-col items-center mt-10">

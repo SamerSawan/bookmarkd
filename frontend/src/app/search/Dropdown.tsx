@@ -33,11 +33,13 @@ const Dropdown: React.FC<DropdownProps> = ({ shelves, onSelect }) => {
   }, []);
 
   return (
-    <div className="relative inline-block" ref={dropdownRef}>
+    <div className="relative w-48 z-10" ref={dropdownRef}>
       {/* Button */}
       <button
-        onClick={toggleDropdown}
-        className="flex items-center gap-1 text-secondary-dark bg-primary px-3 py-1 rounded-md hover:opacity-80 transition"
+        onClick={(e) => {
+          e.stopPropagation();
+          toggleDropdown()}}
+        className="flex items-center gap-1 text-secondary-dark bg-primary px-3 py-1 w-full text-center justify-center rounded-md hover:opacity-80 transition"
       >
         <IconPlus stroke={2} />
         <span>Add to Shelf</span>
@@ -51,7 +53,8 @@ const Dropdown: React.FC<DropdownProps> = ({ shelves, onSelect }) => {
               <li
                 key={shelf.id}
                 className="px-4 py-2 hover:opacity-40 cursor-pointer"
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   onSelect(shelf.id, shelf.name)
                   setIsOpen(false);
                 }}

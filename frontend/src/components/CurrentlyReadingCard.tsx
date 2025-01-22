@@ -37,7 +37,7 @@ const CurrentlyReadingCard: React.FC = () => {
 
   if (!currentlyReading || currentlyReading.length === 0 || !book) {
     return (
-      <div className="flex flex-col bg-back-raised rounded-lg shadow-lg p-4 text-center">
+      <div className="flex flex-col bg-back-raised rounded-lg shadow-lg p-4 text-center h-full w-full items-center justify-center">
         <h4 className="text-xl font-semibold text-secondary-strong">
           No books are currently being read!
         </h4>

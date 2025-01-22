@@ -1,25 +1,18 @@
 package handlers
 
 import (
-	"encoding/json"
 	"net/http"
 )
 
 func (cfg *ApiConfig) GetBook(w http.ResponseWriter, r *http.Request) {
-	type parameters struct {
-		ISBN string `json:"isbn"`
-	}
 
-	params := parameters{}
-
-	decoder := json.NewDecoder(r.Body)
-
-	if err := decoder.Decode(&params); err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to decode parameters", err)
+	isbn := r.URL.Query().Get("isbn")
+	if isbn == "" {
+		respondWithError(w, http.StatusBadRequest, "ISBN query parameter is required", nil)
 		return
 	}
 
-	book, err := cfg.Db.GetBook(r.Context(), params.ISBN)
+	book, err := cfg.Db.GetBook(r.Context(), isbn)
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Book does not exist!", err)
 		return

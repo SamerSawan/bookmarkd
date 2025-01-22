@@ -6,51 +6,11 @@ import { motion } from "framer-motion";
 import Dropdown from './Dropdown';
 import { toast, ToastContainer } from 'react-toastify';
 import {useUser} from '../context/UserContext';
-import Link from 'next/link';
 import { auth } from '../../../firebase';
 import TooManyFavourites from '@/components/TooManyFavourites';
-
-interface IndustryIdentifier {
-  type: string;
-  identifier: string;
-}
-
-interface ImageLinks {
-  thumbnail: string;
-  smallThumbnail?: string;
-}
-
-interface VolumeInfo {
-  title: string;
-  authors?: string[];
-  publisher?: string;
-  publishedDate?: string;
-  description?: string;
-  industryIdentifiers?: IndustryIdentifier[];
-  pageCount?: number;
-  categories?: string[];
-  imageLinks?: ImageLinks;
-  language?: string;
-}
-
-interface BookItem {
-  VolumeInfo: VolumeInfo;
-}
-
-interface Book {
-  title: string;
-  authors: string[];
-  publisher?: string;
-  publishedDate?: string;
-  description: string;
-  isbn: string;
-  cover: string;
-  industryIdentifiers?: IndustryIdentifier[];
-  pageCount?: number;
-  categories?: string[];
-  imageLinks?: ImageLinks;
-  language?: string;
-}
+import Navbar from '@/components/util/Navbar';
+import { useRouter } from 'next/navigation'
+import { BookItem, Book, IndustryIdentifier } from '@/utils/models';
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -60,8 +20,7 @@ const Search: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  
-  
+  const router = useRouter()
 
   const handleSearch = async () => {
     const processedQuery = query.replace(/\s+/g, "+").toLowerCase();
@@ -151,6 +110,7 @@ const Search: React.FC = () => {
       toast.error("Failed to update favourites.");
     }
   };
+
   const addToShelf = async (book: Book, shelfId: string, shelfName: string) => {
     try {
       const user = auth.currentUser;
@@ -209,24 +169,53 @@ const Search: React.FC = () => {
       console.error(err);
       toast.error(`Failed to add "${book.title}" to ${shelfName}`);
     }
+    
   };
 
+  const handleClickOnBook = async (book: Book) => {
+
+    try {
+      const user = auth.currentUser;
+      if (!user) {
+        toast.error("You need to be logged in to add books.");
+        return;
+      }
+      const idToken = await user.getIdToken();
+      const checkBookExists = await axiosInstance.get(`/books/exists?isbn=${book.isbn}`);
+
+      const bookExists = checkBookExists.data.exists;
+      if (!bookExists) {
+        await axiosInstance.post("/books", {
+          title: book.title,
+          authors: book.authors,
+          publisher: book.publisher,
+          publishedDate: book.publishedDate,
+          description: book.description,
+          industryIdentifiers: book.industryIdentifiers,
+          pageCount: book.pageCount,
+          categories: book.categories,
+          imageLinks: book.imageLinks,
+          language: book.language
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${idToken}`,
+          },
+      });}
+    } catch (error) {
+      console.log("Failed to create book")
+      console.log(error)
+      toast.error("Failed to create book in database!")
+      return;
+    }
+    console.log("pushing router")
+    router.push(`/book/${book.isbn}`)
+
+}
+
   return (
-    <div className="flex flex-col bg-back-base min-h-screen">
-      <div className="flex self-start justify-between w-full px-20 py-10">
-              <div>
-                  <Link href="/" className="font-bold text-3xl text-primary hover:underline">BOOKMARKD</Link>
-              </div>
-              <div className="flex flex-row gap-16 text-2xl text-primary">
-                  <Link href="/shelves" className="hover:underline">
-                      Shelves
-                  </Link>
-                  <Link href="/activity" className="hover:underline">
-                      Activity
-                  </Link>
-                  <Link href="/search" className="hover:underline">Search</Link>
-              </div>
-          </div>
+    <div className="flex flex-col bg-back-base min-h-screen px-20 py-10">
+      <Navbar/>
     <motion.div
       className="flex flex-col items-center justify-center bg-back-base text-secondary-weak px-20 py-10"
       layout
@@ -258,7 +247,13 @@ const Search: React.FC = () => {
 
       <motion.div className="mt-8 grid grid-cols-1 gap-8 w-full" layout>
         {books.map((book, index) => (
-          <motion.div key={index} className="relative flex bg-back-raised p-6 rounded-lg shadow-lg hover:shadow-2xl">
+          <motion.div key={index} className="relative flex text-left bg-back-raised p-6 rounded-lg hover:shadow-lg hover:shadow-2xl hover:cursor-pointer" whileHover={{
+            scale: 1.01,
+            transition: { duration: 1 },
+            zIndex: 10
+          }}
+          onClick={() => handleClickOnBook(book)}
+          >
             <img src={book.cover || "https://via.placeholder.com/100x150"} alt={book.title} className="w-32 h-48 rounded-lg object-cover" />
             <div className="ml-6 flex flex-col justify-between w-full">
               <div>
@@ -270,7 +265,10 @@ const Search: React.FC = () => {
                 <Dropdown shelves={shelves} onSelect={(shelfID: string, shelfName: string) => addToShelf(book, shelfID, shelfName)} />
               </div>
             </div>
-            <button onClick={() => handleFavourite(book.isbn)} className="absolute top-4 right-4 text-yellow-400">
+            <button onClick={(e) => {
+            e.stopPropagation();
+            handleFavourite(book.isbn);
+            }} className="absolute top-4 right-4 text-yellow-400">
               {favourites?.some(fav => fav.isbn === book.isbn) ? <IconStarFilled size={24}/> : <IconStar size={24}/>}
             </button>
           </motion.div>

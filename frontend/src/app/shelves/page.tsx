@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import QuickShelf from "@/components/QuickShelf";
 import ShelfCard from "@/components/ShelfCard";
 import Button from "@/components/util/Button";
-import Link from "next/link";
+import Navbar from "@/components/util/Navbar";
 import React from "react";
 import { useUser } from "../context/UserContext";
 
@@ -54,21 +54,8 @@ const Shelves: React.FC = () => {
 
   return (
       <div className="flex flex-col min-h-screen items-center bg-back-base text-secondary-weak px-20 py-10">
-          {/* Top Navbar */}
-          <div className="flex justify-between w-[80%]">
-              <div>
-                  <Link href="/" className="font-bold text-3xl text-primary hover:underline">BOOKMARKD</Link>
-              </div>
-              <div className="flex flex-row gap-16 text-2xl text-primary">
-                  <Link href="/shelves" className="hover:underline">
-                      Shelves
-                  </Link>
-                  <Link href="/activity" className="hover:underline">
-                      Activity
-                  </Link>
-                  <Link href="/search" className="hover:underline">Search</Link>
-              </div>
-          </div>
+          
+          <Navbar/>
 
           {/* Shelves */}
           <div className="grid grid-cols-12">
