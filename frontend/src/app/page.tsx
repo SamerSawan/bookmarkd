@@ -12,6 +12,7 @@ import { IconLogout } from '@tabler/icons-react';
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
 import Footer from "@/components/Footer";
+import { ToastContainer } from "react-toastify";
 
 type User = {
   id: string;
@@ -116,6 +117,7 @@ const Home: React.FC = () => {
         <TBRList />
       </div>
       <Footer/>
+      <ToastContainer theme="colored" />
       
     </div>
   );

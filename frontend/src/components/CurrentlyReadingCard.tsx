@@ -74,7 +74,7 @@ const CurrentlyReadingCard: React.FC = () => {
         }
       );
 
-      toast.success("Book moved to Read shelf.");
+      toast.success(`You have finished reading ${book.Title}.`);
       await fetchCurrentlyReading();
       refreshShelves()
     } catch (err) {

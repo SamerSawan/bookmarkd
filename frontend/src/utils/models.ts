@@ -50,3 +50,14 @@ export interface BookItem {
     VolumeInfo: VolumeInfo;
 }
 
+export interface CurrentlyReadingBook {
+    Isbn: string;
+    Title: string;
+    Author: string;
+    CoverImageUrl: string;
+    PublishDate: string;
+    Pages: number;
+    Description: string;
+    Progress: number;
+}
+

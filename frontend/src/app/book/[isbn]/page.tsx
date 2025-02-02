@@ -3,18 +3,33 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/util/Navbar";
 import axiosInstance from "@/utils/axiosInstance";
-import { FetchedBook } from "@/utils/models";
+import { CurrentlyReadingBook, FetchedBook } from "@/utils/models";
 import Dropdown from "@/app/search/Dropdown";
 import { useUser } from "@/app/context/UserContext";
 import { toast, ToastContainer } from "react-toastify";
 import { auth } from "../../../../firebase";
 
+// TODO: basic information such as pages and whatnot
+// TODO: find a place to put the ISBN
+// TODO: if book is currently being read, change add to shelf to update progress which shows a modal
+
 export default function BookPage() {
     const params = useParams();
     const isbn = params.isbn as string;
-    const { shelves, refreshShelves } = useUser()
+    const { shelves, refreshShelves, currentlyReading } = useUser()
 
     const [book, setBook] = useState<FetchedBook | null>(null);
+
+    const [userBook, setUserBook] = useState<CurrentlyReadingBook | null>(null);
+
+    useEffect(() => {
+        const foundBook = currentlyReading?.find(
+            (currentBook) => currentBook.Isbn === isbn
+        );
+        if (foundBook) {
+            setUserBook(foundBook)
+        }
+    }, [isbn, currentlyReading])
 
     useEffect(() => {
         const fetchBook = async () => {
@@ -87,7 +102,7 @@ export default function BookPage() {
                                 alt="Book cover"
                             />
                             <div className="mt-8">
-                                <Dropdown shelves={shelves} onSelect={addToShelf} />
+                                {<Dropdown shelves={shelves} onSelect={addToShelf} />}
                             </div>
                             
                         </div>
@@ -104,7 +119,7 @@ export default function BookPage() {
                                         {book.author}
                                     </h1>
                                 </div>
-                                <h1 className="text-secondary-weak text-2xl self-end justify-self-end">
+                                <h1 className="text-secondary-strong text-2xl self-end justify-self-end">
                                     {book.publish_date
                                         ? (() => {
                                             const date = new Date(book.publish_date);
@@ -118,11 +133,11 @@ export default function BookPage() {
                                                 .padStart(2, "0");
 
                                             if (year && month && day) {
-                                                return `${year}/${month}/${day}`;
+                                                return `Published ${year}/${month}/${day}`;
                                             } else if (year && month) {
-                                                return `${year}/${month}`;
+                                                return `Published ${year}/${month}`;
                                             } else {
-                                                return `${year}`;
+                                                return `Published ${year}`;
                                             }
                                         })()
                                         : "Unknown Publish Date"}
@@ -131,6 +146,12 @@ export default function BookPage() {
                             <p className="text-lg text-secondary-strong mt-8">
                                 {book.description}
                             </p>
+                            {userBook ? <div className="w-full bg-stroke-weak rounded-full h-4 mb-4 mt-6">
+                                <div
+                                    className="bg-gradient-to-r from-[#4C7BD9] to-primary h-4 rounded-full"
+                                    style={{ width: `${(userBook.Progress / userBook.Pages) * 100}%` }}
+                                ></div>
+                            </div> : <></>}
                         </div>
                         <ToastContainer theme="colored" />
                     </div>
