@@ -147,10 +147,14 @@ export default function BookPage() {
                                 {book.description}
                             </p>
                             {userBook ? <div className="w-full bg-stroke-weak rounded-full h-4 mb-4 mt-6">
-                                <div
-                                    className="bg-gradient-to-r from-[#4C7BD9] to-primary h-4 rounded-full"
-                                    style={{ width: `${(userBook.Progress / userBook.Pages) * 100}%` }}
-                                ></div>
+                                    <div
+                                        className="bg-gradient-to-r from-[#4C7BD9] to-primary h-4 rounded-full"
+                                        style={{ width: `${(userBook.Progress / userBook.Pages) * 100}%` }}
+                                    ></div>
+                                    <div className="flex flex-row justify-between w-full mt-2">
+                                        <span>0%</span>
+                                        <span>100%</span>
+                                    </div>
                             </div> : <></>}
                         </div>
                         <ToastContainer theme="colored" />
