@@ -208,9 +208,7 @@ const Search: React.FC = () => {
       toast.error("Failed to create book in database!")
       return;
     }
-    console.log("pushing router")
     router.push(`/book/${book.isbn}`)
-
 }
 
   return (

@@ -2,13 +2,18 @@
 
 import { useUser } from "@/app/context/UserContext";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const TBRList = () => {
   const { shelves } = useUser();
+  const router = useRouter()
 
   const toReadShelf = shelves.find((shelf) => shelf.name === "To Be Read");
-
-  // Utility function to get the right image from GoogleBooks
+  
+    const handleClickOnBook = async (isbn: string) => {
+      router.push(`/book/${isbn}`)
+  }
+  
   const getHighResImage = (url: string) => {
     if (!url) return "https://via.placeholder.com/100x150";
 
@@ -31,6 +36,7 @@ const TBRList = () => {
       </div>
     );
   }
+  
 
   return (
     <div className="mb-12">
@@ -40,7 +46,8 @@ const TBRList = () => {
             {toReadShelf.books.map((book) => (
               <div
                 key={book.isbn}
-                className="relative group bg-back-raised p-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+                className="relative group bg-back-raised p-2 rounded-lg shadow-md hover:shadow-lg transition-all hover:cursor-pointer"
+                onClick={() => handleClickOnBook(book.isbn)}
               >
                 <img
                   src={getHighResImage(book.coverImageUrl)}

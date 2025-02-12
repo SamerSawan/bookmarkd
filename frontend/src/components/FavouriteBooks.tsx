@@ -1,6 +1,7 @@
 import { useUser } from "@/app/context/UserContext";
 import { useState } from "react";
 import TooManyFavourites from "./TooManyFavourites";
+import { useRouter } from 'next/navigation'
 
 const FavouriteBooks = () => {
     const [ showModal, setShowModal ] = useState(false)
@@ -12,6 +13,10 @@ const FavouriteBooks = () => {
         .replace(/^http:/, "https:")
         .replace(/zoom=\d+/, "zoom=3");
     };
+    const router = useRouter()
+    const handleClickOnBook = async (isbn: string) => {
+      router.push(`/book/${isbn}`)
+  }
 
     return (
 
@@ -26,7 +31,8 @@ const FavouriteBooks = () => {
               {favourites?.map((book) => (
                 <div
                   key={book.isbn}
-                  className="relative group bg-back-raised p-2 rounded-lg shadow-md hover:shadow-lg transition-all"
+                  className="relative group bg-back-raised p-2 rounded-lg shadow-md hover:shadow-lg transition-all hover:cursor-pointer"
+                  onClick={() => handleClickOnBook(book.isbn)}
                 >
                   <img
                     src={getHighResImage(book.coverImageUrl)}

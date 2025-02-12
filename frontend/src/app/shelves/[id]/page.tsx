@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useUser } from "@/app/context/UserContext";
 import { IconStar, IconStarFilled, IconTrash } from "@tabler/icons-react";
 import { toast } from "react-toastify";
@@ -18,6 +18,10 @@ export default function ShelfPage() {
   const { shelves, favourites, refreshShelves } = useUser();
   const params = useParams();
   const shelfId = params.id as string;
+  const router = useRouter()
+    const handleClickOnBook = async (isbn: string) => {
+      router.push(`/book/${isbn}`)
+  }
 
   const shelf = shelves.find((shelf) => shelf.id === shelfId);
 
@@ -136,7 +140,7 @@ export default function ShelfPage() {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-8">
               {shelf.books.map((book) => (
-                <div key={book.isbn} className="relative flex flex-col items-center">
+                <div key={book.isbn} className="relative flex flex-col items-center hover:cursor-pointer" onClick={() => handleClickOnBook(book.isbn)}>
                   {/* Book Cover */}
                   <img
                     src={book.coverImageUrl || "https://via.placeholder.com/100x150"}
