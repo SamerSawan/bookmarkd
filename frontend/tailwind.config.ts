@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable import/no-anonymous-default-export */
 import type { Config } from "tailwindcss";
 
 export default {
@@ -23,6 +25,7 @@ export default {
           'raised': '#1D1D26',
           'overlay': '#2A2933',
         },
+        'danger': "#C73A3A"
         
       }
     },

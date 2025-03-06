@@ -8,6 +8,7 @@ import Dropdown from "@/app/search/Dropdown";
 import { useUser } from "@/app/context/UserContext";
 import { toast, ToastContainer } from "react-toastify";
 import { auth } from "../../../../firebase";
+import UpdateProgressButton from "@/components/util/UpdateProgressButton";
 
 // TODO: basic information such as pages and whatnot
 // TODO: find a place to put the ISBN
@@ -102,7 +103,7 @@ export default function BookPage() {
                                 alt="Book cover"
                             />
                             <div className="mt-8">
-                                {<Dropdown shelves={shelves} onSelect={addToShelf} />}
+                                {userBook ? <UpdateProgressButton CoverImageURL={userBook.CoverImageUrl}/> : <Dropdown shelves={shelves} onSelect={addToShelf} />}
                             </div>
                             
                         </div>

@@ -4,6 +4,7 @@ import Button from "./util/Button";
 import { auth } from "../../firebase";
 import axiosInstance from "@/utils/axiosInstance";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 
 const CurrentlyReadingCard: React.FC = () => {
@@ -12,7 +13,7 @@ const CurrentlyReadingCard: React.FC = () => {
   const [newProgress, setNewProgress] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
-
+  const router = useRouter()
   const book =
     currentlyReading && currentlyReading.length > 0
       ? currentlyReading[currentIndex]
@@ -131,7 +132,7 @@ const CurrentlyReadingCard: React.FC = () => {
 
   return (
     <div className="flex flex-col bg-back-raised rounded-lg shadow-lg overflow-hidden max-w-full">
-      <div className="relative h-60 w-full">
+      <div className="relative h-60 w-full hover:cursor-pointer" onClick={() => {router.push(`/book/${book.Isbn}`)}}>
         <img
           src={bookCover}
           alt={book.Title}
@@ -140,7 +141,7 @@ const CurrentlyReadingCard: React.FC = () => {
       </div>
 
       <div className="flex flex-col items-center p-4">
-        <h4 className="text-xl font-semibold text-secondary-strong text-center">
+        <h4 className="text-xl font-semibold text-secondary-strong text-center hover:cursor-pointer hover:text-primary" onClick={() => {router.push(`/book/${book.Isbn}`)}}>
           {book.Title}
         </h4>
         <p className="text-md text-secondary-weak text-center">By {book.Author}</p>
