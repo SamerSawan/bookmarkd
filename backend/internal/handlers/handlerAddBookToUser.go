@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 
@@ -50,7 +51,7 @@ func (cfg *ApiConfig) AddBookToUser(w http.ResponseWriter, r *http.Request) {
 			Title:         params.Book.Title,
 			Author:        params.Book.Authors[0],
 			CoverImageUrl: params.Book.ImageLinks.Thumbnail,
-			PublishDate:   parsedTime,
+			PublishDate:   sql.NullTime{Time: parsedTime, Valid: !parsedTime.IsZero()},
 			Pages:         int32(params.Book.PageCount),
 			Description:   params.Book.Description})
 		if err != nil {

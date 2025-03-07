@@ -7,7 +7,7 @@ package database
 
 import (
 	"context"
-	"time"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -145,7 +145,7 @@ type GetLatestCurrentlyReadingBookRow struct {
 	Title         string
 	Author        string
 	CoverImageUrl string
-	PublishDate   time.Time
+	PublishDate   sql.NullTime
 	Pages         int32
 	Description   string
 	Progress      int32

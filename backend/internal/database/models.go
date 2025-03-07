@@ -18,7 +18,7 @@ type Book struct {
 	Title         string
 	Author        string
 	CoverImageUrl string
-	PublishDate   time.Time
+	PublishDate   sql.NullTime
 	Pages         int32
 	Description   string
 }
@@ -63,6 +63,14 @@ type UserBook struct {
 	FinishedAt sql.NullTime
 	LentTo     sql.NullString
 	UpdatedAt  sql.NullTime
+}
+
+type UserBookProgress struct {
+	ID         uuid.UUID
+	UserBookID uuid.UUID
+	Progress   int32
+	Comment    sql.NullString
+	CreatedAt  sql.NullTime
 }
 
 type UserShelf struct {

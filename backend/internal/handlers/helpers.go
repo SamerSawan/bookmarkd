@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -67,7 +68,7 @@ func insertBook(isbn string, cfg *ApiConfig, r *http.Request) error {
 		Title:         bookParams.Title,
 		Author:        bookParams.Authors[0],
 		CoverImageUrl: bookParams.ImageLinks.Thumbnail,
-		PublishDate:   parsedTime,
+		PublishDate:   sql.NullTime{Time: parsedTime, Valid: !parsedTime.IsZero()},
 		Pages:         int32(bookParams.PageCount),
 		Description:   bookParams.Description})
 	if err != nil {

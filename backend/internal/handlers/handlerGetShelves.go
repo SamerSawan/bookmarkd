@@ -57,7 +57,7 @@ func (cfg ApiConfig) GetShelves(w http.ResponseWriter, r *http.Request) {
 		for _, bookItem := range booksInShelf {
 			book, _ := cfg.Db.GetBook(r.Context(), bookItem)
 
-			bookList = append(bookList, Book{ISBN: book.Isbn, Title: book.Title, Author: book.Author, CoverImageURL: book.CoverImageUrl, PublishDate: book.PublishDate, Pages: book.Pages, Description: book.Description})
+			bookList = append(bookList, Book{ISBN: book.Isbn, Title: book.Title, Author: book.Author, CoverImageURL: book.CoverImageUrl, PublishDate: book.PublishDate.Time, Pages: book.Pages, Description: book.Description})
 		}
 
 		shelfList = append(shelfList, Shelf{ID: shelf.ID.String(), Name: shelf.Name, BookCount: len(bookList), Books: bookList})

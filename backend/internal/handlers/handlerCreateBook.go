@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -53,7 +54,7 @@ func (cfg *ApiConfig) CreateBook(w http.ResponseWriter, r *http.Request) {
 		Title:         params.Title,
 		Author:        params.Authors[0],
 		CoverImageUrl: params.ImageLinks.Thumbnail,
-		PublishDate:   parsedTime,
+		PublishDate:   sql.NullTime{Time: parsedTime, Valid: !parsedTime.IsZero()},
 		Pages:         int32(params.PageCount),
 		Description:   params.Description})
 	if err != nil {
@@ -66,7 +67,7 @@ func (cfg *ApiConfig) CreateBook(w http.ResponseWriter, r *http.Request) {
 		UpdatedAt:     book.UpdatedAt,
 		Title:         book.Title,
 		Author:        book.Author,
-		PublishDate:   book.PublishDate,
+		PublishDate:   book.PublishDate.Time,
 		CoverImageURL: book.CoverImageUrl,
 		Pages:         book.Pages,
 		Description:   book.Description})

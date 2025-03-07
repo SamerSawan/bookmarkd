@@ -91,7 +91,7 @@ func TestUpdateBookProgressEndpoint(t *testing.T) {
 		Title:         "Test Book",
 		Author:        "Test Author",
 		CoverImageUrl: "http://example.com/image.jpg",
-		PublishDate:   time.Now(),
+		PublishDate:   sql.NullTime{Time: time.Now(), Valid: true},
 		Pages:         300,
 		Description:   "This is a test book.",
 	})
@@ -169,7 +169,7 @@ func TestUpdateBookStatusEndpoint(t *testing.T) {
 		Title:         "Test Book",
 		Author:        "Test Author",
 		CoverImageUrl: "http://example.com/image.jpg",
-		PublishDate:   time.Now(),
+		PublishDate:   sql.NullTime{Time: time.Now(), Valid: true},
 		Pages:         300,
 		Description:   "This is a test book.",
 	})

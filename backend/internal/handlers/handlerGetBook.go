@@ -18,5 +18,5 @@ func (cfg *ApiConfig) GetBook(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	respondWithJSON(w, http.StatusOK, Book{ISBN: book.Isbn, Title: book.Title, Author: book.Author, PublishDate: book.PublishDate, CoverImageURL: book.CoverImageUrl, Pages: book.Pages, Description: book.Description})
+	respondWithJSON(w, http.StatusOK, Book{ISBN: book.Isbn, Title: book.Title, Author: book.Author, PublishDate: book.PublishDate.Time, CoverImageURL: book.CoverImageUrl, Pages: book.Pages, Description: book.Description})
 }

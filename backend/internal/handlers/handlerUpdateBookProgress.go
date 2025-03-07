@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"database/sql"
 	"encoding/json"
 	"net/http"
 	"strings"
@@ -33,7 +34,8 @@ func (cfg *ApiConfig) UpdateBookProgress(w http.ResponseWriter, r *http.Request)
 	}
 
 	type parameters struct {
-		Progress int `json:"progress"`
+		Progress int    `json:"progress"`
+		Comment  string `json:"comment"`
 	}
 	params := parameters{}
 	decoder := json.NewDecoder(r.Body)
@@ -53,12 +55,20 @@ func (cfg *ApiConfig) UpdateBookProgress(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	user_book_progress, err := cfg.Db.UpdateProgressWithComment(r.Context(), database.UpdateProgressWithCommentParams{UserID: user_id, Isbn: isbn, Progress: int32(params.Progress), Comment: sql.NullString{String: params.Comment, Valid: params.Comment != ""}})
+
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to create Progress Update with Comment", err)
+		return
+	}
+
 	type response struct {
 		ID         uuid.UUID `json:"id"`
 		UserID     string    `json:"user_id"`
 		ISBN       string    `json:"isbn"`
 		Status     string    `json:"status"`
 		Progress   int       `json:"progress"`
+		Comment    string    `json:"comment"`
 		StartedAt  time.Time `json:"started_at"`
 		FinishedAt time.Time `json:"finished_at"`
 	}
@@ -69,6 +79,7 @@ func (cfg *ApiConfig) UpdateBookProgress(w http.ResponseWriter, r *http.Request)
 		UserID:     user_book.UserID,
 		Status:     user_book.Status,
 		Progress:   int(user_book.Progress),
+		Comment:    user_book_progress.Comment.String,
 		StartedAt:  user_book.StartedAt.Time,
 		FinishedAt: user_book.FinishedAt.Time})
 }
