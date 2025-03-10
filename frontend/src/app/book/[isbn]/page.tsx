@@ -17,9 +17,11 @@ import UpdateProgressButton from "@/components/util/UpdateProgressButton";
 export default function BookPage() {
     const params = useParams();
     const isbn = params.isbn as string;
-    const { shelves, refreshShelves, currentlyReading } = useUser()
+    const { shelves, refreshShelves, currentlyReading, fetchProgressUpdates, progressUpdates } = useUser();
 
     const [book, setBook] = useState<FetchedBook | null>(null);
+    
+    const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
     const [userBook, setUserBook] = useState<CurrentlyReadingBook | null>(null);
 
@@ -36,14 +38,18 @@ export default function BookPage() {
         const fetchBook = async () => {
             try {
                 const res = await axiosInstance.get(`/books?isbn=${isbn}`);
-                setBook(res.data); // Set the book data
+                setBook(res.data);
             } catch (error) {
                 console.error(error);
             }
         };
-
         fetchBook();
+        
     }, [isbn]);
+
+    useEffect(() => {   
+        fetchProgressUpdates(isbn)
+    }, [isbn, fetchProgressUpdates, refreshTrigger]);
 
     const getHighResImage = (url: string) => {
         if (!url) return "https://via.placeholder.com/100x150";
@@ -94,7 +100,7 @@ export default function BookPage() {
         <div className="flex flex-col min-h-screen bg-back-base text-secondary-weak px-20 py-10">
             <Navbar />
             <div className="flex-grow flex justify-center items-center">
-                {book ? (
+                {book && progressUpdates ? (
                     <div className="flex flex-row gap-4">
                         <div className="w-full h-full flex flex-col justify-center items-center">
                             <img
@@ -103,7 +109,7 @@ export default function BookPage() {
                                 alt="Book cover"
                             />
                             <div className="mt-8">
-                                {userBook ? <UpdateProgressButton CoverImageURL={userBook.CoverImageUrl}/> : <Dropdown shelves={shelves} onSelect={addToShelf} />}
+                                {userBook ? <UpdateProgressButton CoverImageURL={userBook.CoverImageUrl} isbn={book.isbn} onProgressUpdate={() => setRefreshTrigger(prev => prev + 1)}/> : <Dropdown shelves={shelves} onSelect={addToShelf} />}
                             </div>
                             
                         </div>
@@ -157,6 +163,26 @@ export default function BookPage() {
                                         <span>100%</span>
                                     </div>
                             </div> : <></>}
+                            <div className="mt-10 p-4">
+                                <h2 className="text-lg font-bold mb-2">Progress Updates</h2>
+                                {progressUpdates ? (
+                                progressUpdates.map((update, index) => {
+                                    console.log(update)
+                                    return (
+                                    <div key={index} className="mb-4 p-3 bg-fill rounded-md shadow">
+                                        <h4 className="text-secondary-strong">You finished {((update.progress / book.pages) * 100).toFixed(2)}% of the book!</h4>
+                                    <p className="text-secondary-strong">
+                                        {update.comment}
+                                    </p>
+                                    <p className="text-xs text-secondary-weak">
+                                        {new Date(update.created_at).toLocaleString()}
+                                    </p>
+                                    </div>
+                                )})
+                                ) : (
+                                <p className="text-secondary-weak">No progress updates yet.</p>
+                                )}
+                            </div>
                         </div>
                         <ToastContainer theme="colored" />
                     </div>

@@ -61,3 +61,9 @@ export interface CurrentlyReadingBook {
     Progress: number;
 }
 
+export interface ProgressUpdates {
+    progress: number;
+    comment: string;
+    created_at: string;
+}
+
