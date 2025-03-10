@@ -10,28 +10,44 @@ import (
 	"database/sql"
 )
 
-const fetchProgressUpdate = `-- name: FetchProgressUpdate :one
+const getProgressUpdates = `-- name: GetProgressUpdates :many
 SELECT id, user_book_id, progress, comment, created_at FROM user_book_progress 
 WHERE user_book_id = (SELECT id FROM user_books WHERE user_id = $1 AND isbn = $2) 
 ORDER BY created_at DESC
 `
 
-type FetchProgressUpdateParams struct {
+type GetProgressUpdatesParams struct {
 	UserID string
 	Isbn   string
 }
 
-func (q *Queries) FetchProgressUpdate(ctx context.Context, arg FetchProgressUpdateParams) (UserBookProgress, error) {
-	row := q.db.QueryRowContext(ctx, fetchProgressUpdate, arg.UserID, arg.Isbn)
-	var i UserBookProgress
-	err := row.Scan(
-		&i.ID,
-		&i.UserBookID,
-		&i.Progress,
-		&i.Comment,
-		&i.CreatedAt,
-	)
-	return i, err
+func (q *Queries) GetProgressUpdates(ctx context.Context, arg GetProgressUpdatesParams) ([]UserBookProgress, error) {
+	rows, err := q.db.QueryContext(ctx, getProgressUpdates, arg.UserID, arg.Isbn)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []UserBookProgress
+	for rows.Next() {
+		var i UserBookProgress
+		if err := rows.Scan(
+			&i.ID,
+			&i.UserBookID,
+			&i.Progress,
+			&i.Comment,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const updateProgressWithComment = `-- name: UpdateProgressWithComment :one

@@ -6,7 +6,7 @@ VALUES (
     $4
 ) RETURNING *;
 
--- name: FetchProgressUpdate :one
+-- name: GetProgressUpdates :many
 SELECT * FROM user_book_progress 
 WHERE user_book_id = (SELECT id FROM user_books WHERE user_id = $1 AND isbn = $2) 
 ORDER BY created_at DESC;
