@@ -100,7 +100,7 @@ export default function BookPage() {
         <div className="flex flex-col min-h-screen bg-back-base text-secondary-weak px-20 py-10">
             <Navbar />
             <div className="flex-grow flex justify-center items-center">
-                {book && progressUpdates ? (
+                {book ? (
                     <div className="flex flex-row gap-4">
                         <div className="w-full h-full flex flex-col justify-center items-center">
                             <img
