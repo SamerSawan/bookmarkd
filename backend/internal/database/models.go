@@ -30,6 +30,14 @@ type Favourite struct {
 	CreatedAt sql.NullTime
 }
 
+type Review struct {
+	ID     uuid.UUID
+	Isbn   string
+	UserID string
+	Review string
+	Stars  sql.NullString
+}
+
 type Shelf struct {
 	ID        uuid.UUID
 	CreatedAt time.Time
