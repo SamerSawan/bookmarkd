@@ -31,11 +31,13 @@ type Favourite struct {
 }
 
 type Review struct {
-	ID     uuid.UUID
-	Isbn   string
-	UserID string
-	Review string
-	Stars  sql.NullString
+	ID          uuid.UUID
+	Isbn        string
+	UserID      string
+	Review      sql.NullString
+	Stars       sql.NullFloat64
+	Recommended sql.NullBool
+	CreatedAt   sql.NullTime
 }
 
 type Shelf struct {

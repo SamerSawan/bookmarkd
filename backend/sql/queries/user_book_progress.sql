@@ -10,3 +10,6 @@ VALUES (
 SELECT * FROM user_book_progress 
 WHERE user_book_id = (SELECT id FROM user_books WHERE user_id = $1 AND isbn = $2) 
 ORDER BY created_at DESC;
+
+-- name: GetReadingStatus :one
+SELECT status FROM user_books WHERE user_id = $1 AND isbn = $2;

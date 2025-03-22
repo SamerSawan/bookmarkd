@@ -301,7 +301,8 @@ func (q *Queries) UpdateBookProgress(ctx context.Context, arg UpdateBookProgress
 const updateBookStatus = `-- name: UpdateBookStatus :one
 UPDATE user_books SET 
     status = $1,
-    started_at = CASE WHEN $1 = 'Reading' THEN CURRENT_DATE ELSE started_at END
+    started_at = CASE WHEN $1 = 'Reading' THEN CURRENT_DATE ELSE started_at END,
+    finished_at = CASE WHEN $1 = 'Read' THEN CURRENT_DATE ELSE finished_at END
 WHERE user_id = $2 AND isbn = $3
 RETURNING id, user_id, isbn, status, progress, started_at, finished_at, lent_to, updated_at
 `

@@ -78,6 +78,8 @@ func main() {
 	serveMux.HandleFunc("GET /api/shelves/{shelf_id}/exists", apiCfg.CheckBookExistsInShelf)
 	serveMux.HandleFunc("DELETE /api/shelves/{shelf_id}/books", apiCfg.RemoveBookFromShelf)
 	serveMux.HandleFunc("GET /api/users/me/books/{isbn}/progress", apiCfg.GetBookProgressUpdate)
+	serveMux.HandleFunc("POST /api/reviews", apiCfg.CreateReview)
+	serveMux.HandleFunc("GET /api/reviews", apiCfg.GetReviewsForBook)
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000", "https://bookmarkd-coral.vercel.app"},

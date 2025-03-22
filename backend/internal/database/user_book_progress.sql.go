@@ -50,6 +50,22 @@ func (q *Queries) GetProgressUpdates(ctx context.Context, arg GetProgressUpdates
 	return items, nil
 }
 
+const getReadingStatus = `-- name: GetReadingStatus :one
+SELECT status FROM user_books WHERE user_id = $1 AND isbn = $2
+`
+
+type GetReadingStatusParams struct {
+	UserID string
+	Isbn   string
+}
+
+func (q *Queries) GetReadingStatus(ctx context.Context, arg GetReadingStatusParams) (string, error) {
+	row := q.db.QueryRowContext(ctx, getReadingStatus, arg.UserID, arg.Isbn)
+	var status string
+	err := row.Scan(&status)
+	return status, err
+}
+
 const updateProgressWithComment = `-- name: UpdateProgressWithComment :one
 INSERT INTO user_book_progress (user_book_id, progress, comment)
 VALUES (

@@ -8,23 +8,27 @@ package database
 import (
 	"context"
 	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createReview = `-- name: CreateReview :one
-INSERT INTO reviews ( isbn, user_id, review, stars )
+INSERT INTO reviews ( isbn, user_id, review, stars, recommended )
 VALUES (
     $1,
     $2,
     $3,
-    $4
-) RETURNING id, isbn, user_id, review, stars
+    $4,
+    $5
+) RETURNING id, isbn, user_id, review, stars, recommended, created_at
 `
 
 type CreateReviewParams struct {
-	Isbn   string
-	UserID string
-	Review string
-	Stars  sql.NullString
+	Isbn        string
+	UserID      string
+	Review      sql.NullString
+	Stars       sql.NullFloat64
+	Recommended sql.NullBool
 }
 
 func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Review, error) {
@@ -33,6 +37,7 @@ func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Rev
 		arg.UserID,
 		arg.Review,
 		arg.Stars,
+		arg.Recommended,
 	)
 	var i Review
 	err := row.Scan(
@@ -41,6 +46,8 @@ func (q *Queries) CreateReview(ctx context.Context, arg CreateReviewParams) (Rev
 		&i.UserID,
 		&i.Review,
 		&i.Stars,
+		&i.Recommended,
+		&i.CreatedAt,
 	)
 	return i, err
 }
@@ -60,24 +67,53 @@ func (q *Queries) DeleteReview(ctx context.Context, arg DeleteReviewParams) erro
 }
 
 const getBookReviews = `-- name: GetBookReviews :many
-SELECT id, isbn, user_id, review, stars FROM reviews WHERE isbn = $1
+SELECT 
+  r.id,
+  r.isbn,
+  r.user_id,
+  r.review,
+  r.stars,
+  r.recommended,
+  r.created_at,
+  u.username,
+  b.title
+FROM reviews r
+JOIN users u ON r.user_id = u.id
+JOIN books b ON r.isbn = b.isbn
+WHERE r.isbn = $1
 `
 
-func (q *Queries) GetBookReviews(ctx context.Context, isbn string) ([]Review, error) {
+type GetBookReviewsRow struct {
+	ID          uuid.UUID
+	Isbn        string
+	UserID      string
+	Review      sql.NullString
+	Stars       sql.NullFloat64
+	Recommended sql.NullBool
+	CreatedAt   sql.NullTime
+	Username    string
+	Title       string
+}
+
+func (q *Queries) GetBookReviews(ctx context.Context, isbn string) ([]GetBookReviewsRow, error) {
 	rows, err := q.db.QueryContext(ctx, getBookReviews, isbn)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Review
+	var items []GetBookReviewsRow
 	for rows.Next() {
-		var i Review
+		var i GetBookReviewsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Isbn,
 			&i.UserID,
 			&i.Review,
 			&i.Stars,
+			&i.Recommended,
+			&i.CreatedAt,
+			&i.Username,
+			&i.Title,
 		); err != nil {
 			return nil, err
 		}
@@ -93,7 +129,7 @@ func (q *Queries) GetBookReviews(ctx context.Context, isbn string) ([]Review, er
 }
 
 const getReview = `-- name: GetReview :one
-SELECT id, isbn, user_id, review, stars FROM reviews WHERE isbn = $1 AND user_id = $2
+SELECT id, isbn, user_id, review, stars, recommended, created_at FROM reviews WHERE isbn = $1 AND user_id = $2
 `
 
 type GetReviewParams struct {
@@ -110,6 +146,8 @@ func (q *Queries) GetReview(ctx context.Context, arg GetReviewParams) (Review, e
 		&i.UserID,
 		&i.Review,
 		&i.Stars,
+		&i.Recommended,
+		&i.CreatedAt,
 	)
 	return i, err
 }

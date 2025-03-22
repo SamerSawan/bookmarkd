@@ -50,6 +50,11 @@ export interface BookItem {
     VolumeInfo: VolumeInfo;
 }
 
+export interface Shelf {
+    id: string;
+    name: string;
+}
+
 export interface CurrentlyReadingBook {
     Isbn: string;
     Title: string;
@@ -65,5 +70,29 @@ export interface ProgressUpdates {
     progress: number;
     comment: string;
     created_at: string;
+}
+
+export interface Review {
+    ID: string;
+    Isbn: string;
+    UserID: string;
+    Username: string;
+    Title: string;
+    CreatedAt: {
+        Time: string;  // ISO 8601 timestamp
+        Valid: boolean;
+    };
+    Recommended: {
+        Bool: boolean;
+        Valid: boolean;
+    };
+    Review: {
+        String: string;
+        Valid: boolean;
+    };
+    Stars: {
+        Float64: number;
+        Valid: boolean;
+    };
 }
 

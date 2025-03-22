@@ -27,7 +27,8 @@ VALUES (
 -- name: UpdateBookStatus :one
 UPDATE user_books SET 
     status = $1,
-    started_at = CASE WHEN $1 = 'Reading' THEN CURRENT_DATE ELSE started_at END
+    started_at = CASE WHEN $1 = 'Reading' THEN CURRENT_DATE ELSE started_at END,
+    finished_at = CASE WHEN $1 = 'Read' THEN CURRENT_DATE ELSE finished_at END
 WHERE user_id = $2 AND isbn = $3
 RETURNING *;
 

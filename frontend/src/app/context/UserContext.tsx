@@ -4,7 +4,6 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import axiosInstance from '@/utils/axiosInstance';
 import { auth } from '../../../firebase';
 import { toast } from 'react-toastify';
-import { ProgressUpdates } from '@/utils/models';
 
 interface RawBook {
   isbn: string;
@@ -68,8 +67,6 @@ interface UserContextType {
   fetchCurrentlyReading: () => void;
   updateProgress: ( isbn: string, progress: number ) => Promise<void>;
   favourites: Book[] | null;
-  progressUpdates: ProgressUpdates[];
-  fetchProgressUpdates: (isbn: string) => void;
 }
 
 
@@ -80,7 +77,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState<boolean>(true);
   const [currentlyReading, setCurrentlyReading] = useState<CurrentlyReadingBook[] | null>(null);
   const [favourites, setFavourites] = useState<Book[] | null>(null);
-  const [progressUpdates, setProgressUpdates] = useState<ProgressUpdates[]>([]);
+  
 
   const fetchShelves = useCallback(async () => {
     const normalizeBooks = (books: RawBook[]): Book[] => {
@@ -164,23 +161,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const fetchProgressUpdates = async (isbn: string) => {
-    try {
-
-        const user = auth.currentUser;
-        if (!user) return;
-        const idToken = await user.getIdToken();
-
-        const res = await axiosInstance.get(`/users/me/books/${isbn}/progress`, {
-            headers: { Authorization: `Bearer ${idToken}` },
-          })
-        console.log("Trying to print res.data")
-        console.log(res.data)
-        setProgressUpdates(res.data)
-    } catch (error) {
-        console.error(error);
-    }
-}
 
   const fetchFavourites = async () => {
     setFavourites((prev) => prev || [])
@@ -234,7 +214,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [fetchShelves]);
 
   return (
-    <UserContext.Provider value={{ shelves, currentlyReading, loading, refreshShelves, fetchCurrentlyReading, updateProgress, favourites, progressUpdates, fetchProgressUpdates }}>
+    <UserContext.Provider value={{ shelves, currentlyReading, loading, refreshShelves, fetchCurrentlyReading, updateProgress, favourites }}>
       {children}
     </UserContext.Provider>
   );
