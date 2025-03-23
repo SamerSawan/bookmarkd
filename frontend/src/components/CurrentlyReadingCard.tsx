@@ -5,6 +5,7 @@ import { auth } from "../../firebase";
 import axiosInstance from "@/utils/axiosInstance";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import MarkAsFinishedButton from "./util/MarkAsFinishedButton";
 
 
 const CurrentlyReadingCard: React.FC = () => {
@@ -18,8 +19,6 @@ const CurrentlyReadingCard: React.FC = () => {
     currentlyReading && currentlyReading.length > 0
       ? currentlyReading[currentIndex]
       : null;
-
-  const readShelf = shelves.find((shelf) => shelf.name === "Read");
 
   useEffect(() => {
     if (book) {
@@ -52,37 +51,6 @@ const CurrentlyReadingCard: React.FC = () => {
   const pages = Number(book.Pages) || 0;
   const progressPercentage = Math.min(100, Math.round((newProgress / pages) * 100));
   const isFinished = newProgress >= pages;
-
-  const moveToReadShelf = async () => {
-    const user = auth.currentUser;
-    if (!user) {
-      return;
-    }
-    if (!readShelf) {
-      return;
-    }
-
-    try {
-      const idToken = await user.getIdToken();
-
-      await axiosInstance.post(
-        `/shelves/${readShelf.id}`,
-        { isbn: book.Isbn },
-        {
-          headers: {
-            Authorization: `Bearer ${idToken}`,
-          },
-        }
-      );
-
-      toast.success(`You have finished reading ${book.Title}.`);
-      await fetchCurrentlyReading();
-      refreshShelves()
-    } catch (err) {
-      console.error("Failed to move book:", err);
-      toast.error("Failed to move book.");
-    }
-  };
 
   const handleUpdate = async () => {
     const user = auth.currentUser;
@@ -178,12 +146,7 @@ const CurrentlyReadingCard: React.FC = () => {
                 Cancel
               </button>
             </div>
-            {!isFinished && <button
-            onClick={moveToReadShelf}
-            className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-500 mt-4"
-          >
-            Mark as Finished
-          </button>}
+            {!isFinished && <MarkAsFinishedButton CoverImageURL={book.CoverImageUrl} isbn={book.Isbn} shelves={shelves} triggerRefresh={refreshShelves}/>}
           </div>
         ) : (
           <div className="mt-4">
@@ -192,12 +155,7 @@ const CurrentlyReadingCard: React.FC = () => {
         )}
 
         {isFinished && (
-          <button
-            onClick={moveToReadShelf}
-            className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-500 mt-4"
-          >
-            Mark as Finished
-          </button>
+          <MarkAsFinishedButton CoverImageURL={book.CoverImageUrl} isbn={book.Isbn} shelves={shelves} triggerRefresh={refreshShelves}/>
         )}
 
         <div className="flex justify-between w-full mt-4">

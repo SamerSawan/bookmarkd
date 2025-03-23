@@ -41,7 +41,7 @@ const Home: React.FC = () => {
           console.error("Error fetching user data:", error);
         }
       } else {
-        router.push("/login");
+        router.push("/about");
       }
     });
     return () => unsubscribe();
