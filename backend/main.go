@@ -80,6 +80,7 @@ func main() {
 	serveMux.HandleFunc("GET /api/users/me/books/{isbn}/progress", apiCfg.GetBookProgressUpdate)
 	serveMux.HandleFunc("POST /api/reviews", apiCfg.CreateReview)
 	serveMux.HandleFunc("GET /api/reviews", apiCfg.GetReviewsForBook)
+	serveMux.HandleFunc("GET /api/reviews/recent", apiCfg.GetRecentReviews)
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000", "https://bookmarkd-coral.vercel.app"},

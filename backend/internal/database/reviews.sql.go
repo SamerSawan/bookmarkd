@@ -68,15 +68,15 @@ func (q *Queries) DeleteReview(ctx context.Context, arg DeleteReviewParams) erro
 
 const getBookReviews = `-- name: GetBookReviews :many
 SELECT 
-  r.id,
-  r.isbn,
-  r.user_id,
-  r.review,
-  r.stars,
-  r.recommended,
-  r.created_at,
-  u.username,
-  b.title
+    r.id,
+    r.isbn,
+    r.user_id,
+    r.review,
+    r.stars,
+    r.recommended,
+    r.created_at,
+    u.username,
+    b.title
 FROM reviews r
 JOIN users u ON r.user_id = u.id
 JOIN books b ON r.isbn = b.isbn
@@ -104,6 +104,74 @@ func (q *Queries) GetBookReviews(ctx context.Context, isbn string) ([]GetBookRev
 	var items []GetBookReviewsRow
 	for rows.Next() {
 		var i GetBookReviewsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Isbn,
+			&i.UserID,
+			&i.Review,
+			&i.Stars,
+			&i.Recommended,
+			&i.CreatedAt,
+			&i.Username,
+			&i.Title,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getRecentReviews = `-- name: GetRecentReviews :many
+SELECT
+    r.id,
+    r.isbn,
+    r.user_id,
+    r.review,
+    r.stars,
+    r.recommended,
+    r.created_at,
+    u.username,
+    b.title
+FROM reviews r
+JOIN users u ON r.user_id = u.id
+JOIN books b ON r.isbn = b.isbn
+ORDER BY r.created_at DESC
+LIMIT $1 OFFSET $2
+`
+
+type GetRecentReviewsParams struct {
+	Limit  int32
+	Offset int32
+}
+
+type GetRecentReviewsRow struct {
+	ID          uuid.UUID
+	Isbn        string
+	UserID      string
+	Review      sql.NullString
+	Stars       sql.NullFloat64
+	Recommended sql.NullBool
+	CreatedAt   sql.NullTime
+	Username    string
+	Title       string
+}
+
+func (q *Queries) GetRecentReviews(ctx context.Context, arg GetRecentReviewsParams) ([]GetRecentReviewsRow, error) {
+	rows, err := q.db.QueryContext(ctx, getRecentReviews, arg.Limit, arg.Offset)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetRecentReviewsRow
+	for rows.Next() {
+		var i GetRecentReviewsRow
 		if err := rows.Scan(
 			&i.ID,
 			&i.Isbn,

@@ -10,7 +10,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { auth } from "../../../../firebase";
 import UpdateProgressButton from "@/components/util/UpdateProgressButton";
 import MarkAsFinishedButton from "@/components/util/MarkAsFinishedButton";
-import { IconThumbUpFilled, IconThumbDownFilled, IconStarHalfFilled, IconStarFilled, IconStar } from "@tabler/icons-react";
+import ReviewCard from "@/components/util/ReviewCard";
 
 // TODO: basic information such as pages and whatnot
 // TODO: find a place to put the ISBN
@@ -136,27 +136,6 @@ export default function BookPage() {
         setRefreshTrigger(prev => prev + 1)
     }
 
-    const renderStars = (rating: number) => {
-        const stars = [];
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 >= 0.5;
-        const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-      
-        for (let i = 0; i < fullStars; i++) {
-          stars.push(<IconStarFilled key={`full-${i}`} className="text-yellow-400" />);
-        }
-      
-        if (hasHalfStar) {
-          stars.push(<IconStarHalfFilled key="half" className="text-yellow-400" />);
-        }
-      
-        for (let i = 0; i < emptyStars; i++) {
-          stars.push(<IconStar key={`empty-${i}`} className="text-gray-400" />);
-        }
-      
-        return <div className="flex flex-row gap-1">{stars}</div>;
-      };
-
     return (
         <div className="flex flex-col min-h-screen bg-back-base text-secondary-weak px-20 py-10">
             <Navbar />
@@ -252,34 +231,7 @@ export default function BookPage() {
                                 <h2 className="text-lg font-bold mb-2">Reviews</h2>
                                 {reviews ? (
                                     reviews.map((review, index) => (
-                                        <div key={index} className="mb-6 p-5 bg-fill rounded-xl shadow-md border border-stroke-weak">
-                                            <div className="flex flex-col gap-2 mb-4">
-                                                <div className="flex flex-row justify-between items-center">
-                                                    <h4 className="text-xl font-semibold text-secondary-strong">{review.Username}</h4>
-                                                    {review.Recommended.Bool ? (
-                                                        <div className="flex flex-row items-center bg-green-100 px-3 py-1 rounded-full gap-2">
-                                                            <IconThumbUpFilled className="text-green-600" stroke={2} />
-                                                            <span className="text-green-800 font-medium text-sm">Recommended</span>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex flex-row items-center bg-red-100 px-3 py-1 rounded-full gap-2">
-                                                            <IconThumbDownFilled className="text-red-600" stroke={2} />
-                                                            <span className="text-red-800 font-medium text-sm">Not Recommended</span>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                    
-                                                {renderStars(review.Stars.Float64)}
-                                            </div>
-                                    
-                                            <p className="text-base text-secondary-strong mb-4">
-                                                “{review.Review.String}”
-                                            </p>
-                                    
-                                            <p className="text-xs text-secondary-weak text-right">
-                                                {new Date(review.CreatedAt.Time).toLocaleDateString('en-CA')}
-                                            </p>
-                                        </div>
+                                        <ReviewCard key={index} review={review} inBook={true} />
                                     ))
                                     
                                 ) : (
