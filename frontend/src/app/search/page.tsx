@@ -245,7 +245,7 @@ const Search: React.FC = () => {
 
       <motion.div className="mt-8 grid grid-cols-1 gap-8 w-full" layout>
         {books.map((book, index) => (
-          <motion.div key={index} className="relative flex text-left bg-back-raised p-6 rounded-lg hover:shadow-lg hover:shadow-2xl hover:cursor-pointer" whileHover={{
+          <motion.div key={index} className="relative flex text-left bg-back-raised px-6 pt-6 pb-4 rounded-lg hover:shadow-lg hover:shadow-2xl hover:cursor-pointer" whileHover={{
             scale: 1.01,
             transition: { duration: 1 },
             zIndex: 10
@@ -258,6 +258,10 @@ const Search: React.FC = () => {
                 <h3 className="text-xl font-bold text-primary">{book.title}</h3>
                 <p className="text-sm text-secondary-weak italic">{book.authors.join(", ")}</p>
                 <p className="text-sm text-secondary mt-4 line-clamp-4">{book.description}</p>
+                <div className="text-sm mt-4 flex flex-row justify-between w-1/5">
+                  <span>{book.pageCount} Pages</span>
+                  <span>ISBN {book.isbn}</span>
+                </div>
               </div>
               <div className="flex items-center justify-end gap-2 mt-4">
                 <Dropdown shelves={shelves} onSelect={(shelfID: string, shelfName: string) => addToShelf(book, shelfID, shelfName)} />

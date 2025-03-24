@@ -10,12 +10,13 @@ import { useUser } from '@/app/context/UserContext';
 
 interface ModalProps {
     CoverImageURL: string
-    isbn: string
+    isbn: string;
     onProgressUpdate: () => void;
+    pages: number;
 }
 
 
-const UpdateProgressButton: React.FC<ModalProps> = ({CoverImageURL, isbn, onProgressUpdate}) => {
+const UpdateProgressButton: React.FC<ModalProps> = ({CoverImageURL, isbn, onProgressUpdate, pages}) => {
     const { fetchCurrentlyReading } = useUser();
 
     const [isOpen, setIsOpen] = useState(false)
@@ -72,7 +73,8 @@ const UpdateProgressButton: React.FC<ModalProps> = ({CoverImageURL, isbn, onProg
                         <div className="flex flex-col w-full">
                             <div>
                                 <span className="text-secondary-weak mr-2">Page #</span>
-                                <input className="outline-none appearance-none rounded-md bg-fill px-2 mb-2 w-20 focus:ring-2 focus:ring-primary text-secondary-strong" type={"number"} onChange={(e) => setNewProgress(Number(e.target.value))} name="progress" inputMode="numeric" pattern="[0-9]*"/>
+                                <input className="outline-none appearance-none rounded-md bg-fill px-2 mb-2 w-20 focus:ring-2 focus:ring-primary text-secondary-strong" type={"number"} max={pages} onChange={(e) => setNewProgress(Number(e.target.value))} name="progress" inputMode="numeric" pattern="[0-9]*"/>
+                                <span>/ {pages}</span>
                             </div>
                             <textarea
                             className="w-full text-start px-4 py-2 mb-4 text-secondary-weak bg-fill rounded-md outline-none w-full h-64 focus:ring-2 focus:ring-primary transition-all"

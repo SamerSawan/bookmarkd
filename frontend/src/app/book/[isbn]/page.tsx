@@ -12,9 +12,6 @@ import UpdateProgressButton from "@/components/util/UpdateProgressButton";
 import MarkAsFinishedButton from "@/components/util/MarkAsFinishedButton";
 import ReviewCard from "@/components/util/ReviewCard";
 
-// TODO: basic information such as pages and whatnot
-// TODO: find a place to put the ISBN
-// TODO: if book is currently being read, change add to shelf to update progress which shows a modal
 
 export default function BookPage() {
     const params = useParams();
@@ -152,7 +149,7 @@ export default function BookPage() {
                             <div className="mt-8">
                                 {userBook ?
                                 <div className="flex flex-col">
-                                    <UpdateProgressButton CoverImageURL={userBook.CoverImageUrl} isbn={book.isbn} onProgressUpdate={() => setRefreshTrigger(prev => prev + 1)}/>
+                                    <UpdateProgressButton CoverImageURL={userBook.CoverImageUrl} isbn={book.isbn} pages={book.pages} onProgressUpdate={() => setRefreshTrigger(prev => prev + 1)}/>
                                     <MarkAsFinishedButton CoverImageURL={userBook.CoverImageUrl} isbn={book.isbn} shelves={shelves} triggerRefresh={TriggerRefresh}/>
                                 </div> 
                                 : <Dropdown shelves={shelves} onSelect={addToShelf} />}
@@ -172,7 +169,14 @@ export default function BookPage() {
                                         {book.author}
                                     </h1>
                                 </div>
-                                <h1 className="text-secondary-strong text-2xl self-end justify-self-end">
+                            </div>
+                            <p className="text-lg text-secondary-strong mt-8">
+                                {book.description}
+                            </p>
+                            <div className="flex flex-row mt-4 text-xl text-secondary-weak justify-between">
+                                <span>{book.pages} Pages</span>
+                                <span>ISBN {book.isbn}</span>
+                                <h1>
                                     {book.publish_date
                                         ? (() => {
                                             const date = new Date(book.publish_date);
@@ -196,9 +200,6 @@ export default function BookPage() {
                                         : "Unknown Publish Date"}
                                 </h1>
                             </div>
-                            <p className="text-lg text-secondary-strong mt-8">
-                                {book.description}
-                            </p>
                             {userBook ? <div className="w-full bg-stroke-weak rounded-full h-4 mb-4 mt-6">
                                     <div
                                         className="bg-gradient-to-r from-[#4C7BD9] to-primary h-4 rounded-full"
@@ -210,22 +211,27 @@ export default function BookPage() {
                                     </div>
                             </div> : <></>}
                             <div className="mt-10 p-4">
-                                <h2 className="text-lg font-bold mb-2">Progress Updates</h2>
-                                {progressUpdates ? (
-                                progressUpdates.map((update, index) => {
-                                    return (
-                                    <div key={index} className="mb-4 p-3 bg-fill rounded-md shadow">
-                                        <h4 className="text-secondary-strong">You finished {((update.progress / book.pages) * 100).toFixed(2)}% of the book!</h4>
-                                    <p className="text-secondary-strong">
-                                        {update.comment}
-                                    </p>
-                                    <p className="text-xs text-secondary-weak">
-                                        {new Date(update.created_at).toLocaleDateString('en-CA')}
-                                    </p>
+                                
+                                {progressUpdates && progressUpdates.length > 0 ? (
+                                    <div>
+                                        <h2 className="text-lg font-bold mb-2">Progress Updates</h2>
+                                        {
+                                            progressUpdates.map((update, index) => {
+                                                return (
+                                                <div key={index} className="mb-4 p-3 bg-fill rounded-md shadow">
+                                                    <h4 className="text-secondary-strong">You finished {((update.progress / book.pages) * 100).toFixed(2)}% of the book!</h4>
+                                                <p className="text-secondary-strong">
+                                                    {update.comment}
+                                                </p>
+                                                <p className="text-xs text-secondary-weak">
+                                                    {new Date(update.created_at).toLocaleDateString('en-CA')}
+                                                </p>
+                                                </div>
+                                            )})
+                                        }
                                     </div>
-                                )})
                                 ) : (
-                                <p className="text-secondary-weak">No progress updates yet.</p>
+                                <></>
                                 )}
                             </div>
                             <div className="p-4">
