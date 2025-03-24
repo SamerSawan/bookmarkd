@@ -13,6 +13,17 @@ export interface Book {
     language?: string;
 }
 
+export interface FavBook {
+    ID: string;
+    Isbn: string;
+    Title: string;
+    Author: string;
+    CoverImageUrl: string;
+    PublishDate: string;
+    Pages: number;
+    Description: string;
+  }
+
 export interface FetchedBook {
     author: string;
     cover_image_url: string;
@@ -79,7 +90,7 @@ export interface Review {
     Username: string;
     Title: string;
     CreatedAt: {
-        Time: string;  // ISO 8601 timestamp
+        Time: string;
         Valid: boolean;
     };
     Recommended: {
@@ -94,5 +105,20 @@ export interface Review {
         Float64: number;
         Valid: boolean;
     };
+    CoverImageUrl: string;
+}
+
+export interface UserWithStats {
+    id: string;
+    username: string;
+    bio?: string;
+    profileImageUrl?: string;
+
+    numberOfBooksRead: number;
+    avgRating: number | null;
+    numberOfReviewsWritten: number;
+
+    favourites: FavBook[];
+    reviews: Review[];
 }
 

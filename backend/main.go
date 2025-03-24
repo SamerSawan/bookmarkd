@@ -67,6 +67,7 @@ func main() {
 	serveMux.HandleFunc("GET /api/books/search", apiCfg.Search)
 	serveMux.HandleFunc("PUT /api/users/{user_id}/books/{isbn}/progress", apiCfg.UpdateBookProgress)
 	serveMux.HandleFunc("GET /api/users/{user_id}", apiCfg.GetUser)
+	serveMux.HandleFunc("GET /api/users/me", apiCfg.GetCurrentUser)
 	serveMux.HandleFunc("GET /api/users/{user_id}/shelves", apiCfg.GetShelves)
 	serveMux.HandleFunc("POST /api/shelves/{shelf_id}", apiCfg.AddBookToShelf)
 	serveMux.HandleFunc("GET /api/books", apiCfg.GetBook)
@@ -81,6 +82,7 @@ func main() {
 	serveMux.HandleFunc("POST /api/reviews", apiCfg.CreateReview)
 	serveMux.HandleFunc("GET /api/reviews", apiCfg.GetReviewsForBook)
 	serveMux.HandleFunc("GET /api/reviews/recent", apiCfg.GetRecentReviews)
+	serveMux.HandleFunc("GET /api/profile/{username}", apiCfg.GetUserWithStats)
 
 	handler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3000", "https://bookmarkd-coral.vercel.app"},

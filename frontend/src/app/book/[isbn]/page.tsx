@@ -76,8 +76,9 @@ export default function BookPage() {
 
                 const reviewsRes = await axiosInstance.get(`/reviews?isbn=${isbn}`);
                 setReviews(reviewsRes.data);
-    
-                setProgressUpdates([...res.data]);
+                if (res.data) {
+                    setProgressUpdates([...res.data])
+                }
             } catch (error) {
                 console.error("Error fetching progress updates:", error);
             }

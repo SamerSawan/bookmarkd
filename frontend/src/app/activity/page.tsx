@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Navbar from "@/components/util/Navbar";
 import { Review } from "@/utils/models";
 import axiosInstance from "@/utils/axiosInstance";
-import ReviewCard from "@/components/util/ReviewCard";
+import ReviewCardWithImage from "@/components/util/ReviewCardWithImage";
 
 const Activity: React.FC = () => {
   const [reviews, setReviews] = useState<Review[] | null>(null);
@@ -35,7 +35,7 @@ const Activity: React.FC = () => {
       <div className="flex flex-col items-center justify-center w-2/3 self-center">
       {reviews ? (
         reviews.map((review, index) => (
-          <ReviewCard key={index} review={review} />
+          <ReviewCardWithImage key={index} review={review} />
           ))
           ) : (
            <p>This is awkward... No one has reviewed a book in the community yet.</p>

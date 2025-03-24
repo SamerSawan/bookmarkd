@@ -76,7 +76,8 @@ SELECT
     r.recommended,
     r.created_at,
     u.username,
-    b.title
+    b.title,
+    b.cover_image_url
 FROM reviews r
 JOIN users u ON r.user_id = u.id
 JOIN books b ON r.isbn = b.isbn
@@ -84,15 +85,16 @@ WHERE r.isbn = $1
 `
 
 type GetBookReviewsRow struct {
-	ID          uuid.UUID
-	Isbn        string
-	UserID      string
-	Review      sql.NullString
-	Stars       sql.NullFloat64
-	Recommended sql.NullBool
-	CreatedAt   sql.NullTime
-	Username    string
-	Title       string
+	ID            uuid.UUID
+	Isbn          string
+	UserID        string
+	Review        sql.NullString
+	Stars         sql.NullFloat64
+	Recommended   sql.NullBool
+	CreatedAt     sql.NullTime
+	Username      string
+	Title         string
+	CoverImageUrl string
 }
 
 func (q *Queries) GetBookReviews(ctx context.Context, isbn string) ([]GetBookReviewsRow, error) {
@@ -114,6 +116,7 @@ func (q *Queries) GetBookReviews(ctx context.Context, isbn string) ([]GetBookRev
 			&i.CreatedAt,
 			&i.Username,
 			&i.Title,
+			&i.CoverImageUrl,
 		); err != nil {
 			return nil, err
 		}
@@ -138,7 +141,8 @@ SELECT
     r.recommended,
     r.created_at,
     u.username,
-    b.title
+    b.title,
+    b.cover_image_url
 FROM reviews r
 JOIN users u ON r.user_id = u.id
 JOIN books b ON r.isbn = b.isbn
@@ -152,15 +156,16 @@ type GetRecentReviewsParams struct {
 }
 
 type GetRecentReviewsRow struct {
-	ID          uuid.UUID
-	Isbn        string
-	UserID      string
-	Review      sql.NullString
-	Stars       sql.NullFloat64
-	Recommended sql.NullBool
-	CreatedAt   sql.NullTime
-	Username    string
-	Title       string
+	ID            uuid.UUID
+	Isbn          string
+	UserID        string
+	Review        sql.NullString
+	Stars         sql.NullFloat64
+	Recommended   sql.NullBool
+	CreatedAt     sql.NullTime
+	Username      string
+	Title         string
+	CoverImageUrl string
 }
 
 func (q *Queries) GetRecentReviews(ctx context.Context, arg GetRecentReviewsParams) ([]GetRecentReviewsRow, error) {
@@ -182,6 +187,7 @@ func (q *Queries) GetRecentReviews(ctx context.Context, arg GetRecentReviewsPara
 			&i.CreatedAt,
 			&i.Username,
 			&i.Title,
+			&i.CoverImageUrl,
 		); err != nil {
 			return nil, err
 		}
@@ -218,4 +224,67 @@ func (q *Queries) GetReview(ctx context.Context, arg GetReviewParams) (Review, e
 		&i.CreatedAt,
 	)
 	return i, err
+}
+
+const getReviewsByUser = `-- name: GetReviewsByUser :many
+SELECT
+  r.id,
+  r.isbn,
+  b.title,
+  r.stars,
+  r.recommended,
+  r.review,
+  r.created_at,
+  u.username,
+  b.cover_image_url
+FROM reviews r
+JOIN books b ON r.isbn = b.isbn
+JOIN users u ON r.user_id = u.id
+WHERE r.user_id = $1
+ORDER BY r.created_at DESC
+`
+
+type GetReviewsByUserRow struct {
+	ID            uuid.UUID
+	Isbn          string
+	Title         string
+	Stars         sql.NullFloat64
+	Recommended   sql.NullBool
+	Review        sql.NullString
+	CreatedAt     sql.NullTime
+	Username      string
+	CoverImageUrl string
+}
+
+func (q *Queries) GetReviewsByUser(ctx context.Context, userID string) ([]GetReviewsByUserRow, error) {
+	rows, err := q.db.QueryContext(ctx, getReviewsByUser, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetReviewsByUserRow
+	for rows.Next() {
+		var i GetReviewsByUserRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Isbn,
+			&i.Title,
+			&i.Stars,
+			&i.Recommended,
+			&i.Review,
+			&i.CreatedAt,
+			&i.Username,
+			&i.CoverImageUrl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

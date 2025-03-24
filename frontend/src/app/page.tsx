@@ -13,6 +13,8 @@ import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import { ToastContainer } from "react-toastify";
+import Image from "next/image";
+import { useUser } from "./context/UserContext";
 
 type User = {
   id: string;
@@ -23,6 +25,7 @@ type User = {
 const Home: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+  const { user: loggedInUser, loading } = useUser();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -61,7 +64,9 @@ const Home: React.FC = () => {
     }
   };
 
-  if (!user) {
+
+
+  if (!user || loading) {
     return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
   }
 
@@ -78,6 +83,15 @@ const Home: React.FC = () => {
           </Link>
           <Link href="/activity" className="hover:underline">Activity</Link>
           <Link href="/search" className="hover:underline">Search</Link>
+          <div onClick={() => {router.push(`/${loggedInUser?.username}`)}}>
+          <Image
+            src={"/default-avatar.jpg"}
+            alt={`${user.username}'s avatar`}
+            width={45}
+            height={45}
+            className="rounded-full object-cover aspect-square hover:cursor-pointer"
+          />
+        </div>
           <button
           onClick={handleSignOut}
           className="bg-primary text-secondary-dark px-4 py-2 rounded-md hover:bg-primary-dark"

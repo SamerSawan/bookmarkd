@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"time"
+
+	"github.com/samersawan/bookmarkd/backend/internal/database"
 )
 
 type BookResponse struct {
@@ -48,4 +50,26 @@ type Book struct {
 	CoverImageURL string    `json:"cover_image_url"`
 	Pages         int32     `json:"pages"`
 	Description   string    `json:"description"`
+}
+
+type Review struct {
+	ID          string  `json:"id"`
+	Isbn        string  `json:"isbn"`
+	BookTitle   string  `json:"bookTitle"`
+	Stars       float64 `json:"stars"`
+	Recommended bool    `json:"recommended"`
+	Content     string  `json:"content"`
+	CreatedAt   string  `json:"createdAt"`
+}
+
+type UserWithStats struct {
+	ID                     string                             `json:"id"`
+	Username               string                             `json:"username"`
+	Bio                    *string                            `json:"bio,omitempty"`
+	ProfileImageURL        *string                            `json:"profileImageUrl,omitempty"`
+	NumberOfBooksRead      int                                `json:"numberOfBooksRead"`
+	AvgRating              float64                            `json:"avgRating"`
+	NumberOfReviewsWritten int64                              `json:"numberOfReviewsWritten"`
+	Favourites             []database.GetFavouritesVerboseRow `json:"favourites"`
+	Reviews                []database.GetReviewsByUserRow     `json:"reviews"`
 }

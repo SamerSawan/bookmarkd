@@ -7,6 +7,9 @@ package database
 
 import (
 	"context"
+	"database/sql"
+
+	"github.com/google/uuid"
 )
 
 const createFavourite = `-- name: CreateFavourite :one
@@ -52,6 +55,65 @@ func (q *Queries) GetFavourites(ctx context.Context, userID string) ([]Favourite
 			&i.UserID,
 			&i.Isbn,
 			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getFavouritesVerbose = `-- name: GetFavouritesVerbose :many
+SELECT
+  f.isbn,
+  f.user_id,
+  f.id,
+  b.title,
+  b.cover_image_url,
+  b.publish_date,
+  b.pages,
+  b.description
+FROM favourites f
+JOIN users u ON u.id = f.user_id
+JOIN books b ON b.isbn = f.isbn
+WHERE f.user_id = $1
+`
+
+type GetFavouritesVerboseRow struct {
+	Isbn          string
+	UserID        string
+	ID            uuid.UUID
+	Title         string
+	CoverImageUrl string
+	PublishDate   sql.NullTime
+	Pages         int32
+	Description   string
+}
+
+func (q *Queries) GetFavouritesVerbose(ctx context.Context, userID string) ([]GetFavouritesVerboseRow, error) {
+	rows, err := q.db.QueryContext(ctx, getFavouritesVerbose, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetFavouritesVerboseRow
+	for rows.Next() {
+		var i GetFavouritesVerboseRow
+		if err := rows.Scan(
+			&i.Isbn,
+			&i.UserID,
+			&i.ID,
+			&i.Title,
+			&i.CoverImageUrl,
+			&i.PublishDate,
+			&i.Pages,
+			&i.Description,
 		); err != nil {
 			return nil, err
 		}

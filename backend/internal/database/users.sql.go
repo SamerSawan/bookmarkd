@@ -75,6 +75,32 @@ func (q *Queries) AddShelfToUser(ctx context.Context, arg AddShelfToUserParams) 
 	return i, err
 }
 
+const countBooksReadByUser = `-- name: CountBooksReadByUser :one
+SELECT COUNT(*) AS count
+FROM user_books
+WHERE user_id = $1 AND status = 'Read'
+`
+
+func (q *Queries) CountBooksReadByUser(ctx context.Context, userID string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countBooksReadByUser, userID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
+const countReviewsWrittenByUser = `-- name: CountReviewsWrittenByUser :one
+SELECT COUNT(*) AS count
+FROM reviews
+WHERE user_id = $1
+`
+
+func (q *Queries) CountReviewsWrittenByUser(ctx context.Context, userID string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countReviewsWrittenByUser, userID)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createUser = `-- name: CreateUser :one
 INSERT INTO users ( id, created_at, updated_at, email, username )
 VALUES (
@@ -83,7 +109,7 @@ VALUES (
     NOW(),
     $2,
     $3
-) RETURNING id, created_at, updated_at, email, username
+) RETURNING id, created_at, updated_at, email, username, bio, profile_image_url
 `
 
 type CreateUserParams struct {
@@ -101,6 +127,8 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.UpdatedAt,
 		&i.Email,
 		&i.Username,
+		&i.Bio,
+		&i.ProfileImageUrl,
 	)
 	return i, err
 }
@@ -117,6 +145,19 @@ type DeleteUserBookEntryParams struct {
 func (q *Queries) DeleteUserBookEntry(ctx context.Context, arg DeleteUserBookEntryParams) error {
 	_, err := q.db.ExecContext(ctx, deleteUserBookEntry, arg.UserID, arg.Isbn)
 	return err
+}
+
+const getAverageRatingByUser = `-- name: GetAverageRatingByUser :one
+SELECT AVG(stars) AS avg_rating
+FROM reviews
+WHERE user_id = $1
+`
+
+func (q *Queries) GetAverageRatingByUser(ctx context.Context, userID string) (float64, error) {
+	row := q.db.QueryRowContext(ctx, getAverageRatingByUser, userID)
+	var avg_rating float64
+	err := row.Scan(&avg_rating)
+	return avg_rating, err
 }
 
 const getLatestCurrentlyReadingBook = `-- name: GetLatestCurrentlyReadingBook :many
@@ -210,7 +251,7 @@ func (q *Queries) GetUserBook(ctx context.Context, arg GetUserBookParams) (UserB
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, created_at, updated_at, email, username FROM users WHERE email = $1
+SELECT id, created_at, updated_at, email, username, bio, profile_image_url FROM users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -222,12 +263,14 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.UpdatedAt,
 		&i.Email,
 		&i.Username,
+		&i.Bio,
+		&i.ProfileImageUrl,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, created_at, updated_at, email, username FROM users WHERE id = $1
+SELECT id, created_at, updated_at, email, username, bio, profile_image_url FROM users WHERE id = $1
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
@@ -239,6 +282,37 @@ func (q *Queries) GetUserByID(ctx context.Context, id string) (User, error) {
 		&i.UpdatedAt,
 		&i.Email,
 		&i.Username,
+		&i.Bio,
+		&i.ProfileImageUrl,
+	)
+	return i, err
+}
+
+const getUserProfileByUsername = `-- name: GetUserProfileByUsername :one
+SELECT
+  id,
+  username,
+  bio,
+  profile_image_url
+FROM users
+WHERE username = $1
+`
+
+type GetUserProfileByUsernameRow struct {
+	ID              string
+	Username        string
+	Bio             sql.NullString
+	ProfileImageUrl sql.NullString
+}
+
+func (q *Queries) GetUserProfileByUsername(ctx context.Context, username string) (GetUserProfileByUsernameRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserProfileByUsername, username)
+	var i GetUserProfileByUsernameRow
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Bio,
+		&i.ProfileImageUrl,
 	)
 	return i, err
 }

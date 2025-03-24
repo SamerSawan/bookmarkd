@@ -56,11 +56,13 @@ type ShelfBook struct {
 }
 
 type User struct {
-	ID        string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	Email     string
-	Username  string
+	ID              string
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+	Email           string
+	Username        string
+	Bio             sql.NullString
+	ProfileImageUrl sql.NullString
 }
 
 type UserBook struct {

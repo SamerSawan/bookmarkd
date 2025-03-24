@@ -79,5 +79,29 @@ ORDER BY
 -- name: RemoveUserBook :exec
 DELETE FROM user_books WHERE user_id = $1 AND isbn = $2;
 
+-- name: GetAverageRatingByUser :one
+SELECT AVG(stars) AS avg_rating
+FROM reviews
+WHERE user_id = $1;
+
+-- name: CountBooksReadByUser :one
+SELECT COUNT(*) AS count
+FROM user_books
+WHERE user_id = $1 AND status = 'Read';
+
+-- name: CountReviewsWrittenByUser :one
+SELECT COUNT(*) AS count
+FROM reviews
+WHERE user_id = $1;
+
+-- name: GetUserProfileByUsername :one
+SELECT
+  id,
+  username,
+  bio,
+  profile_image_url
+FROM users
+WHERE username = $1;
+
 -- name: ResetUsers :exec
 DELETE FROM users;

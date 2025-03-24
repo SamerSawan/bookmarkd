@@ -24,7 +24,8 @@ SELECT
     r.recommended,
     r.created_at,
     u.username,
-    b.title
+    b.title,
+    b.cover_image_url
 FROM reviews r
 JOIN users u ON r.user_id = u.id
 JOIN books b ON r.isbn = b.isbn
@@ -40,9 +41,28 @@ SELECT
     r.recommended,
     r.created_at,
     u.username,
-    b.title
+    b.title,
+    b.cover_image_url
 FROM reviews r
 JOIN users u ON r.user_id = u.id
 JOIN books b ON r.isbn = b.isbn
 ORDER BY r.created_at DESC
 LIMIT $1 OFFSET $2;
+
+-- name: GetReviewsByUser :many
+SELECT
+  r.id,
+  r.isbn,
+  b.title,
+  r.stars,
+  r.recommended,
+  r.review,
+  r.created_at,
+  u.username,
+  b.cover_image_url
+FROM reviews r
+JOIN books b ON r.isbn = b.isbn
+JOIN users u ON r.user_id = u.id
+WHERE r.user_id = $1
+ORDER BY r.created_at DESC;
+

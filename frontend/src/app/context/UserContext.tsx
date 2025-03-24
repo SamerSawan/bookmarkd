@@ -59,7 +59,16 @@ interface Shelf {
   books: Book[];
 }
 
+interface User {
+  id: string;
+  email: string;
+  username: string;
+  bio?: string;
+  profileImageUrl?: string;
+}
+
 interface UserContextType {
+  user: User | null;
   shelves: Shelf[];
   currentlyReading: CurrentlyReadingBook[] | null;
   loading: boolean;
@@ -73,11 +82,32 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const [user, setUser] = useState<User | null>(null);
   const [shelves, setShelves] = useState<Shelf[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentlyReading, setCurrentlyReading] = useState<CurrentlyReadingBook[] | null>(null);
   const [favourites, setFavourites] = useState<Book[] | null>(null);
   
+  const fetchUser = async () => {
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) return;
+      const idToken = await currentUser.getIdToken();
+
+      const res = await axiosInstance.get(`/users/me`, {
+        headers: {
+          Authorization: `Bearer ${idToken}`,
+        },
+      });
+      console.log(res.data)
+      console.log("user data above")
+      const { id, email, username, bio, profileImageUrl } = res.data;
+
+      setUser({ id, email, username, bio, profileImageUrl });
+    } catch (err) {
+      console.error("Failed to fetch user", err);
+    }
+  };
 
   const fetchShelves = useCallback(async () => {
     const normalizeBooks = (books: RawBook[]): Book[] => {
@@ -183,10 +213,10 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
           isbn: book.Isbn,
           title: book.Title,
           author: book.Author,
-          coverImageUrl: book.CoverImageUrl || "https://via.placeholder.com/100x150", // Default if missing
+          coverImageUrl: book.CoverImageUrl || "https://via.placeholder.com/100x150",
           publishDate: book.PublishDate,
           pages: book.Pages,
-          description: book.Description || "No description available.", // Default description
+          description: book.Description || "No description available.",
         }));
       };
 
@@ -201,6 +231,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
+        fetchUser()
         fetchShelves();
         fetchCurrentlyReading();
         fetchFavourites();
@@ -214,7 +245,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [fetchShelves]);
 
   return (
-    <UserContext.Provider value={{ shelves, currentlyReading, loading, refreshShelves, fetchCurrentlyReading, updateProgress, favourites }}>
+    <UserContext.Provider value={{ user, shelves, currentlyReading, loading, refreshShelves, fetchCurrentlyReading, updateProgress, favourites }}>
       {children}
     </UserContext.Provider>
   );
