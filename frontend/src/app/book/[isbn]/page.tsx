@@ -150,9 +150,12 @@ export default function BookPage() {
                                 {userBook ?
                                 <div className="flex flex-col">
                                     <UpdateProgressButton CoverImageURL={userBook.CoverImageUrl} isbn={book.isbn} pages={book.pages} onProgressUpdate={() => setRefreshTrigger(prev => prev + 1)}/>
-                                    <MarkAsFinishedButton CoverImageURL={userBook.CoverImageUrl} isbn={book.isbn} shelves={shelves} triggerRefresh={TriggerRefresh}/>
+                                    <MarkAsFinishedButton CoverImageURL={userBook.CoverImageUrl} isbn={book.isbn} shelves={shelves} triggerRefresh={TriggerRefresh} isCurrentlyReading={true}/>
                                 </div> 
-                                : <Dropdown shelves={shelves} onSelect={addToShelf} />}
+                                : <div>
+                                    <Dropdown shelves={shelves} onSelect={addToShelf}/>
+                                    <MarkAsFinishedButton CoverImageURL={book.cover_image_url} isbn={book.isbn} shelves={shelves} triggerRefresh={TriggerRefresh} isCurrentlyReading={false}/>
+                                  </div>}
                             </div>
                             
                         </div>

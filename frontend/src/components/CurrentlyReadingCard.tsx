@@ -146,7 +146,7 @@ const CurrentlyReadingCard: React.FC = () => {
                 Cancel
               </button>
             </div>
-            {!isFinished && <MarkAsFinishedButton CoverImageURL={book.CoverImageUrl} isbn={book.Isbn} shelves={shelves} triggerRefresh={refreshShelves}/>}
+            {!isFinished && <MarkAsFinishedButton CoverImageURL={book.CoverImageUrl} isbn={book.Isbn} shelves={shelves} triggerRefresh={refreshShelves} isCurrentlyReading={true}/>}
           </div>
         ) : (
           <div className="mt-4">
@@ -155,7 +155,7 @@ const CurrentlyReadingCard: React.FC = () => {
         )}
 
         {isFinished && (
-          <MarkAsFinishedButton CoverImageURL={book.CoverImageUrl} isbn={book.Isbn} shelves={shelves} triggerRefresh={refreshShelves}/>
+          <MarkAsFinishedButton CoverImageURL={book.CoverImageUrl} isbn={book.Isbn} shelves={shelves} triggerRefresh={refreshShelves} isCurrentlyReading={true}/>
         )}
 
         <div className="flex justify-between w-full mt-4">

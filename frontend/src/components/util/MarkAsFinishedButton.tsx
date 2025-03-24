@@ -16,10 +16,11 @@ interface ModalProps {
     isbn: string
     shelves: Shelf[];
     triggerRefresh: () => void;
+    isCurrentlyReading: boolean;
 }
 
 
-const MarkAsFinishedButton: React.FC<ModalProps> = ({CoverImageURL, isbn, shelves, triggerRefresh }) => {
+const MarkAsFinishedButton: React.FC<ModalProps> = ({ CoverImageURL, isbn, shelves, triggerRefresh, isCurrentlyReading }) => {
 
     const [isOpen, setIsOpen] = useState(false);
     const [review, setReview] = useState<string>("");
@@ -48,13 +49,6 @@ const MarkAsFinishedButton: React.FC<ModalProps> = ({CoverImageURL, isbn, shelve
               nullChecker = false
               isRecommended = false
           }
-
-          console.log("Sending review data:", {
-            isbn,
-            review,
-            stars: rating,
-            recommended: !nullChecker ? isRecommended : null
-        });
         const readShelf = getShelfIdByName(shelves, "Read");
         await axiosInstance.post(`/shelves/${readShelf}`, {
             isbn: isbn,
@@ -91,18 +85,18 @@ const MarkAsFinishedButton: React.FC<ModalProps> = ({CoverImageURL, isbn, shelve
       };
 
     return (
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center w-full">
             <button
             onClick={() => {setIsOpen(true)}}
-            className="bg-primary text-secondary-dark py-2 px-4 rounded my-2 hover:bg-primary hover:opacity-80 transition"
+            className="bg-primary text-secondary-dark py-2 px-4 rounded my-2 hover:bg-primary hover:opacity-80 transition w-full"
             >
-                Mark as Finished
+                {isCurrentlyReading ? (<span>Mark as Finished</span>) : (<span>Review Book</span>) }
             </button>
             <Dialog open={isOpen} onClose={() => setIsOpen(false)} className="relative z-50">
                 <DialogBackdrop className="fixed inset-0 bg-black/80" />
                 <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
                 <DialogPanel className="max-w-4xl space-y-4 rounded-lg bg-back-overlay p-12 w-1/3">
-                    <DialogTitle className="font-bold text-xl">Mark as Finished</DialogTitle>
+                    <DialogTitle className="font-bold text-xl">{isCurrentlyReading ? (<span>Mark as Finished</span>) : (<span>Review Book</span>) }</DialogTitle>
                     <div className="flex flex-row gap-4">
                         <div className="h-72 w-72 relative">
                             <Image src={CoverImageURL} alt={"Book Cover"} layout="fill" objectFit="cover" quality={100} className="rounded-lg" />
