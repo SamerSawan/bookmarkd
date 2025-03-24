@@ -36,7 +36,7 @@ const ReviewCard: React.FC<ReviewProps> = ({ review, inBook = false }) => {
                     <div className="flex flex-row justify-between items-center">
                         {inBook ? 
                         (<h4 className="text-xl font-semibold text-secondary-strong">{review.Username}</h4>) 
-                        : (<h4 className="text-xl font-semibold text-secondary-strong">{review.Username} reviewed &quot;<Link href={`/book/${review.Isbn}`} className="italic text-primary hover:cursor-pointer hover:underline">{review.Title}</Link>&quot;</h4>)}
+                        : (<h4 className="text-xl font-semibold text-secondary-strong"><Link href={`/${review.Username}`} className="text-primary hover:cursor-pointer hover:underline">{review.Username}</Link> reviewed &quot;<Link href={`/book/${review.Isbn}`} className="italic text-primary hover:cursor-pointer hover:underline">{review.Title}</Link>&quot;</h4>)}
                         
                         {review.Recommended.Bool ? (
                             <div className="flex flex-row items-center bg-green-100 px-3 py-1 rounded-full gap-2">
