@@ -16,69 +16,90 @@ const ProfilePage: React.FC<Props> = ({ user }) => {
   const [showModal, setShowModal] = useState(false);
   if (loading) return null;
   return (
-    <div className="min-h-screen bg-back-base text-secondary-weak flex justify-center flex-col items-center px-12 py-10">
-      <Navbar/>
-      {/* Header section */}
-      <div className="flex gap-12 items-start my-10">
-        {/* Profile Image */}
-        <div>
-          <Image
-            src={user.profileImageUrl || "/default-avatar.jpg"}
-            alt={`${user.username}'s avatar`}
-            width={120}
-            height={120}
-            className="rounded-full object-cover aspect-square"
-          />
-        </div>
+    <div className="min-h-screen bg-back-base text-secondary-weak flex flex-col">
+      <div className="px-20 py-10">
+        <Navbar/>
+      </div>
 
-        {/* Name + Bio + Stats */}
-        <div className="flex flex-col gap-2 relative w-full">
-          {currentUser?.username === user.username && (
-            <button
-              onClick={() => setShowModal(true)}
-              className="absolute top-0 right-0 text-sm text-primary hover:underline"
-            >
-              Edit Profile
-            </button>
-          )}
-          <h1 className="text-3xl font-bold text-secondary-strong">{user.username}</h1>
-          <p className="text-secondary-weak text-sm">@{user.username}</p>
-          <p className="italic">{user.bio || "No bio yet."}</p>
+      {/* Main Content - Centered, Max Width */}
+      <div className="w-full max-w-[1400px] mx-auto px-20">
+        {/* Header section */}
+        <div className="flex gap-12 items-start mb-16">
+          {/* Profile Image */}
+          <div>
+            <Image
+              src={user.profileImageUrl || "/default-avatar.jpg"}
+              alt={`${user.username}'s avatar`}
+              width={140}
+              height={140}
+              className="rounded-full object-cover aspect-square"
+            />
+          </div>
 
-          <div className="flex gap-6 mt-4">
-            <div>
-              <p className="text-xl font-semibold">{user.numberOfBooksRead}</p>
-              <p className="text-sm text-secondary-weak">Books Read</p>
-            </div>
-            <div>
-              <p className="text-xl font-semibold">{user.avgRating ?? "—"}</p>
-              <p className="text-sm text-secondary-weak">Avg Rating</p>
-            </div>
-            <div>
-              <p className="text-xl font-semibold">{user.numberOfReviewsWritten}</p>
-              <p className="text-sm text-secondary-weak">Reviews Written</p>
+          {/* Name + Bio + Stats */}
+          <div className="flex flex-col gap-2 relative w-full">
+            {currentUser?.username === user.username && (
+              <button
+                onClick={() => setShowModal(true)}
+                className="absolute top-0 right-0 text-sm text-primary hover:text-primary-light transition-colors"
+              >
+                Edit Profile
+              </button>
+            )}
+            <h1 className="text-4xl font-bold text-white">{user.username}</h1>
+            <p className="text-secondary-weak">@{user.username}</p>
+            <p className="text-secondary mt-2">{user.bio || "No bio yet."}</p>
+
+            <div className="flex gap-8 mt-6">
+              <div>
+                <p className="text-2xl font-semibold text-white">{user.numberOfBooksRead}</p>
+                <p className="text-sm text-secondary-weak">Books Read</p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-white">{user.avgRating ?? "—"}</p>
+                <p className="text-sm text-secondary-weak">Avg Rating</p>
+              </div>
+              <div>
+                <p className="text-2xl font-semibold text-white">{user.numberOfReviewsWritten}</p>
+                <p className="text-sm text-secondary-weak">Reviews Written</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Favourites */}
-      <div className="w-3/5">
-        <ProfileFavouriteBooks username={user.username} favourites={user.favourites} />
-      </div>
+        {/* Divider */}
+        <div className="border-t border-slate-700/30 mb-12"></div>
 
-      {/* Reviews */}
-      <div className="w-3/5 mt-8">
-        <h1 className="text-2xl text-secondary-strong font-semibold mb-2">
-          {user.username}&apos;s reviews
-        </h1>
-        {user.reviews.length > 0 ? (
-          user.reviews.map((review, index) => (
-            <ReviewCardWithImage key={index} review={review} />
-          ))
-        ) : (
-          <p>No reviews yet.</p>
-        )}
+        {/* Favourites */}
+        <div className="mb-16">
+          <h2 className="text-2xl font-semibold text-white mb-6">Favourite Books</h2>
+          {user.favourites && user.favourites.length > 0 ? (
+            <ProfileFavouriteBooks username={user.username} favourites={user.favourites} />
+          ) : (
+            <div className="flex items-center justify-center py-12 bg-slate-800/20 rounded-lg border border-slate-700/30">
+              <p className="text-secondary-weak">No favourite books yet.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-slate-700/30 mb-12"></div>
+
+        {/* Reviews */}
+        <div className="mb-16">
+          <h2 className="text-2xl font-semibold text-white mb-6">Reviews</h2>
+          {user.reviews && user.reviews.length > 0 ? (
+            <div className="flex flex-col gap-6">
+              {user.reviews.map((review, index) => (
+                <ReviewCardWithImage key={index} review={review} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex items-center justify-center py-12 bg-slate-800/20 rounded-lg border border-slate-700/30">
+              <p className="text-secondary-weak">No reviews yet.</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Modal */}

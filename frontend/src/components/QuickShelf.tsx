@@ -11,7 +11,7 @@ const QuickShelf: React.FC<QuickShelfProps> = ({ title, books }) => {
       <div className='flex flex-col'>
       <h3 className="text-white font-semibold text-lg">{title}</h3>
       <div className="flex justify-between">
-        <div className="flex -space-x-12 overflow-hidden">
+        <div className="flex gap-2">
             {books.map((book) => (
             <img
                 key={book.id}

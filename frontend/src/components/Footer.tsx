@@ -1,31 +1,52 @@
 import React from 'react';
-import { IconBrandGithub } from '@tabler/icons-react';
-import { IconMail } from '@tabler/icons-react';
+import { IconBrandGithub, IconMail } from '@tabler/icons-react';
 
 const Footer = () => {
   return (
-    <footer className="w-full bg-back-raised text-secondary-strong py-6 mt-10 px-4 text-center rounded-lg">
-        <div className="flex justify-center gap-4">
-        <a 
-          href="https://github.com/samersawan/bookmarkd" 
-          target="_blank" 
-          rel="noopener noreferrer" 
-          className="flex flex-row gap-1 hover:underline"
-        >
-          <IconBrandGithub stroke={2} className="hover:underline" /> GitHub Repo
-        </a>
-        <a 
-          href="mailto:me@samersawan.com?subject=Feedback%20on%20Bookmarkd" 
-          className="flex flex-row gap-1 hover:underline"
-        >
-          <IconMail stroke={2} /> Send Feedback
-        </a>
+    <footer className="w-full border-t border-stroke-weak/30 mt-16 pt-8 pb-6">
+      <div className="max-w-6xl mx-auto px-6">
+        {/* Main Footer Content */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-6">
+          {/* Brand */}
+          <div className="text-center md:text-left">
+            <h3 className="text-xl font-bold text-primary mb-1">BOOKMARKD</h3>
+            <p className="text-secondary-weak text-sm">Track your reading journey</p>
+          </div>
+
+          {/* Links */}
+          <div className="flex flex-col sm:flex-row items-center gap-4">
+            <a
+              href="https://github.com/samersawan/bookmarkd"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-secondary hover:text-primary transition-colors group"
+            >
+              <IconBrandGithub stroke={2} size={20} className="group-hover:scale-110 transition-transform" />
+              <span className="text-sm font-medium">GitHub</span>
+            </a>
+            <a
+              href="mailto:me@samersawan.com?subject=Feedback%20on%20Bookmarkd"
+              className="flex items-center gap-2 text-secondary hover:text-primary transition-colors group"
+            >
+              <IconMail stroke={2} size={20} className="group-hover:scale-110 transition-transform" />
+              <span className="text-sm font-medium">Send Feedback</span>
+            </a>
+          </div>
+        </div>
+
+        {/* Divider */}
+        <div className="border-t border-stroke-weak/20 mb-4"></div>
+
+        {/* Bottom Section */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+          <p className="text-secondary-weak text-xs">
+            Currently in development. Features and design are subject to change.
+          </p>
+          <p className="text-secondary-weak text-xs">
+            Built by <a href="https://samersawan.com" target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary-light hover:underline transition-colors">Samer Sawan</a>
+          </p>
+        </div>
       </div>
-      <p className="text-center justify-self-center my-4">Your feedback is greatly appreciated. Please feel free to write me an email or to check out the github repository for detailed instructions on how to report bugs and make suggestions</p>
-      
-      <p className="text-md">
-        <span className="font-bold text-primary">Bookmarkd</span> is currently in development. Features and design are subject to change.
-      </p>
     </footer>
   );
 };
