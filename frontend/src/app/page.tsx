@@ -6,7 +6,7 @@ import TBRList from "@/components/ToBeRead";
 import { auth } from "../../firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { IconBook, IconBookmark, IconCircleCheck } from '@tabler/icons-react';
+import { IconBook, IconBookmark, IconCircleCheck, IconStar } from '@tabler/icons-react';
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
 import Footer from "@/components/Footer";
@@ -53,15 +53,15 @@ const Home: React.FC = () => {
   //   alert("Quest completed! 🎉");
   // };
 
-  const handleSignOut = async () => {
-    try {
-      await signOut(auth);
-      setUser(null);
-      router.push("/login");
-    } catch (error) {
-      console.error("Error signing out:", error);
-    }
-  };
+  // const handleSignOut = async () => {
+  //   try {
+  //     await signOut(auth);
+  //     setUser(null);
+  //     router.push("/login");
+  //   } catch (error) {
+  //     console.error("Error signing out:", error);
+  //   }
+  // };
 
 
 
