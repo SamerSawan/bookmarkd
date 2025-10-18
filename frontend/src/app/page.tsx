@@ -24,7 +24,7 @@ type User = {
 const Home: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-  const { user: loggedInUser, shelves, currentlyReading, favourites, loading } = useUser();
+  const { shelves, currentlyReading, loading } = useUser();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
