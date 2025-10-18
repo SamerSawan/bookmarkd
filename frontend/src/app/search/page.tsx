@@ -1,7 +1,7 @@
 "use client";
 import axiosInstance from '@/utils/axiosInstance';
 import { IconSearch, IconStar, IconStarFilled } from '@tabler/icons-react';
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Dropdown from './Dropdown';
 import { toast, ToastContainer } from 'react-toastify';
@@ -19,6 +19,7 @@ const Search: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const router = useRouter()
 
@@ -60,9 +61,39 @@ const Search: React.FC = () => {
     }
   };
 
+  // Debounced search effect
+  useEffect(() => {
+    // Clear previous timer
+    if (debounceTimerRef.current) {
+      clearTimeout(debounceTimerRef.current);
+    }
+
+    // Don't search if query is empty
+    if (query.trim() === "") {
+      setBooks([]);
+      return;
+    }
+
+    // Set new timer
+    debounceTimerRef.current = setTimeout(() => {
+      handleSearch();
+    }, 500); // 500ms delay
+
+    // Cleanup
+    return () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
+    };
+  }, [query]);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (query.trim() !== "") {
+      // Clear debounce timer and search immediately on submit
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
       handleSearch();
     }
   };
