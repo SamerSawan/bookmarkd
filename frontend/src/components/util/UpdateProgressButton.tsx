@@ -54,10 +54,10 @@ const UpdateProgressButton: React.FC<ModalProps> = ({CoverImageURL, isbn, onProg
       };
 
     return (
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center w-full">
             <button
             onClick={() => {setIsOpen(true)}}
-            className="bg-primary text-secondary-dark py-2 px-4 rounded my-2 hover:bg-primary hover:opacity-80 transition"
+            className="bg-primary text-secondary-dark py-2 px-4 rounded my-2 hover:bg-primary hover:opacity-80 transition w-full"
             >
                 Update Progress
             </button>

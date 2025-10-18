@@ -33,18 +33,17 @@ const Dropdown: React.FC<DropdownProps> = ({ shelves, onSelect }) => {
   }, []);
 
   return (
-    <div className="relative w-auto z-20" ref={dropdownRef}>
-      {/* Circular Icon Button */}
+    <div className="relative w-full z-20" ref={dropdownRef}>
+      {/* Add to Shelf Button */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           toggleDropdown()}}
-        className="flex items-center justify-center text-primary bg-back-base/80 backdrop-blur-sm p-2 rounded-full
-                   hover:bg-primary/20 hover:scale-110 hover:text-primary-light
-                   active:scale-95 transition-all duration-200"
+        className="w-full bg-primary text-secondary-dark py-2 px-4 rounded my-2 hover:bg-primary hover:opacity-80 transition flex items-center justify-center gap-2"
         title="Add to shelf"
       >
-        <IconPlus stroke={2} size={24} />
+        <IconPlus stroke={2} size={20} />
+        <span>Add to Shelf</span>
       </button>
 
       {/* Dropdown */}

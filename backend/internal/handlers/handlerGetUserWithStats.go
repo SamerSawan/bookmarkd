@@ -17,10 +17,24 @@ func (cfg *ApiConfig) GetUserWithStats(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Failed to count books read", err)
 		return
 	}
-	avgRating, err := cfg.Db.GetAverageRatingByUser(r.Context(), user.ID)
+	avgRatingResult, err := cfg.Db.GetAverageRatingByUser(r.Context(), user.ID)
 	if err != nil {
 		respondWithError(w, http.StatusInternalServerError, "Failed to get average rating", err)
 		return
+	}
+
+	// Convert interface{} to float64
+	var avgRating float64
+	if avgRatingResult != nil {
+		switch v := avgRatingResult.(type) {
+		case float64:
+			avgRating = v
+		case string:
+			// Handle string conversion if needed
+			avgRating = 0
+		default:
+			avgRating = 0
+		}
 	}
 	reviews, err := cfg.Db.GetReviewsByUser(r.Context(), user.ID)
 	if err != nil {

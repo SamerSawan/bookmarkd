@@ -6,37 +6,6 @@ import Link from "next/link";
 import React from "react";
 import { useUser } from "../context/UserContext";
 
-const dummyQuickShelves = [
-    {
-        id: 1,
-        title: 'Classics',
-        books: [
-          { id: 1, image: 'https://books.google.ca/books/publisher/content?id=PGR2AwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&imgtk=AFLRE71PyWy2lcALKWxbJ74-dObZQ7iepETYyOLt828m_54LTBS_p1anor7WSFLMvg8mTJCLs_fAa1--WXvO7XiHfjWge9VYNTtvGxTKyEhLx-DPjojWrGl_XGBXNDICymtejuOQ8yzy' }, // To Kill a Mockingbird
-          { id: 2, image: 'https://m.media-amazon.com/images/I/71wANojhEKL._UF1000,1000_QL80_.jpg' }, // 1984
-          { id: 3, image: 'https://m.media-amazon.com/images/I/81NLDvyAHrL._UF1000,1000_QL80_.jpg' }, // Pride and Prejudice
-          { id: 4, image: 'https://upload.wikimedia.org/wikipedia/commons/7/7a/The_Great_Gatsby_Cover_1925_Retouched.jpg' }, // The Great Gatsby
-        ],
-      },
-      {
-        id: 2,
-        title: 'Fantasy',
-        books: [
-          { id: 6, image: 'https://books.google.com/books/content?id=aWZzLPhY4o0C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api' }, // The Hobbit
-          { id: 7, image: 'https://books.google.com/books/content?id=5NomkK4EV68C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api' }, // Harry Potter
-          { id: 8, image: 'https://books.google.com/books/content?id=yl4dILkcqm4C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api' }, // A Game of Thrones
-        ],
-      },
-      {
-        id: 3,
-        title: 'Science Fiction',
-        books: [
-          { id: 9, image: 'https://books.google.com/books/content?id=B1hSG45JCX4C&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api' }, // Dune
-          { id: 10, image: 'https://upload.wikimedia.org/wikipedia/commons/7/71/The_Martian_%28Weir_novel%29.jpg' }, // The Martian
-          { id: 11, image: 'https://dynamic.indigoimages.ca/v1/books/books/1250773024/1.jpg?width=810&maxHeight=810&quality=85' }, // Ender's Game
-        ],
-      },
-]
-
 const Shelves: React.FC = () => {
   const { shelves } = useUser();
 

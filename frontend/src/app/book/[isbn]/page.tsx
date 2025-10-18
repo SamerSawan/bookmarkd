@@ -135,127 +135,155 @@ export default function BookPage() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-back-base text-secondary-weak px-20 py-10">
-            <Navbar />
-            <div className="flex-grow flex justify-center items-center mt-10">
+        <div className="flex flex-col min-h-screen bg-back-base text-secondary-weak">
+            <div className="px-20 py-10">
+                <Navbar />
+            </div>
+
+            {/* Main Content - Centered, Max Width */}
+            <div className="w-full max-w-[1400px] mx-auto px-20 pb-16">
                 {book && shelves && progressUpdates ? (
-                    <div className="flex flex-row gap-4">
-                        <div className="w-full h-full flex flex-col justify-center items-center">
-                            <img
-                                className="w-48 h-72 rounded-lg"
-                                src={getHighResImage(book.cover_image_url)}
-                                alt="Book cover"
-                            />
-                            <div className="mt-8">
-                                {userBook ?
-                                <div className="flex flex-col">
-                                    <UpdateProgressButton CoverImageURL={userBook.CoverImageUrl} isbn={book.isbn} pages={book.pages} onProgressUpdate={() => setRefreshTrigger(prev => prev + 1)}/>
-                                    <MarkAsFinishedButton CoverImageURL={userBook.CoverImageUrl} isbn={book.isbn} shelves={shelves} triggerRefresh={TriggerRefresh} isCurrentlyReading={true}/>
-                                </div> 
-                                : <div>
-                                    <Dropdown shelves={shelves} onSelect={addToShelf}/>
-                                    <MarkAsFinishedButton CoverImageURL={book.cover_image_url} isbn={book.isbn} shelves={shelves} triggerRefresh={TriggerRefresh} isCurrentlyReading={false}/>
-                                  </div>}
-                            </div>
-                            
-                        </div>
-                        <div className="flex flex-col">
-                            <div className="flex flex-row justify-between">
-                                <div className="flex flex-row gap-2">
-                                    <h1 className="text-3xl font-bold text-secondary-strong">
-                                        {book.title}
-                                    </h1>
-                                    <h1 className="text-secondary-weak font-bold text-3xl">
-                                        by
-                                    </h1>
-                                    <h1 className="text-secondary-strong font-bold italic text-3xl">
-                                        {book.author}
-                                    </h1>
+                    <div className="flex flex-col gap-12">
+                        {/* Book Header Section */}
+                        <div className="flex gap-8">
+                            {/* Book Cover & Actions */}
+                            <div className="flex-shrink-0">
+                                <img
+                                    className="w-[200px] h-[300px] rounded-md shadow-lg object-cover"
+                                    src={getHighResImage(book.cover_image_url)}
+                                    alt="Book cover"
+                                />
+                                <div className="mt-4 flex flex-col gap-2">
+                                    {userBook ? (
+                                        <>
+                                            <UpdateProgressButton
+                                                CoverImageURL={userBook.CoverImageUrl}
+                                                isbn={book.isbn}
+                                                pages={book.pages}
+                                                onProgressUpdate={() => setRefreshTrigger(prev => prev + 1)}
+                                            />
+                                            <MarkAsFinishedButton
+                                                CoverImageURL={userBook.CoverImageUrl}
+                                                isbn={book.isbn}
+                                                shelves={shelves}
+                                                triggerRefresh={TriggerRefresh}
+                                                isCurrentlyReading={true}
+                                            />
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Dropdown shelves={shelves} onSelect={addToShelf}/>
+                                            <MarkAsFinishedButton
+                                                CoverImageURL={book.cover_image_url}
+                                                isbn={book.isbn}
+                                                shelves={shelves}
+                                                triggerRefresh={TriggerRefresh}
+                                                isCurrentlyReading={false}
+                                            />
+                                        </>
+                                    )}
                                 </div>
                             </div>
-                            <p className="text-lg text-secondary-strong mt-8">
-                                {book.description}
-                            </p>
-                            <div className="flex flex-row mt-4 text-xl text-secondary-weak justify-between">
-                                <span>{book.pages} Pages</span>
-                                <span>ISBN {book.isbn}</span>
-                                <h1>
-                                    {book.publish_date
-                                        ? (() => {
-                                            const date = new Date(book.publish_date);
-                                            const year = date.getUTCFullYear();
-                                            const month = (date.getUTCMonth() + 1)
-                                                .toString()
-                                                .padStart(2, "0");
-                                            const day = date
-                                                .getUTCDate()
-                                                .toString()
-                                                .padStart(2, "0");
 
-                                            if (year && month && day) {
-                                                return `Published ${year}/${month}/${day}`;
-                                            } else if (year && month) {
-                                                return `Published ${year}/${month}`;
-                                            } else {
-                                                return `Published ${year}`;
-                                            }
-                                        })()
-                                        : "Unknown Publish Date"}
+                            {/* Book Info */}
+                            <div className="flex-1">
+                                <h1 className="text-4xl font-bold text-white mb-2">
+                                    {book.title}
                                 </h1>
-                            </div>
-                            {userBook ? <div className="w-full bg-stroke-weak rounded-full h-4 mb-4 mt-6">
-                                    <div
-                                        className="bg-gradient-to-r from-[#4C7BD9] to-primary h-4 rounded-full"
-                                        style={{ width: `${(userBook.Progress / userBook.Pages) * 100}%` }}
-                                    ></div>
-                                    <div className="flex flex-row justify-between w-full mt-2">
-                                        <span>0%</span>
-                                        <span>100%</span>
+                                <p className="text-xl text-secondary-weak mb-6">
+                                    by <span className="text-secondary italic">{book.author}</span>
+                                </p>
+
+                                {/* Book Meta */}
+                                <div className="flex gap-4 text-sm text-secondary-weak mb-6">
+                                    <span>{book.pages} pages</span>
+                                    <span>
+                                        Published {book.publish_date
+                                            ? new Date(book.publish_date).getUTCFullYear()
+                                            : "Unknown"}
+                                    </span>
+                                </div>
+
+                                {/* Progress Bar (if currently reading) */}
+                                {userBook && (
+                                    <div className="mb-6">
+                                        <div className="flex justify-between text-sm text-secondary-weak mb-2">
+                                            <span>Your Progress</span>
+                                            <span>{Math.round((userBook.Progress / userBook.Pages) * 100)}%</span>
+                                        </div>
+                                        <div className="w-full bg-slate-700/50 rounded-full h-2">
+                                            <div
+                                                className="bg-gradient-to-r from-[#4C7BD9] to-primary h-2 rounded-full transition-all"
+                                                style={{ width: `${(userBook.Progress / userBook.Pages) * 100}%` }}
+                                            ></div>
+                                        </div>
                                     </div>
-                            </div> : <></>}
-                            <div className="mt-10 p-4">
-                                
-                                {progressUpdates && progressUpdates.length > 0 ? (
-                                    <div>
-                                        <h2 className="text-lg font-bold mb-2">Progress Updates</h2>
-                                        {
-                                            progressUpdates.map((update, index) => {
-                                                return (
-                                                <div key={index} className="mb-4 p-3 bg-fill rounded-md shadow">
-                                                    <h4 className="text-secondary-strong">You finished {((update.progress / book.pages) * 100).toFixed(2)}% of the book!</h4>
-                                                <p className="text-secondary-strong">
-                                                    {update.comment}
-                                                </p>
-                                                <p className="text-xs text-secondary-weak">
-                                                    {new Date(update.created_at).toLocaleDateString('en-CA')}
-                                                </p>
-                                                </div>
-                                            )})
-                                        }
-                                    </div>
-                                ) : (
-                                <></>
                                 )}
-                            </div>
-                            <div className="p-4">
-                                <h2 className="text-lg font-bold mb-2">Reviews</h2>
-                                {reviews ? (
-                                    reviews.map((review, index) => (
-                                        <ReviewCard key={index} review={review} inBook={true} />
-                                    ))
-                                    
-                                ) : (
-                                    <p>No reviews yet.</p>
-                                )}
+
+                                {/* Description */}
+                                <p className="text-secondary leading-relaxed">
+                                    {book.description}
+                                </p>
                             </div>
                         </div>
+
+                        {/* Divider */}
+                        <div className="border-t border-slate-700/30"></div>
+
+                        {/* Progress Updates Section */}
+                        {progressUpdates && progressUpdates.length > 0 && (
+                            <div>
+                                <h2 className="text-2xl font-semibold text-white mb-6">Progress Updates</h2>
+                                <div className="flex flex-col gap-4">
+                                    {progressUpdates.map((update, index) => (
+                                        <div key={index} className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-4">
+                                            <div className="flex justify-between items-start mb-2">
+                                                <h4 className="text-white font-medium">
+                                                    {((update.progress / book.pages) * 100).toFixed(0)}% complete
+                                                </h4>
+                                                <span className="text-xs text-secondary-weak">
+                                                    {new Date(update.created_at).toLocaleDateString('en-US', {
+                                                        month: 'short',
+                                                        day: 'numeric',
+                                                        year: 'numeric'
+                                                    })}
+                                                </span>
+                                            </div>
+                                            {update.comment && (
+                                                <p className="text-secondary">
+                                                    {update.comment}
+                                                </p>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Reviews Section */}
+                        <div>
+                            <h2 className="text-2xl font-semibold text-white mb-6">Reviews</h2>
+                            {reviews && reviews.length > 0 ? (
+                                <div className="flex flex-col gap-4">
+                                    {reviews.map((review, index) => (
+                                        <ReviewCard key={index} review={review} inBook={true} />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="flex items-center justify-center py-12 bg-slate-800/20 rounded-lg border border-slate-700/30">
+                                    <p className="text-secondary-weak">No reviews yet.</p>
+                                </div>
+                            )}
+                        </div>
+
                         <ToastContainer theme="colored" />
                     </div>
                 ) : (
-                    <div>Loading...</div>
+                    <div className="flex items-center justify-center min-h-[60vh]">
+                        <p className="text-xl text-secondary-weak">Loading...</p>
+                    </div>
                 )}
             </div>
         </div>
-
     );
 }

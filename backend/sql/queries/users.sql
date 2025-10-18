@@ -80,7 +80,7 @@ ORDER BY
 DELETE FROM user_books WHERE user_id = $1 AND isbn = $2;
 
 -- name: GetAverageRatingByUser :one
-SELECT AVG(stars) AS avg_rating
+SELECT COALESCE(AVG(stars), 0) AS avg_rating
 FROM reviews
 WHERE user_id = $1;
 

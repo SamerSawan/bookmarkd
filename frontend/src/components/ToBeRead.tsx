@@ -1,7 +1,6 @@
 "use client";
 
 import { useUser } from "@/app/context/UserContext";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { IconBookmark, IconBookmarkFilled, IconPlus } from '@tabler/icons-react';
 
