@@ -11,6 +11,7 @@ import TooManyFavourites from '@/components/TooManyFavourites';
 import Navbar from '@/components/util/Navbar';
 import { useRouter } from 'next/navigation'
 import { BookItem, Book, IndustryIdentifier } from '@/utils/models';
+import BookCardSkeleton from '@/components/util/BookCardSkeleton';
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -271,39 +272,65 @@ const Search: React.FC = () => {
         </div>
       </motion.form>
 
-      {loading && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm mt-4">Loading...</motion.p>}
-      {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm mt-4 text-red-500">{error}</motion.p>}
+      {error && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-sm mt-4 text-danger">{error}</motion.p>}
 
-      <motion.div className="mt-8 grid grid-cols-1 gap-8 w-full" layout>
-        {books.map((book, index) => (
-          <motion.div key={index} className="relative flex text-left bg-back-raised px-6 pt-6 pb-4 rounded-lg hover:shadow-lg hover:shadow-2xl hover:cursor-pointer" whileHover={{
-            scale: 1.01,
-            transition: { duration: 1 },
-            zIndex: 10
-          }}
-          onClick={() => handleClickOnBook(book)}
+      <motion.div className="mt-8 grid grid-cols-1 gap-6 w-full" layout>
+        {loading && (
+          <>
+            <BookCardSkeleton />
+            <BookCardSkeleton />
+            <BookCardSkeleton />
+          </>
+        )}
+        {!loading && books.map((book, index) => (
+          <motion.div
+            key={index}
+            className="relative flex text-left bg-back-raised border border-stroke-weak/50 px-6 pt-6 pb-4
+                       rounded-lg shadow-card hover:shadow-card-hover hover:border-primary/30 transition-all duration-200"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
           >
-            <img src={book.cover || "https://via.placeholder.com/100x150"} alt={book.title} className="w-32 h-48 rounded-lg object-cover" />
-            <div className="ml-6 flex flex-col justify-between w-full">
-              <div>
-                <h3 className="text-xl font-bold text-primary">{book.title}</h3>
-                <p className="text-sm text-secondary-weak italic">{book.authors.join(", ")}</p>
-                <p className="text-sm text-secondary mt-4 line-clamp-4">{book.description}</p>
-                <div className="text-sm mt-4 flex flex-row justify-between w-1/5">
-                  <span>{book.pageCount} Pages</span>
-                  <span>ISBN {book.isbn}</span>
+            <div
+              className="flex-shrink-0 cursor-pointer"
+              onClick={() => handleClickOnBook(book)}
+            >
+              <img
+                src={book.cover || "https://via.placeholder.com/100x150"}
+                alt={book.title}
+                className="w-32 h-48 rounded-lg object-cover shadow-md hover:scale-105 transition-transform duration-200"
+              />
+            </div>
+
+            <div className="ml-6 flex flex-col justify-between w-full pr-32">
+              <div onClick={() => handleClickOnBook(book)} className="cursor-pointer">
+                <h3 className="text-xl font-bold text-primary-light hover:text-primary transition-colors">{book.title}</h3>
+                <p className="text-sm text-secondary italic mt-1">{book.authors.join(", ")}</p>
+                <p className="text-sm text-secondary-weak mt-4 line-clamp-4 leading-relaxed">{book.description}</p>
+                <div className="text-xs text-secondary mt-4 flex flex-row gap-4">
+                  <span className="bg-back-overlay px-3 py-1 rounded-full">{book.pageCount} Pages</span>
+                  <span className="bg-back-overlay px-3 py-1 rounded-full">ISBN {book.isbn}</span>
                 </div>
               </div>
-              <div className="flex items-center justify-end gap-2 mt-4">
+            </div>
+
+            {/* Action buttons in top-right corner */}
+            <div className="absolute top-4 right-4 flex flex-row gap-2 items-center z-10">
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFavourite(book.isbn);
+                }}
+                className="text-yellow-400 hover:scale-110 transition-transform duration-200 bg-back-base/80 backdrop-blur-sm rounded-full p-2"
+                title={favourites?.some(fav => fav.isbn === book.isbn) ? "Remove from favorites" : "Add to favorites"}
+              >
+                {favourites?.some(fav => fav.isbn === book.isbn) ? <IconStarFilled size={24}/> : <IconStar size={24}/>}
+              </button>
+
+              <div onClick={(e) => e.stopPropagation()}>
                 <Dropdown shelves={shelves} onSelect={(shelfID: string, shelfName: string) => addToShelf(book, shelfID, shelfName)} />
               </div>
             </div>
-            <button onClick={(e) => {
-            e.stopPropagation();
-            handleFavourite(book.isbn);
-            }} className="absolute top-4 right-4 text-yellow-400">
-              {favourites?.some(fav => fav.isbn === book.isbn) ? <IconStarFilled size={24}/> : <IconStar size={24}/>}
-            </button>
           </motion.div>
         ))}
         <ToastContainer theme="colored" />

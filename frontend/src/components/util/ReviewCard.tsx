@@ -31,33 +31,45 @@ interface ReviewProps {
 
 const ReviewCard: React.FC<ReviewProps> = ({ review, inBook = false }) => {
     return (
-        <div className="mb-6 p-5 bg-fill rounded-xl shadow-md border border-stroke-weak w-full">
-            <div className="flex flex-col gap-2 mb-4">
-                    <div className="flex flex-row justify-between items-center">
-                        {inBook ? 
-                        (<h4 className="text-xl font-semibold text-secondary-strong">{review.Username}</h4>) 
-                        : (<h4 className="text-xl font-semibold text-secondary-strong"><Link href={`/${review.Username}`} className="text-primary hover:cursor-pointer hover:underline">{review.Username}</Link> reviewed &quot;<Link href={`/book/${review.Isbn}`} className="italic text-primary hover:cursor-pointer hover:underline">{review.Title}</Link>&quot;</h4>)}
-                        
+        <div className="mb-6 p-6 bg-back-raised border border-stroke-weak/50 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-200 w-full">
+            <div className="flex flex-col gap-3 mb-4">
+                    <div className="flex flex-row justify-between items-start gap-4">
+                        <div className="flex-1">
+                            {inBook ?
+                            (<h4 className="text-lg font-semibold text-secondary-strong">{review.Username}</h4>)
+                            : (<h4 className="text-lg text-secondary-weak">
+                                <Link href={`/${review.Username}`} className="text-primary-light font-semibold hover:cursor-pointer hover:underline">
+                                    {review.Username}
+                                </Link> reviewed &quot;<Link href={`/book/${review.Isbn}`} className="italic text-primary-light font-semibold hover:cursor-pointer hover:underline">
+                                    {review.Title}
+                                </Link>&quot;
+                            </h4>)}
+                        </div>
+
                         {review.Recommended.Bool ? (
-                            <div className="flex flex-row items-center bg-green-100 px-3 py-1 rounded-full gap-2">
-                                <IconThumbUpFilled className="text-green-600" stroke={2} />
-                                <span className="text-green-800 font-medium text-sm">Recommended</span>
+                            <div className="flex flex-row items-center bg-success/20 px-3 py-1.5 rounded-full gap-2 border border-success/30">
+                                <IconThumbUpFilled className="text-success" stroke={2} size={18} />
+                                <span className="text-success font-medium text-xs">Recommended</span>
                             </div>
                             ) : (
-                            <div className="flex flex-row items-center bg-red-100 px-3 py-1 rounded-full gap-2">
-                                <IconThumbDownFilled className="text-red-600" stroke={2} />
-                                <span className="text-red-800 font-medium text-sm">Not Recommended</span>
+                            <div className="flex flex-row items-center bg-danger/20 px-3 py-1.5 rounded-full gap-2 border border-danger/30">
+                                <IconThumbDownFilled className="text-danger" stroke={2} size={18} />
+                                <span className="text-danger font-medium text-xs">Not Recommended</span>
                             </div>
                             )}
                     </div>
-                                    
+
                     {renderStars(review.Stars.Float64)}
-            </div>    
-                        <p className="text-base text-secondary-strong mb-4">
-                            “{review.Review.String}”
-                        </p>            
-                        <p className="text-xs text-secondary-weak text-right">
-                            {new Date(review.CreatedAt.Time).toLocaleDateString('en-CA')}
+            </div>
+                        <p className="text-base text-secondary-strong leading-relaxed mb-4 italic">
+                            &ldquo;{review.Review.String}&rdquo;
+                        </p>
+                        <p className="text-xs text-secondary text-right">
+                            {new Date(review.CreatedAt.Time).toLocaleDateString('en-US', {
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
+                            })}
                         </p>
             </div>
     )

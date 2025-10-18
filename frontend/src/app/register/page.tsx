@@ -59,47 +59,84 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div
-      className="flex flex-col min-h-screen items-center justify-center bg-back text-secondary-weak px-20 py-10
-    bg-[url('/background_art.jpg')] bg-cover bg-center"
-    >
-      <div className="flex flex-col self-center items-center bg-back-raised w-80 p-6 rounded-lg shadow-lg">
-        <h3 className="text-xl font-bold text-primary mb-6">Join Bookmarkd</h3>
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-          <input
-            type="text"
-            placeholder="Enter your username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="w-full px-4 py-2 mb-4 text-secondary-weak bg-fill rounded-md outline-none focus:ring-2 focus:ring-primary"
-          />
-          <input
-            type="email"
-            placeholder="Enter your email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full px-4 py-2 mb-4 text-secondary-weak bg-fill rounded-md outline-none focus:ring-2 focus:ring-primary"
-          />
-          <input
-            type="password"
-            placeholder="Enter your password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full px-4 py-2 mb-4 text-secondary-weak bg-fill rounded-md outline-none focus:ring-2 focus:ring-primary"
-          />
-          <input
-            type="password"
-            placeholder="Confirm password"
-            value={confirmPass}
-            onChange={(e) => setConfirmed(e.target.value)}
-            className="w-full px-4 py-2 mb-4 text-secondary-weak bg-fill rounded-md outline-none focus:ring-2 focus:ring-primary"
-          />
-          <div className="mt-2">
-            <Button Text={"Register"} onPress={handleRegister} />
-          </div>
-        <Link href="/login" className="text-primary text-sm hover:underline">
-          Already have an account? Login here
-        </Link>
+    <div className="flex flex-col min-h-screen items-center justify-center bg-back-base text-secondary-weak px-6 py-10
+     bg-[url('/background_art.jpg')] bg-cover bg-center">
+
+        <div className="flex flex-col self-center items-center bg-back-raised/95 backdrop-blur-sm border border-stroke-weak/50 w-96 p-8 rounded-2xl shadow-card-hover">
+            <h1 className="text-3xl font-bold text-primary-light mb-2">Join Bookmarkd</h1>
+            <p className="text-secondary text-sm mb-8">Create your account to start tracking your reading</p>
+
+            <div className="w-full space-y-4">
+              <div>
+                <label className="text-secondary-weak text-sm font-medium mb-2 block">Username</label>
+                <input
+                  type="text"
+                  placeholder="Choose a username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  className="w-full px-4 py-3 text-secondary-strong bg-back-overlay border border-stroke-weak/30
+                             rounded-lg outline-none focus:ring-2 focus:ring-primary focus:border-transparent
+                             transition-all duration-200"
+                />
+              </div>
+
+              <div>
+                <label className="text-secondary-weak text-sm font-medium mb-2 block">Email</label>
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full px-4 py-3 text-secondary-strong bg-back-overlay border border-stroke-weak/30
+                             rounded-lg outline-none focus:ring-2 focus:ring-primary focus:border-transparent
+                             transition-all duration-200"
+                />
+              </div>
+
+              <div>
+                <label className="text-secondary-weak text-sm font-medium mb-2 block">Password</label>
+                <input
+                  type="password"
+                  placeholder="Create a password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full px-4 py-3 text-secondary-strong bg-back-overlay border border-stroke-weak/30
+                             rounded-lg outline-none focus:ring-2 focus:ring-primary focus:border-transparent
+                             transition-all duration-200"
+                />
+              </div>
+
+              <div>
+                <label className="text-secondary-weak text-sm font-medium mb-2 block">Confirm Password</label>
+                <input
+                  type="password"
+                  placeholder="Confirm your password"
+                  value={confirmPass}
+                  onChange={(e) => setConfirmed(e.target.value)}
+                  className="w-full px-4 py-3 text-secondary-strong bg-back-overlay border border-stroke-weak/30
+                             rounded-lg outline-none focus:ring-2 focus:ring-primary focus:border-transparent
+                             transition-all duration-200"
+                />
+              </div>
+            </div>
+
+            {error && (
+              <div className="w-full mt-4 p-3 bg-danger/10 border border-danger/30 rounded-lg">
+                <p className="text-danger text-sm">
+                  {error}
+                </p>
+              </div>
+            )}
+
+            <div className="mt-6 w-full">
+              <Button Text="Create Account" onPress={handleRegister}/>
+            </div>
+
+            <div className="mt-6 text-center">
+              <Link href="/login" className="text-primary hover:text-primary-light text-sm hover:underline transition-colors">
+                Already have an account? <span className="font-semibold">Login here</span>
+              </Link>
+            </div>
       </div>
     </div>
   );

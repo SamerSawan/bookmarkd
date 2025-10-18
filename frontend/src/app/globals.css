@@ -30,4 +30,20 @@ body {
     -webkit-appearance: none;
     margin: 0;
   }
+
+  h1 {
+    @apply text-3xl font-bold text-secondary-strong leading-tight;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold text-secondary-strong leading-snug;
+  }
+
+  h3 {
+    @apply text-xl font-semibold text-primary leading-snug;
+  }
+
+  p {
+    @apply leading-relaxed;
+  }
 }

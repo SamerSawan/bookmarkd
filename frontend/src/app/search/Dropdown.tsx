@@ -33,26 +33,28 @@ const Dropdown: React.FC<DropdownProps> = ({ shelves, onSelect }) => {
   }, []);
 
   return (
-    <div className="relative w-48 z-10" ref={dropdownRef}>
-      {/* Button */}
+    <div className="relative w-auto z-20" ref={dropdownRef}>
+      {/* Circular Icon Button */}
       <button
         onClick={(e) => {
           e.stopPropagation();
           toggleDropdown()}}
-        className="flex items-center gap-1 text-secondary-dark bg-primary px-3 py-1 w-full text-center justify-center rounded-md hover:opacity-80 transition"
+        className="flex items-center justify-center text-primary bg-back-base/80 backdrop-blur-sm p-2 rounded-full
+                   hover:bg-primary/20 hover:scale-110 hover:text-primary-light
+                   active:scale-95 transition-all duration-200"
+        title="Add to shelf"
       >
-        <IconPlus stroke={2} />
-        <span>Add to Shelf</span>
+        <IconPlus stroke={2} size={24} />
       </button>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute mt-2 w-48 bg-back-overlay rounded-md shadow-lg z-10">
-          <ul className="py-1 text-secondary-strong">
+        <div className="absolute right-0 mt-2 w-56 bg-back-overlay border border-stroke-weak/50 rounded-lg shadow-card-hover z-50 overflow-hidden">
+          <ul className="py-1 text-secondary-strong max-h-64 overflow-y-auto">
             {shelves.map((shelf) => (
               <li
                 key={shelf.id}
-                className="px-4 py-2 hover:opacity-40 cursor-pointer"
+                className="px-4 py-3 hover:bg-primary/20 hover:text-primary-light cursor-pointer transition-colors duration-150"
                 onClick={(e) => {
                   e.stopPropagation();
                   onSelect(shelf.id, shelf.name)

@@ -1,20 +1,20 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import DailyQuestCard from "@/components/DailyQuest";
-import ReadingStatsCard from "@/components/ReadingStatsCard";
 import CurrentlyReadingCard from "@/components/CurrentlyReadingCard";
 import FavouriteBooks from "@/components/FavouriteBooks";
 import TBRList from "@/components/ToBeRead";
 import { auth } from "../../firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { IconLogout } from '@tabler/icons-react';
+import { IconLogout, IconBook, IconStar, IconBookmark, IconCircleCheck } from '@tabler/icons-react';
 import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import { ToastContainer } from "react-toastify";
 import Image from "next/image";
 import { useUser } from "./context/UserContext";
+import LoadingSpinner from "@/components/util/LoadingSpinner";
+import Navbar from "@/components/util/Navbar";
 
 type User = {
   id: string;
@@ -25,7 +25,7 @@ type User = {
 const Home: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
-  const { user: loggedInUser, loading } = useUser();
+  const { user: loggedInUser, shelves, currentlyReading, favourites, loading } = useUser();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -67,72 +67,125 @@ const Home: React.FC = () => {
 
 
   if (!user || loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center min-h-screen flex-col gap-4">
+        <LoadingSpinner size="lg" />
+        <p className="text-secondary">Loading your library...</p>
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col min-h-screen items-center bg-back-base text-secondary-weak px-20 py-10">
-      {/* Nav */}
-      <div className="flex justify-between w-[80%]">
-        <div>
-          <p className="font-bold text-3xl text-primary">BOOKMARKD</p>
+    <div className="flex flex-col min-h-screen bg-back-base text-secondary-weak">
+      {/* Top Navigation */}
+      <div className="px-6 md:px-12 lg:px-20 py-6 md:py-10">
+        <div className="mb-8">
+          <Navbar />
         </div>
-        <div className="flex flex-row gap-16 text-2xl text-primary">
-          <Link href="/shelves" className="hover:underline">
-            Shelves
-          </Link>
-          <Link href="/activity" className="hover:underline">Activity</Link>
-          <Link href="/search" className="hover:underline">Search</Link>
-          <div onClick={() => {router.push(`/${loggedInUser?.username}`)}}>
-          <Image
-            src={"/default-avatar.jpg"}
-            alt={`${user.username}'s avatar`}
-            width={45}
-            height={45}
-            className="rounded-full object-cover aspect-square hover:cursor-pointer"
-          />
+
+        {/* Hero Section */}
+        <div className="mb-8 md:mb-12">
+          <h1 className="text-3xl md:text-4xl font-bold text-secondary-strong mb-2 md:mb-3">
+            Welcome back, {user.username}!
+          </h1>
+          <p className="text-secondary text-base md:text-lg">
+            Continue your reading journey
+          </p>
         </div>
-          <button
-          onClick={handleSignOut}
-          className="bg-primary text-secondary-dark px-4 py-2 rounded-md hover:bg-primary-dark"
-        >
-          <IconLogout stroke={2}/>
-        </button>
+
+        {/* Quick Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          <div className="bg-back-raised border border-stroke-weak/50 rounded-xl p-6 shadow-card hover:shadow-card-hover transition-shadow">
+            <div className="flex items-center gap-4">
+              <div className="bg-primary/20 p-3 rounded-lg">
+                <IconBook className="text-primary" size={28} stroke={2} />
+              </div>
+              <div>
+                <p className="text-secondary-weak text-sm">Currently Reading</p>
+                <p className="text-2xl font-bold text-secondary-strong">{currentlyReading?.length || 0}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-back-raised border border-stroke-weak/50 rounded-xl p-6 shadow-card hover:shadow-card-hover transition-shadow">
+            <div className="flex items-center gap-4">
+              <div className="bg-success/20 p-3 rounded-lg">
+                <IconCircleCheck className="text-success" size={28} stroke={2} />
+              </div>
+              <div>
+                <p className="text-secondary-weak text-sm">Books Read</p>
+                <p className="text-2xl font-bold text-secondary-strong">
+                  {shelves?.find(s => s.name === "Read")?.books?.length || 0}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-back-raised border border-stroke-weak/50 rounded-xl p-6 shadow-card hover:shadow-card-hover transition-shadow">
+            <div className="flex items-center gap-4">
+              <div className="bg-warning/20 p-3 rounded-lg">
+                <IconBookmark className="text-warning" size={28} stroke={2} />
+              </div>
+              <div>
+                <p className="text-secondary-weak text-sm">To Be Read</p>
+                <p className="text-2xl font-bold text-secondary-strong">
+                  {shelves?.find(s => s.name === "To Be Read")?.books?.length || 0}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Main Dashboard Content - Single Column with Sidebar */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+          {/* Main Column - Currently Reading (Featured) */}
+          <div className="lg:col-span-8">
+            <CurrentlyReadingCard />
+          </div>
+
+          {/* Sidebar - Quick Actions & Reading Tip */}
+          <div className="lg:col-span-4 space-y-6">
+            <div className="bg-back-raised border border-stroke-weak/50 rounded-xl p-6 shadow-card">
+              <h3 className="text-lg font-semibold text-secondary-strong mb-4">Quick Actions</h3>
+              <div className="space-y-3">
+                <Link
+                  href="/search"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-back-overlay hover:bg-primary/10
+                             hover:border-primary/30 border border-transparent transition-all group"
+                >
+                  <IconBook className="text-primary group-hover:scale-110 transition-transform" size={20} stroke={2} />
+                  <span className="text-secondary-weak group-hover:text-primary transition-colors text-sm">Add a new book</span>
+                </Link>
+                <Link
+                  href="/shelves"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-back-overlay hover:bg-primary/10
+                             hover:border-primary/30 border border-transparent transition-all group"
+                >
+                  <IconBookmark className="text-primary group-hover:scale-110 transition-transform" size={20} stroke={2} />
+                  <span className="text-secondary-weak group-hover:text-primary transition-colors text-sm">View all shelves</span>
+                </Link>
+                <Link
+                  href="/activity"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-back-overlay hover:bg-primary/10
+                             hover:border-primary/30 border border-transparent transition-all group"
+                >
+                  <IconStar className="text-primary group-hover:scale-110 transition-transform" size={20} stroke={2} />
+                  <span className="text-secondary-weak group-hover:text-primary transition-colors text-sm">See community activity</span>
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Favorites and TBR Grid */}
+        <div className="space-y-8">
+          <FavouriteBooks />
+          <TBRList />
         </div>
       </div>
-      {/* Welcome Text */}
-      <div className="grid grid-cols-5 grid-rows-2 w-full items-start pt-10 text-lg">
-        <p className="col-start-2 col-span-2 text-2xl text-secondary-strong">
-          Welcome back, {user.username}!
-        </p>
-        <p className="col-start-2 row-start-2">
-          Keep reading to log your first book of the month!
-        </p>
-      </div>
-      {/* Cards */}
-      <div className="grid grid-cols-2 md:w-[60%] 2xl:w-[40%] pt-10 gap-4">
-        <div className="2xl:w-full row-span-2">
-          <CurrentlyReadingCard
-          />
-        </div>
-        <div className="2xl:w-full">
-          <DailyQuestCard
-          quest="Read 20 pages today!"
-          progress={75}
-          onComplete={() => alert("Quest completed! 🎉")}
-          />
-        </div>
-        <div className="col-start-2 row-start-2 2xl:w-full">
-          <ReadingStatsCard />
-        </div>
-      </div>
-      <div className="mt-12 w-[60%] flex flex-col gap-8">
-        <FavouriteBooks />
-        <TBRList />
-      </div>
+
       <Footer/>
       <ToastContainer theme="colored" />
-      
     </div>
   );
 };

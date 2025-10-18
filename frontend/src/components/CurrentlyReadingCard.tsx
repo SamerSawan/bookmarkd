@@ -29,7 +29,7 @@ const CurrentlyReadingCard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex flex-col bg-back-raised rounded-lg shadow-lg p-4 text-center">
+      <div className="flex flex-col bg-back-raised border border-stroke-weak/50 rounded-xl shadow-card p-8 text-center">
         <h4 className="text-xl font-semibold text-secondary-strong">Loading...</h4>
       </div>
     );
@@ -37,12 +37,12 @@ const CurrentlyReadingCard: React.FC = () => {
 
   if (!currentlyReading || currentlyReading.length === 0 || !book) {
     return (
-      <div className="flex flex-col bg-back-raised rounded-lg shadow-lg p-4 text-center h-full w-full items-center justify-center">
+      <div className="flex flex-col bg-back-raised border border-stroke-weak/50 rounded-xl shadow-card p-8 text-center h-full w-full items-center justify-center">
         <h4 className="text-xl font-semibold text-secondary-strong">
           No books are currently being read!
         </h4>
-        <p className="text-md text-secondary-weak mt-2">
-          Add a book to your &quot;Currently Reading&ldquo; shelf to see it here.
+        <p className="text-md text-secondary mt-2">
+          Add a book to your &quot;Currently Reading&quot; shelf to see it here.
         </p>
       </div>
     );
@@ -99,68 +99,120 @@ const CurrentlyReadingCard: React.FC = () => {
   const bookCover = getHighResImage(book.CoverImageUrl);
 
   return (
-    <div className="flex flex-col bg-back-raised rounded-lg shadow-lg overflow-hidden max-w-full">
-      <div className="relative h-60 w-full hover:cursor-pointer" onClick={() => {router.push(`/book/${book.Isbn}`)}}>
+    <div className="flex flex-col md:flex-row bg-back-raised border border-stroke-weak/50 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-200 overflow-hidden">
+      {/* Book Cover - Left Side */}
+      <div
+        className="relative w-full md:w-40 h-56 md:h-auto flex-shrink-0 hover:cursor-pointer group"
+        onClick={() => {router.push(`/book/${book.Isbn}`)}}
+      >
         <img
           src={bookCover}
           alt={book.Title}
-          className="h-full w-full object-cover"
+          className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-back-base/80 via-transparent to-transparent" />
       </div>
 
-      <div className="flex flex-col items-center p-4">
-        <h4 className="text-xl font-semibold text-secondary-strong text-center hover:cursor-pointer hover:text-primary" onClick={() => {router.push(`/book/${book.Isbn}`)}}>
-          {book.Title}
-        </h4>
-        <p className="text-md text-secondary-weak text-center">By {book.Author}</p>
+      {/* Content - Right Side */}
+      <div className="flex flex-col justify-between p-6 flex-1">
+        <div>
+          <h3
+            className="text-2xl font-bold text-primary-light hover:cursor-pointer hover:text-primary transition-colors"
+            onClick={() => {router.push(`/book/${book.Isbn}`)}}
+          >
+            {book.Title}
+          </h3>
+          <p className="text-sm text-secondary mt-1">By {book.Author}</p>
 
-        <div className="w-full bg-stroke-weak rounded-full h-4 mb-4 mt-6">
-          <div
-            className="bg-gradient-to-r from-[#4C7BD9] to-primary h-4 rounded-full"
-            style={{ width: `${progressPercentage}%` }}
-          ></div>
-        </div>
-        <div className="flex justify-between text-sm text-secondary-weak">
-          <span>Progress: {progressPercentage}%</span>
-        </div>
-
-        {isEditing ? (
-          <div className="mt-4 flex flex-col gap-2 items-center">
-            <div className="flex flex-row gap-2">
-              <input
-                placeholder={String(newProgress)}
-                onChange={(e) => setNewProgress(Number(e.target.value))}
-                className="bg-[#475569] text-white p-2 rounded w-20"
-                max={pages}
-              />
-              <button
-                onClick={handleUpdate}
-                className="bg-[#64748b] text-white py-2 px-4 rounded hover:bg-[#475569] transition"
+          {/* Progress Bar */}
+          <div className="mt-6">
+            <div className="flex justify-between text-sm text-secondary-weak mb-2">
+              <span>{newProgress} / {pages} pages</span>
+              <span className="font-semibold text-primary">{progressPercentage}%</span>
+            </div>
+            <div className="w-full bg-back-overlay rounded-full h-3 overflow-hidden border border-stroke-weak/30">
+              <div
+                className="bg-gradient-to-r from-[#4C7BD9] to-primary h-full rounded-full transition-all duration-300 relative"
+                style={{ width: `${progressPercentage}%` }}
               >
-                Save
+                <div className="absolute inset-0 bg-white/20 animate-pulse" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Actions */}
+        <div className="mt-6 space-y-3">
+          {/* Progress Update - Inline Edit Mode */}
+          <div className="flex items-center gap-2">
+            {isEditing ? (
+              <>
+                <div className="flex items-center gap-2 flex-1">
+                  <input
+                    type="number"
+                    value={newProgress}
+                    onChange={(e) => setNewProgress(Number(e.target.value))}
+                    className="bg-back-overlay text-secondary-strong border border-primary/50 p-2 rounded-lg w-20
+                               focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all text-center"
+                    max={pages}
+                    autoFocus
+                  />
+                  <span className="text-secondary-weak text-sm">/ {pages} pages</span>
+                </div>
+                <button
+                  onClick={handleUpdate}
+                  className="bg-primary text-secondary-dark font-semibold py-2 px-4 rounded-lg
+                             hover:bg-primary-light hover:shadow-lg hover:shadow-primary/20
+                             active:scale-95 transition-all duration-200 text-sm"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={() => setIsEditing(false)}
+                  className="bg-back-overlay text-secondary font-semibold py-2 px-4 rounded-lg border border-stroke-weak/30
+                             hover:bg-back-base hover:border-stroke-strong/30
+                             active:scale-95 transition-all duration-200 text-sm"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setIsEditing(true)}
+                className="bg-primary text-secondary-dark font-semibold py-2.5 px-6 rounded-lg w-full
+                           hover:bg-primary-light hover:shadow-lg hover:shadow-primary/20
+                           active:scale-95 transition-all duration-200"
+              >
+                Update Progress
               </button>
+            )}
+          </div>
+
+          {/* Mark as Finished Button */}
+          {isFinished && !isEditing && (
+            <MarkAsFinishedButton CoverImageURL={book.CoverImageUrl} isbn={book.Isbn} shelves={shelves} triggerRefresh={refreshShelves} isCurrentlyReading={true}/>
+          )}
+
+          {/* Navigation for multiple books */}
+          {currentlyReading.length > 1 && (
+            <div className="flex justify-between items-center pt-3 border-t border-stroke-weak/30">
               <button
-                onClick={() => setIsEditing(false)}
-                className="bg-gray-600 text-white py-2 px-4 rounded hover:bg-gray-500 transition"
+                onClick={handlePrev}
+                className="text-primary hover:text-primary-light text-xl hover:scale-110 transition-all duration-200 p-2"
               >
-                Cancel
+                ◀
+              </button>
+              <span className="text-secondary text-sm">
+                Book {currentIndex + 1} of {currentlyReading.length}
+              </span>
+              <button
+                onClick={handleNext}
+                className="text-primary hover:text-primary-light text-xl hover:scale-110 transition-all duration-200 p-2"
+              >
+                ▶
               </button>
             </div>
-            {!isFinished && <MarkAsFinishedButton CoverImageURL={book.CoverImageUrl} isbn={book.Isbn} shelves={shelves} triggerRefresh={refreshShelves} isCurrentlyReading={true}/>}
-          </div>
-        ) : (
-          <div className="mt-4">
-            <Button onPress={() => setIsEditing(true)} Text="Update Progress" />
-          </div>
-        )}
-
-        {isFinished && (
-          <MarkAsFinishedButton CoverImageURL={book.CoverImageUrl} isbn={book.Isbn} shelves={shelves} triggerRefresh={refreshShelves} isCurrentlyReading={true}/>
-        )}
-
-        <div className="flex justify-between w-full mt-4">
-          <button onClick={handlePrev} className="text-primary hover:underline">◀</button>
-          <button onClick={handleNext} className="text-primary hover:underline">▶</button>
+          )}
         </div>
       </div>
     </div>
