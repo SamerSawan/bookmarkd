@@ -12,8 +12,6 @@ Bookmarkd was created to address the lack of intuitive, feature-rich tools for b
 - Track progress and statistics to encourage more reading.
 - Maintain a seamless, cross-platform experience for book lovers. **Mobile support coming soon**.
 
-With Bookmarkd, reading isn't just a hobby—it's an experience.
-
 ---
 
 ## **Features**
