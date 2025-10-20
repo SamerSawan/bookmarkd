@@ -16,7 +16,7 @@ import ReviewCard from "@/components/util/ReviewCard";
 export default function BookPage() {
     const params = useParams();
     const isbn = params.isbn as string;
-    const { shelves, refreshShelves, currentlyReading } = useUser();
+    const { shelves, refreshShelves, currentlyReading, favourites } = useUser();
 
     const [book, setBook] = useState<FetchedBook | null>(null);
     const [reviews, setReviews] = useState<Review[] | null>(null);
@@ -134,6 +134,42 @@ export default function BookPage() {
         setRefreshTrigger(prev => prev + 1)
     }
 
+    const isFavourite = favourites?.some((fav) => fav.Isbn === isbn) || false;
+
+    const toggleFavourite = async () => {
+        try {
+            const user = auth.currentUser;
+            if (!user) {
+                toast.error("You need to be logged in to add favourites.");
+                return;
+            }
+            const idToken = await user.getIdToken();
+
+            if (isFavourite) {
+                // Remove from favourites
+                await axiosInstance.delete(`/users/me/favourites`, {
+                    headers: { Authorization: `Bearer ${idToken}` },
+                    data: { isbn }
+                });
+                toast.success("Removed from favourites!");
+            } else {
+                // Add to favourites
+                await axiosInstance.post(`/users/me/favourites`,
+                    { isbn },
+                    { headers: { Authorization: `Bearer ${idToken}` } }
+                );
+                toast.success("Added to favourites!");
+            }
+            refreshShelves();
+        } catch (error: any) {
+            if (error.response?.data?.error) {
+                toast.error(error.response.data.error);
+            } else {
+                toast.error(isFavourite ? "Failed to remove from favourites" : "Failed to add to favourites");
+            }
+        }
+    }
+
     return (
         <div className="flex flex-col min-h-screen bg-back-base text-secondary-weak">
             <div className="px-20 py-10">
@@ -182,6 +218,17 @@ export default function BookPage() {
                                             />
                                         </>
                                     )}
+                                    {/* Add to Favourites Button */}
+                                    <button
+                                        onClick={toggleFavourite}
+                                        className={`w-full py-2 px-4 rounded my-2 transition ${
+                                            isFavourite
+                                                ? 'bg-amber-500 text-secondary-dark hover:opacity-80'
+                                                : 'bg-slate-700 text-secondary hover:bg-slate-600'
+                                        }`}
+                                    >
+                                        {isFavourite ? '★ Remove from Favourites' : '☆ Add to Favourites'}
+                                    </button>
                                 </div>
                             </div>
 

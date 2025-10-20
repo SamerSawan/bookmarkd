@@ -15,39 +15,10 @@ import { useUser } from "./context/UserContext";
 import LoadingSpinner from "@/components/util/LoadingSpinner";
 import Navbar from "@/components/util/Navbar";
 
-type User = {
-  id: string;
-  email: string;
-  username: string;
-};
-
 const Home: React.FC = () => {
-  const [user, setUser] = useState<User | null>(null);
+  const { user, shelves, currentlyReading, loading } = useUser();
   const router = useRouter();
-  const { shelves, currentlyReading, loading } = useUser();
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      if (currentUser) {
-        const id = currentUser.uid;
-        try {
-          const res = await axiosInstance.get(`/users/${id}`);
-          const { id: email, username } = res.data;
-
-          setUser({
-            id: id,
-            email: email,
-            username: username,
-          });
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      } else {
-        router.push("/about");
-      }
-    });
-    return () => unsubscribe();
-  }, [router]);
+  
   
   // const handleCompleteQuest = () => {
   //   alert("Quest completed! 🎉");

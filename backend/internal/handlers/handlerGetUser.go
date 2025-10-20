@@ -13,5 +13,11 @@ func (cfg *ApiConfig) GetUser(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusBadRequest, "Error retrieving user", err)
 		return
 	}
-	respondWithJSON(w, http.StatusOK, User{ID: user.ID, Email: user.Email, CreatedAt: user.CreatedAt, UpdatedAt: user.UpdatedAt, Username: user.Username})
+	respondWithJSON(w, http.StatusOK, User{
+		ID:        user.ID,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
+		Username:  user.Username,
+	})
 }

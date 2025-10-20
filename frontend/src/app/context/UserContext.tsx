@@ -4,6 +4,8 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import axiosInstance from '@/utils/axiosInstance';
 import { auth } from '../../../firebase';
 import { toast } from 'react-toastify';
+import userService from '@/services/userService';
+import { User } from '@/types/user';
 
 interface RawBook {
   isbn: string;
@@ -59,19 +61,12 @@ interface Shelf {
   books: Book[];
 }
 
-interface User {
-  id: string;
-  email: string;
-  username: string;
-  bio?: string;
-  profileImageUrl?: string;
-}
-
 interface UserContextType {
   user: User | null;
   shelves: Shelf[];
   currentlyReading: CurrentlyReadingBook[] | null;
   loading: boolean;
+  authenticated: boolean;
   refreshShelves: () => void;
   fetchCurrentlyReading: () => void;
   updateProgress: ( isbn: string, progress: number ) => Promise<void>;
@@ -86,26 +81,17 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [shelves, setShelves] = useState<Shelf[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [currentlyReading, setCurrentlyReading] = useState<CurrentlyReadingBook[] | null>(null);
-  const [favourites, setFavourites] = useState<Book[] | null>(null);
-  
+  const [favourites, setFavourites] = useState<Book[] | null>(null); 
+
   const fetchUser = async () => {
     try {
-      const currentUser = auth.currentUser;
-      if (!currentUser) return;
-      const idToken = await currentUser.getIdToken();
+      const currentUser = auth.currentUser
+      if (!currentUser) return
 
-      const res = await axiosInstance.get(`/users/me`, {
-        headers: {
-          Authorization: `Bearer ${idToken}`,
-        },
-      });
-      console.log(res.data)
-      console.log("user data above")
-      const { id, email, username, bio, profileImageUrl } = res.data;
-
-      setUser({ id, email, username, bio, profileImageUrl });
-    } catch (err) {
-      console.error("Failed to fetch user", err);
+      const userData = await userService.getCurrentUser()
+      setUser(userData)
+    } catch (error) {
+      console.log("Failed to fetch user: ", error)
     }
   };
 
@@ -149,14 +135,14 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [setShelves, setLoading]);
 
   const refreshShelves = useCallback(() => {
-    setLoading(true); 
+    setLoading(true);
     fetchShelves();
     fetchCurrentlyReading();
     fetchFavourites();
   }, [fetchShelves]);
 
   const fetchCurrentlyReading = async () => {
-    setCurrentlyReading((prev) => prev || []); // Preserve current data until new data is fetched
+    setCurrentlyReading((prev) => prev || []);
     try {
       const user = auth.currentUser;
       if (!user) return;
@@ -166,7 +152,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         headers: { Authorization: `Bearer ${idToken}` },
       });
   
-      setCurrentlyReading(res.data); // Update state
+      setCurrentlyReading(res.data);
       console.log(res.data)
     } catch (error) {
       console.error("Failed to fetch currently reading book:", error);
@@ -244,8 +230,11 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => unsubscribe();
   }, [fetchShelves]);
 
+  const authenticated = user != null
+
   return (
-    <UserContext.Provider value={{ user, shelves, currentlyReading, loading, refreshShelves, fetchCurrentlyReading, updateProgress, favourites }}>
+    <UserContext.Provider 
+    value={{ user, shelves, currentlyReading, loading, authenticated, refreshShelves, fetchCurrentlyReading, updateProgress, favourites }}>
       {children}
     </UserContext.Provider>
   );

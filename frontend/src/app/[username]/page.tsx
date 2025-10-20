@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
-import axiosInstance from "@/utils/axiosInstance";
 import ProfilePage from "@/components/ProfilePage";
+import userService from "@/services/userService";
 
 type Params = Promise<{username: string}>
 
@@ -10,8 +10,7 @@ export default async function UserProfile({ params }: { params: Params }) {
     if (!username) return notFound();
   
     try {
-      const res = await axiosInstance.get(`/profile/${username}`);
-      const user = res.data;
+      const user = await userService.getUserProfile(username);
   
       if (!user) return notFound();
   
