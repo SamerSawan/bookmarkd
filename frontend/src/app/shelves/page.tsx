@@ -55,7 +55,7 @@ const Shelves: React.FC = () => {
                               </div>
 
                               {/* Books Grid/Scroll */}
-                              {shelf.books.length === 0 ? (
+                              {!shelf.books || shelf.books.length === 0 ? (
                                   <EmptyShelfCard shelfName={shelf.name} />
                               ) : (
                                   <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">

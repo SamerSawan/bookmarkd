@@ -1,4 +1,4 @@
-import { Review } from '@/utils/models';
+import { Review } from '@/types/review';
 import { IconStar, IconStarFilled, IconStarHalfFilled, IconThumbDownFilled, IconThumbUpFilled } from '@tabler/icons-react';
 import Link from 'next/link';
 import React from 'react';
@@ -33,14 +33,14 @@ const ReviewCardWithImage: React.FC<ReviewProps> = ({ review }) => {
     return (
         <div className="mb-6 p-5 bg-fill rounded-xl shadow-md border border-stroke-weak w-full">
             <div className="flex flex-row">
-                <Image src={review.CoverImageUrl} alt={`Cover art for ${review.Title}`} width={120}
+                <Image src={review.coverImageUrl} alt={`Cover art for ${review.bookTitle}`} width={120}
             height={120} className="rounded-lg" />
             <div className="flex flex-col w-full ml-8">
             <div className="flex flex-col gap-2 mb-4">
                     <div className="flex flex-row justify-between items-center">
-                        <h4 className="text-xl font-semibold text-secondary-strong"><Link href={`/${review.Username}`} className="text-primary hover:cursor-pointer hover:underline">{review.Username}</Link> reviewed &quot;<Link href={`/book/${review.Isbn}`} className="italic text-primary hover:cursor-pointer hover:underline">{review.Title}</Link>&quot;</h4>
-                        
-                        {review.Recommended.Bool ? (
+                        <h4 className="text-xl font-semibold text-secondary-strong"><Link href={`/${review.username}`} className="text-primary hover:cursor-pointer hover:underline">{review.username}</Link> reviewed &quot;<Link href={`/book/${review.isbn}`} className="italic text-primary hover:cursor-pointer hover:underline">{review.bookTitle}</Link>&quot;</h4>
+
+                        {review.recommended ? (
                             <div className="flex flex-row items-center bg-green-100 px-3 py-1 rounded-full gap-2">
                                 <IconThumbUpFilled className="text-green-600" stroke={2} />
                                 <span className="text-green-800 font-medium text-sm">Recommended</span>
@@ -52,18 +52,18 @@ const ReviewCardWithImage: React.FC<ReviewProps> = ({ review }) => {
                             </div>
                             )}
                     </div>
-                                    
-                    {renderStars(review.Stars.Float64)}
-            
-            </div>   
+
+                    {renderStars(review.stars)}
+
+            </div>
                         <p className="text-base text-secondary-strong mb-4">
-                            “{review.Review.String}”
-                        </p>            
+                            &ldquo;{review.content}&rdquo;
+                        </p>
                         <p className="text-xs text-secondary-weak text-right">
-                            {new Date(review.CreatedAt.Time).toLocaleDateString('en-CA')}
+                            {new Date(review.createdAt).toLocaleDateString('en-CA')}
                         </p>
             </div>
-            </div> 
+            </div>
             </div>
     )
 }

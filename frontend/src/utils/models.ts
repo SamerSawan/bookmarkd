@@ -26,11 +26,11 @@ export interface FavBook {
 
 export interface FetchedBook {
     author: string;
-    cover_image_url: string;
+    coverImageUrl: string;
     description: string;
     isbn: string;
     pages: number;
-    publish_date: Date;
+    publishDate: string;
     title: string
 }
 
@@ -67,14 +67,14 @@ export interface Shelf {
 }
 
 export interface CurrentlyReadingBook {
-    Isbn: string;
-    Title: string;
-    Author: string;
-    CoverImageUrl: string;
-    PublishDate: string;
-    Pages: number;
-    Description: string;
-    Progress: number;
+    isbn: string;
+    title: string;
+    author: string;
+    coverImageUrl: string;
+    publishDate: string;
+    pages: number;
+    description: string;
+    progress: number;
 }
 
 export interface ProgressUpdates {

@@ -3,8 +3,6 @@ package handlers
 import (
 	"net/http"
 	"strings"
-
-	"github.com/samersawan/bookmarkd/backend/internal/database"
 )
 
 func (cfg *ApiConfig) GetFavourites(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +25,7 @@ func (cfg *ApiConfig) GetFavourites(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var books []database.Book
+	var books []Book
 
 	for _, item := range favourites {
 		book, err := cfg.Db.GetBook(r.Context(), item.Isbn)
@@ -35,7 +33,17 @@ func (cfg *ApiConfig) GetFavourites(w http.ResponseWriter, r *http.Request) {
 			respondWithError(w, http.StatusInternalServerError, "Book is in favourites but not in database", err)
 			return
 		}
-		books = append(books, book)
+		books = append(books, Book{
+			ISBN:          book.Isbn,
+			CreatedAt:     book.CreatedAt,
+			UpdatedAt:     book.UpdatedAt,
+			Title:         book.Title,
+			Author:        book.Author,
+			PublishDate:   book.PublishDate.Time,
+			CoverImageURL: book.CoverImageUrl,
+			Pages:         book.Pages,
+			Description:   book.Description,
+		})
 	}
 
 	respondWithJSON(w, http.StatusOK, books)

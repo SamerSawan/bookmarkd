@@ -1,13 +1,9 @@
 "use client"
-import React, { useEffect, useState } from "react";
+import React from "react";
 import CurrentlyReadingCard from "@/components/CurrentlyReadingCard";
 import FavouriteBooks from "@/components/FavouriteBooks";
 import TBRList from "@/components/ToBeRead";
-import { auth } from "../../firebase";
-import { onAuthStateChanged } from "firebase/auth";
-import { useRouter } from "next/navigation";
 import { IconBook, IconBookmark, IconCircleCheck, IconStar } from '@tabler/icons-react';
-import axiosInstance from "@/utils/axiosInstance";
 import Link from "next/link";
 import Footer from "@/components/Footer";
 import { ToastContainer } from "react-toastify";
@@ -17,7 +13,6 @@ import Navbar from "@/components/util/Navbar";
 
 const Home: React.FC = () => {
   const { user, shelves, currentlyReading, loading } = useUser();
-  const router = useRouter();
   
   
   // const handleCompleteQuest = () => {

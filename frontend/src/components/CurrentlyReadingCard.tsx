@@ -21,7 +21,7 @@ const CurrentlyReadingCard: React.FC = () => {
 
   useEffect(() => {
     if (book) {
-      const progress = Number(book.Progress) || 0;
+      const progress = Number(book.progress) || 0;
       setNewProgress(progress);
     }
   }, [currentIndex, book]);
@@ -47,7 +47,7 @@ const CurrentlyReadingCard: React.FC = () => {
     );
   }
 
-  const pages = Number(book.Pages) || 0;
+  const pages = Number(book.pages) || 0;
   const progressPercentage = Math.min(100, Math.round((newProgress / pages) * 100));
   const isFinished = newProgress >= pages;
 
@@ -59,7 +59,7 @@ const CurrentlyReadingCard: React.FC = () => {
 
     try {
       const idToken = await user.getIdToken();
-      const bookISBN = book.Isbn;
+      const bookISBN = book.isbn;
 
       await axiosInstance.put(
         `/users/${user.uid}/books/${bookISBN}/progress`,
@@ -95,18 +95,18 @@ const CurrentlyReadingCard: React.FC = () => {
     return url.replace(/^http:/, "https:").replace(/zoom=\d+/, "zoom=3");
   };
 
-  const bookCover = getHighResImage(book.CoverImageUrl);
+  const bookCover = getHighResImage(book.coverImageUrl);
 
   return (
     <div className="flex flex-col md:flex-row bg-back-raised border border-stroke-weak/50 rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-200 overflow-hidden">
       {/* Book Cover - Left Side */}
       <div
         className="relative w-full md:w-40 h-56 md:h-auto flex-shrink-0 hover:cursor-pointer group"
-        onClick={() => {router.push(`/book/${book.Isbn}`)}}
+        onClick={() => {router.push(`/book/${book.isbn}`)}}
       >
         <img
           src={bookCover}
-          alt={book.Title}
+          alt={book.title}
           className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-300"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-back-base/80 via-transparent to-transparent" />
@@ -117,11 +117,11 @@ const CurrentlyReadingCard: React.FC = () => {
         <div>
           <h3
             className="text-2xl font-bold text-primary-light hover:cursor-pointer hover:text-primary transition-colors"
-            onClick={() => {router.push(`/book/${book.Isbn}`)}}
+            onClick={() => {router.push(`/book/${book.isbn}`)}}
           >
-            {book.Title}
+            {book.title}
           </h3>
-          <p className="text-sm text-secondary mt-1">By {book.Author}</p>
+          <p className="text-sm text-secondary mt-1">By {book.author}</p>
 
           {/* Progress Bar */}
           <div className="mt-6">
@@ -189,7 +189,7 @@ const CurrentlyReadingCard: React.FC = () => {
 
           {/* Mark as Finished Button */}
           {isFinished && !isEditing && (
-            <MarkAsFinishedButton CoverImageURL={book.CoverImageUrl} isbn={book.Isbn} shelves={shelves} triggerRefresh={refreshShelves} isCurrentlyReading={true}/>
+            <MarkAsFinishedButton CoverImageURL={book.coverImageUrl} isbn={book.isbn} shelves={shelves} triggerRefresh={refreshShelves} isCurrentlyReading={true}/>
           )}
 
           {/* Navigation for multiple books */}

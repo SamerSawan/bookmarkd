@@ -10,6 +10,7 @@ import axiosInstance from '@/utils/axiosInstance';
 import { auth } from '../../../firebase';
 import { Shelf } from '@/utils/models';
 import { getShelfIdByName } from '@/utils/helpers';
+import reviewService from '@/services/reviewService';
 
 interface ModalProps {
     CoverImageURL: string
@@ -39,14 +40,11 @@ const MarkAsFinishedButton: React.FC<ModalProps> = ({ CoverImageURL, isbn, shelv
     
         try {
           const idToken = await user.getIdToken();
-          let nullChecker = true
           let isRecommended = null
 
           if (recommended == "Yes") {
-              nullChecker = false
               isRecommended = true
           } else if (recommended == "No") {
-              nullChecker = false
               isRecommended = false
           }
         const readShelf = getShelfIdByName(shelves, "Read");
@@ -60,20 +58,12 @@ const MarkAsFinishedButton: React.FC<ModalProps> = ({ CoverImageURL, isbn, shelv
         });
         toast.success("Moved book to read shelf")
 
-    
-        await axiosInstance.post(
-            `/reviews`,
-            { 
-                isbn: isbn,
-                review: review ? review : null,
-                stars: rating,
-                recommended: !nullChecker ? isRecommended : null
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${idToken}`,
-              },
-            }
+
+        await reviewService.createReview(
+            isbn,
+            review || null,
+            rating,
+            isRecommended
           );
           toast.success("Review logged!");
           triggerRefresh();

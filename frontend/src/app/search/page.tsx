@@ -3,7 +3,7 @@ import axiosInstance from '@/utils/axiosInstance';
 import { IconSearch, IconStar, IconStarFilled } from '@tabler/icons-react';
 import React, { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import Dropdown from './Dropdown';
+import ShelfDropdownCircular from '@/components/ShelfDropdownCircular';
 import { toast, ToastContainer } from 'react-toastify';
 import {useUser} from '../context/UserContext';
 import { auth } from '../../../firebase';
@@ -328,7 +328,7 @@ const Search: React.FC = () => {
               </button>
 
               <div onClick={(e) => e.stopPropagation()}>
-                <Dropdown shelves={shelves} onSelect={(shelfID: string, shelfName: string) => addToShelf(book, shelfID, shelfName)} />
+                <ShelfDropdownCircular shelves={shelves} onSelect={(shelfID: string, shelfName: string) => addToShelf(book, shelfID, shelfName)} />
               </div>
             </div>
           </motion.div>

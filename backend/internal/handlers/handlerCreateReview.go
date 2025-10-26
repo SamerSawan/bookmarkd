@@ -60,5 +60,5 @@ func (cfg *ApiConfig) CreateReview(w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusInternalServerError, "Unable to create review", err)
 		return
 	}
-	respondWithJSON(w, http.StatusOK, review)
+	respondWithJSON(w, http.StatusOK, Review{ID: review.ID.String(), Isbn: review.Isbn, Stars: review.Stars.Float64, Recommended: review.Recommended.Bool, Content: review.Review.String, CreatedAt: review.CreatedAt.Time.Local().String()})
 }

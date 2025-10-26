@@ -22,7 +22,7 @@ const TBRList = () => {
       .replace(/zoom=\d+/, "zoom=3");
   };
 
-  if (!toReadShelf || toReadShelf.books.length === 0) {
+  if (!toReadShelf || !toReadShelf.books || toReadShelf.books.length === 0) {
     return (
       <div className="mb-12">
         <div className="flex flex-row justify-between items-center mb-6">

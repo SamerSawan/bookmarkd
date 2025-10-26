@@ -341,11 +341,17 @@ func (q *Queries) ResetUsers(ctx context.Context) error {
 }
 
 const updateBookProgress = `-- name: UpdateBookProgress :one
-UPDATE user_books SET 
+UPDATE user_books SET
     progress = $1,
-    finished_at = CASE WHEN $1 = 100 THEN CURRENT_DATE ELSE finished_at END,
-    status = CASE WHEN $1 = 100 THEN 'Read' ELSE status END
-WHERE user_id = $2 AND isbn = $3
+    finished_at = CASE
+        WHEN $1 >= (SELECT pages FROM books WHERE books.isbn = $3) THEN CURRENT_DATE
+        ELSE finished_at
+    END,
+    status = CASE
+        WHEN $1 >= (SELECT pages FROM books WHERE books.isbn = $3) THEN 'Read'
+        ELSE status
+    END
+WHERE user_id = $2 AND user_books.isbn = $3
 RETURNING id, user_id, isbn, status, progress, started_at, finished_at, lent_to, updated_at
 `
 

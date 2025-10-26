@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import { useState } from "react";
-import { UserWithStats } from "@/utils/models";
+import { UserWithStats } from "@/types/user";
 import ReviewCardWithImage from "./util/ReviewCardWithImage";
 import ProfileFavouriteBooks from "./ProfileFavouriteBooks";
 import { useUser } from "@/app/context/UserContext";

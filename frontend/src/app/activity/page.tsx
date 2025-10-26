@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Navbar from "@/components/util/Navbar";
-import { Review } from "@/utils/models";
-import axiosInstance from "@/utils/axiosInstance";
+import { Review } from "@/types/review";
+import reviewService from "@/services/reviewService";
 import ReviewCardWithImage from "@/components/util/ReviewCardWithImage";
 
 const Activity: React.FC = () => {
@@ -12,9 +12,8 @@ const Activity: React.FC = () => {
   useEffect(() => {
     const fetchReviews = async () => {
         try {
-            const reviewsRes = await axiosInstance.get(`/reviews/recent`);
-            console.log(reviewsRes.data);
-            setReviews(reviewsRes.data);
+            const reviewsData = await reviewService.getRecentReviews();
+            setReviews(reviewsData);
         } catch (error) {
             console.error(error);
         }

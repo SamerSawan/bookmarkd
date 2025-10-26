@@ -1,3 +1,6 @@
+import { Review } from "@/types/review"
+import { Favourite } from "@/types/book";
+
 export type User = {
     id: string;
     username: string;
@@ -7,11 +10,10 @@ export type User = {
 }
 
 
-// TODO: Replace any types with Review type and Favourite type
 export type UserWithStats = User & {
     numberOfBooksRead: number;
     avgRating: number;
     numberOfReviewsWritten: number;
-    reviews: any[];
-    favourites: any[];
+    reviews: Review[];
+    favourites: Favourite[];
 }

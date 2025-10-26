@@ -39,16 +39,15 @@ const Dropdown: React.FC<DropdownProps> = ({ shelves, onSelect }) => {
         onClick={(e) => {
           e.stopPropagation();
           toggleDropdown()}}
-        className="w-full bg-primary text-secondary-dark py-2 px-4 rounded my-2 hover:bg-primary hover:opacity-80 transition flex items-center justify-center gap-2"
+        className="w-full bg-primary/20 p-3 rounded-full hover:scale-110 transition-transform flex items-center justify-center group my-2"
         title="Add to shelf"
       >
-        <IconPlus stroke={2} size={20} />
-        <span>Add to Shelf</span>
+        <IconPlus className="text-primary" size={24} stroke={2} />
       </button>
 
       {/* Dropdown */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 bg-back-overlay border border-stroke-weak/50 rounded-lg shadow-card-hover z-50 overflow-hidden">
+        <div className="absolute left-0 right-0 mt-2 bg-back-overlay border border-stroke-weak/50 rounded-lg shadow-card-hover z-50 overflow-hidden">
           <ul className="py-1 text-secondary-strong max-h-64 overflow-y-auto">
             {shelves.map((shelf) => (
               <li

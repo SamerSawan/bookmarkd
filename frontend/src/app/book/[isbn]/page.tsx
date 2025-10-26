@@ -3,14 +3,17 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Navbar from "@/components/util/Navbar";
 import axiosInstance from "@/utils/axiosInstance";
-import { CurrentlyReadingBook, FetchedBook, ProgressUpdates, Review } from "@/utils/models";
-import Dropdown from "@/app/search/Dropdown";
+import { CurrentlyReadingBook, FetchedBook, ProgressUpdates } from "@/utils/models";
+import { Review } from "@/types/review"
+import reviewService from "@/services/reviewService";
+import ShelfDropdownButton from "@/components/ShelfDropdownButton";
 import { useUser } from "@/app/context/UserContext";
 import { toast, ToastContainer } from "react-toastify";
 import { auth } from "../../../../firebase";
 import UpdateProgressButton from "@/components/util/UpdateProgressButton";
 import MarkAsFinishedButton from "@/components/util/MarkAsFinishedButton";
 import ReviewCard from "@/components/util/ReviewCard";
+import { getErrorMessage } from "@/utils/errorHandler";
 
 
 export default function BookPage() {
@@ -28,7 +31,7 @@ export default function BookPage() {
 
     useEffect(() => {
         const foundBook = currentlyReading?.find(
-            (currentBook) => currentBook.Isbn === isbn
+            (currentBook) => currentBook.isbn === isbn
         );
         setUserBook(foundBook ?? null);
     }, [isbn, currentlyReading, shelves])
@@ -38,8 +41,8 @@ export default function BookPage() {
             try {
                 const res = await axiosInstance.get(`/books?isbn=${isbn}`);
                 setBook(res.data);
-                const reviewsRes = await axiosInstance.get(`/reviews?isbn=${isbn}`);
-                setReviews(reviewsRes.data);
+                const reviews = await reviewService.getBookReviews(isbn)
+                setReviews(reviews)
             } catch (error) {
                 console.error(error);
             }
@@ -71,8 +74,8 @@ export default function BookPage() {
                     headers: { Authorization: `Bearer ${idToken}` },
                 });
 
-                const reviewsRes = await axiosInstance.get(`/reviews?isbn=${isbn}`);
-                setReviews(reviewsRes.data);
+                const reviews = await reviewService.getBookReviews(isbn);
+                setReviews(reviews);
                 if (res.data) {
                     setProgressUpdates([...res.data])
                 }
@@ -134,7 +137,7 @@ export default function BookPage() {
         setRefreshTrigger(prev => prev + 1)
     }
 
-    const isFavourite = favourites?.some((fav) => fav.Isbn === isbn) || false;
+    const isFavourite = favourites?.some((fav) => fav.isbn === isbn) || false;
 
     const toggleFavourite = async () => {
         try {
@@ -161,12 +164,8 @@ export default function BookPage() {
                 toast.success("Added to favourites!");
             }
             refreshShelves();
-        } catch (error: any) {
-            if (error.response?.data?.error) {
-                toast.error(error.response.data.error);
-            } else {
-                toast.error(isFavourite ? "Failed to remove from favourites" : "Failed to add to favourites");
-            }
+        } catch (error: unknown) {
+            toast.error(getErrorMessage(error));
         }
     }
 
@@ -186,20 +185,20 @@ export default function BookPage() {
                             <div className="flex-shrink-0">
                                 <img
                                     className="w-[200px] h-[300px] rounded-md shadow-lg object-cover"
-                                    src={getHighResImage(book.cover_image_url)}
+                                    src={getHighResImage(book.coverImageUrl)}
                                     alt="Book cover"
                                 />
                                 <div className="mt-4 flex flex-col gap-2">
                                     {userBook ? (
                                         <>
                                             <UpdateProgressButton
-                                                CoverImageURL={userBook.CoverImageUrl}
+                                                CoverImageURL={userBook.coverImageUrl}
                                                 isbn={book.isbn}
                                                 pages={book.pages}
                                                 onProgressUpdate={() => setRefreshTrigger(prev => prev + 1)}
                                             />
                                             <MarkAsFinishedButton
-                                                CoverImageURL={userBook.CoverImageUrl}
+                                                CoverImageURL={userBook.coverImageUrl}
                                                 isbn={book.isbn}
                                                 shelves={shelves}
                                                 triggerRefresh={TriggerRefresh}
@@ -208,9 +207,9 @@ export default function BookPage() {
                                         </>
                                     ) : (
                                         <>
-                                            <Dropdown shelves={shelves} onSelect={addToShelf}/>
+                                            <ShelfDropdownButton shelves={shelves} onSelect={addToShelf}/>
                                             <MarkAsFinishedButton
-                                                CoverImageURL={book.cover_image_url}
+                                                CoverImageURL={book.coverImageUrl}
                                                 isbn={book.isbn}
                                                 shelves={shelves}
                                                 triggerRefresh={TriggerRefresh}
@@ -245,8 +244,8 @@ export default function BookPage() {
                                 <div className="flex gap-4 text-sm text-secondary-weak mb-6">
                                     <span>{book.pages} pages</span>
                                     <span>
-                                        Published {book.publish_date
-                                            ? new Date(book.publish_date).getUTCFullYear()
+                                        Published {book.publishDate
+                                            ? new Date(book.publishDate).getUTCFullYear()
                                             : "Unknown"}
                                     </span>
                                 </div>
@@ -256,12 +255,12 @@ export default function BookPage() {
                                     <div className="mb-6">
                                         <div className="flex justify-between text-sm text-secondary-weak mb-2">
                                             <span>Your Progress</span>
-                                            <span>{Math.round((userBook.Progress / userBook.Pages) * 100)}%</span>
+                                            <span>{Math.round((userBook.progress / userBook.pages) * 100)}%</span>
                                         </div>
                                         <div className="w-full bg-slate-700/50 rounded-full h-2">
                                             <div
                                                 className="bg-gradient-to-r from-[#4C7BD9] to-primary h-2 rounded-full transition-all"
-                                                style={{ width: `${(userBook.Progress / userBook.Pages) * 100}%` }}
+                                                style={{ width: `${(userBook.progress / userBook.pages) * 100}%` }}
                                             ></div>
                                         </div>
                                     </div>

@@ -1,4 +1,4 @@
-import { Review } from '@/utils/models';
+import { Review } from '@/types/review';
 import { IconStar, IconStarFilled, IconStarHalfFilled, IconThumbDownFilled, IconThumbUpFilled } from '@tabler/icons-react';
 import Link from 'next/link';
 import React from 'react';
@@ -8,19 +8,19 @@ const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-  
+
     for (let i = 0; i < fullStars; i++) {
       stars.push(<IconStarFilled key={`full-${i}`} className="text-yellow-400" />);
     }
-  
+
     if (hasHalfStar) {
       stars.push(<IconStarHalfFilled key="half" className="text-yellow-400" />);
     }
-  
+
     for (let i = 0; i < emptyStars; i++) {
       stars.push(<IconStar key={`empty-${i}`} className="text-gray-400" />);
     }
-  
+
     return <div className="flex flex-row gap-1">{stars}</div>;
 };
 
@@ -36,17 +36,17 @@ const ReviewCard: React.FC<ReviewProps> = ({ review, inBook = false }) => {
                     <div className="flex flex-row justify-between items-start gap-4">
                         <div className="flex-1">
                             {inBook ?
-                            (<h4 className="text-lg font-semibold text-secondary-strong">{review.Username}</h4>)
+                            (<h4 className="text-lg font-semibold text-secondary-strong">{review.username}</h4>)
                             : (<h4 className="text-lg text-secondary-weak">
-                                <Link href={`/${review.Username}`} className="text-primary-light font-semibold hover:cursor-pointer hover:underline">
-                                    {review.Username}
-                                </Link> reviewed &quot;<Link href={`/book/${review.Isbn}`} className="italic text-primary-light font-semibold hover:cursor-pointer hover:underline">
-                                    {review.Title}
+                                <Link href={`/${review.username}`} className="text-primary-light font-semibold hover:cursor-pointer hover:underline">
+                                    {review.username}
+                                </Link> reviewed &quot;<Link href={`/book/${review.isbn}`} className="italic text-primary-light font-semibold hover:cursor-pointer hover:underline">
+                                    {review.bookTitle}
                                 </Link>&quot;
                             </h4>)}
                         </div>
 
-                        {review.Recommended.Bool ? (
+                        {review.recommended ? (
                             <div className="flex flex-row items-center bg-success/20 px-3 py-1.5 rounded-full gap-2 border border-success/30">
                                 <IconThumbUpFilled className="text-success" stroke={2} size={18} />
                                 <span className="text-success font-medium text-xs">Recommended</span>
@@ -59,13 +59,13 @@ const ReviewCard: React.FC<ReviewProps> = ({ review, inBook = false }) => {
                             )}
                     </div>
 
-                    {renderStars(review.Stars.Float64)}
+                    {renderStars(review.stars)}
             </div>
                         <p className="text-base text-secondary-strong leading-relaxed mb-4 italic">
-                            &ldquo;{review.Review.String}&rdquo;
+                            &ldquo;{review.content}&rdquo;
                         </p>
                         <p className="text-xs text-secondary text-right">
-                            {new Date(review.CreatedAt.Time).toLocaleDateString('en-US', {
+                            {new Date(review.createdAt).toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 month: 'long',
                                 day: 'numeric'

@@ -6,34 +6,9 @@ import { auth } from '../../../firebase';
 import { toast } from 'react-toastify';
 import userService from '@/services/userService';
 import { User } from '@/types/user';
+import { Book } from '@/types/book';
 
-interface RawBook {
-  isbn: string;
-  title: string;
-  author: string;
-  cover_image_url?: string;
-  publish_date: string;
-  pages: number;
-  description?: string;
-}
-
-interface RawShelf {
-  id: string;
-  name: string;
-  books?: RawBook[]; 
-}
-
-interface RawFav {
-  Isbn: string;
-  Title: string;
-  Author: string;
-  CoverImageUrl: string;
-  PublishDate: string;
-  Pages: number;
-  Description?: string;
-}
-
-interface Book {
+interface CurrentlyReadingBook {
   isbn: string;
   title: string;
   author: string;
@@ -41,17 +16,7 @@ interface Book {
   publishDate: string;
   pages: number;
   description: string;
-}
-
-interface CurrentlyReadingBook {
-  Isbn: string;
-  Title: string;
-  Author: string;
-  CoverImageUrl: string;
-  PublishDate: string;
-  Pages: number;
-  Description: string;
-  Progress: number;
+  progress: number;
 }
 
 interface Shelf {
@@ -96,18 +61,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const fetchShelves = useCallback(async () => {
-    const normalizeBooks = (books: RawBook[]): Book[] => {
-      return books.map((book) => ({
-        isbn: book.isbn,
-        title: book.title,
-        author: book.author,
-        coverImageUrl: book.cover_image_url || "https://via.placeholder.com/100x150", // Default if missing
-        publishDate: book.publish_date,
-        pages: book.pages,
-        description: book.description || "No description available.", // Default description
-      }));
-    };
-
     try {
       const user = auth.currentUser;
       if (user) {
@@ -115,14 +68,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         const response = await axiosInstance.get(`/users/${idToken}/shelves`);
 
-        const normalizedShelves = response.data.shelves.map((shelf: RawShelf) => ({
-          id: shelf.id,
-          name: shelf.name,
-          bookCount: shelf.books?.length,
-          books: normalizeBooks(shelf.books || []), // Normalize books array
-        }));
-
-        setShelves(normalizedShelves);
+        setShelves(response.data.shelves);
       } else {
         toast.error("User not authenticated");
       }
@@ -130,7 +76,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error("Failed to fetch user shelves:", error);
       toast.error("Failed to load shelves");
     } finally {
-      setLoading(false); 
+      setLoading(false);
     }
   }, [setShelves, setLoading]);
 
@@ -151,7 +97,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const res = await axiosInstance.get("/users/me/currently-reading", {
         headers: { Authorization: `Bearer ${idToken}` },
       });
-  
+
       setCurrentlyReading(res.data);
       console.log(res.data)
     } catch (error) {
@@ -194,21 +140,7 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return;
       }
 
-      const normalizeFavs = (books: RawFav[]): Book[] => {
-        return books.map((book) => ({
-          isbn: book.Isbn,
-          title: book.Title,
-          author: book.Author,
-          coverImageUrl: book.CoverImageUrl || "https://via.placeholder.com/100x150",
-          publishDate: book.PublishDate,
-          pages: book.Pages,
-          description: book.Description || "No description available.",
-        }));
-      };
-
-      const normalizedFavs = normalizeFavs(res.data);
-  
-      setFavourites(normalizedFavs); // Update state
+      setFavourites(res.data);
     } catch (error) {
       console.error("Failed to fetch favourites:", error);
     }

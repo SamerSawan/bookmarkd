@@ -42,12 +42,12 @@ type BookParameters struct {
 
 type Book struct {
 	ISBN          string    `json:"isbn"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
+	CreatedAt     time.Time `json:"createdAt"`
+	UpdatedAt     time.Time `json:"updatedAt"`
 	Title         string    `json:"title"`
 	Author        string    `json:"author"`
-	PublishDate   time.Time `json:"publish_date"`
-	CoverImageURL string    `json:"cover_image_url"`
+	PublishDate   time.Time `json:"publishDate"`
+	CoverImageURL string    `json:"coverImageUrl"`
 	Pages         int32     `json:"pages"`
 	Description   string    `json:"description"`
 }
@@ -55,7 +55,6 @@ type Book struct {
 type Review struct {
 	ID          string  `json:"id"`
 	Isbn        string  `json:"isbn"`
-	BookTitle   string  `json:"bookTitle"`
 	Stars       float64 `json:"stars"`
 	Recommended bool    `json:"recommended"`
 	Content     string  `json:"content"`

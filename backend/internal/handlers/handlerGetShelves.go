@@ -8,7 +8,7 @@ import (
 type Shelf struct {
 	ID        string `json:"id"`
 	Name      string `json:"name"`
-	BookCount int    `json:"book_count"`
+	BookCount int    `json:"bookCount"`
 	Books     []Book `json:"books"`
 }
 
