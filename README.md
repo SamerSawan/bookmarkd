@@ -131,8 +131,7 @@ To run the app using Docker:
 
 ## **Acknowledgments**
 
-- Built with love using Typescript, Next.js, TailwindCSS, Go, and Firebase.
-- Inspired by the passion of book lovers everywhere.
+- Built with Typescript, Next.js, TailwindCSS, Go, and Firebase.
 
 ---
 
