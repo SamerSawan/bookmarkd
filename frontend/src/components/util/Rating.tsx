@@ -1,14 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IconStarFilled, IconStarHalfFilled } from '@tabler/icons-react';
 
 
 interface StarRatingProps {
   onRatingChange: (rating: number) => void;
+  initialRating?: number;
 }
 
-const StarRating: React.FC<StarRatingProps> = ({ onRatingChange }) => {
-  const [rating, setRating] = useState<number>(0);
-  const [hover, setHover] = useState<number>(0);
+const StarRating: React.FC<StarRatingProps> = ({ onRatingChange, initialRating = 0 }) => {
+  const [rating, setRating] = useState<number>(initialRating);
+  const [hover, setHover] = useState<number>(initialRating);
+
+  useEffect(() => {
+    setRating(initialRating);
+    setHover(initialRating);
+  }, [initialRating]);
 
   const handleClick = (value: number) => {
     setRating(value);

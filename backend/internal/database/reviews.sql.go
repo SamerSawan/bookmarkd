@@ -288,3 +288,42 @@ func (q *Queries) GetReviewsByUser(ctx context.Context, userID string) ([]GetRev
 	}
 	return items, nil
 }
+
+const updateReview = `-- name: UpdateReview :one
+UPDATE reviews
+SET
+  review = $3,
+  stars = $4,
+  recommended = $5
+WHERE isbn = $1 AND user_id = $2
+RETURNING id, isbn, user_id, review, stars, recommended, created_at
+`
+
+type UpdateReviewParams struct {
+	Isbn        string
+	UserID      string
+	Review      sql.NullString
+	Stars       sql.NullFloat64
+	Recommended sql.NullBool
+}
+
+func (q *Queries) UpdateReview(ctx context.Context, arg UpdateReviewParams) (Review, error) {
+	row := q.db.QueryRowContext(ctx, updateReview,
+		arg.Isbn,
+		arg.UserID,
+		arg.Review,
+		arg.Stars,
+		arg.Recommended,
+	)
+	var i Review
+	err := row.Scan(
+		&i.ID,
+		&i.Isbn,
+		&i.UserID,
+		&i.Review,
+		&i.Stars,
+		&i.Recommended,
+		&i.CreatedAt,
+	)
+	return i, err
+}

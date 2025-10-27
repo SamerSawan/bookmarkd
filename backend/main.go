@@ -80,6 +80,8 @@ func main() {
 	serveMux.HandleFunc("DELETE /api/shelves/{shelf_id}/books", apiCfg.RemoveBookFromShelf)
 	serveMux.HandleFunc("GET /api/users/me/books/{isbn}/progress", apiCfg.GetBookProgressUpdate)
 	serveMux.HandleFunc("POST /api/reviews", apiCfg.CreateReview)
+	serveMux.HandleFunc("PUT /api/reviews", apiCfg.UpdateReview)
+	serveMux.HandleFunc("DELETE /api/reviews", apiCfg.DeleteReview)
 	serveMux.HandleFunc("GET /api/reviews", apiCfg.GetReviewsForBook)
 	serveMux.HandleFunc("GET /api/reviews/recent", apiCfg.GetRecentReviews)
 	serveMux.HandleFunc("GET /api/profile/{username}", apiCfg.GetUserWithStats)

@@ -203,6 +203,7 @@ export default function BookPage() {
                                                 shelves={shelves}
                                                 triggerRefresh={TriggerRefresh}
                                                 isCurrentlyReading={true}
+                                                reviews={reviews || []}
                                             />
                                         </>
                                     ) : (
@@ -214,6 +215,7 @@ export default function BookPage() {
                                                 shelves={shelves}
                                                 triggerRefresh={TriggerRefresh}
                                                 isCurrentlyReading={false}
+                                                reviews={reviews || []}
                                             />
                                         </>
                                     )}

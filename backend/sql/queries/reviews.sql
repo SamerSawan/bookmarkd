@@ -11,6 +11,15 @@ VALUES (
 -- name: GetReview :one
 SELECT * FROM reviews WHERE isbn = $1 AND user_id = $2;
 
+-- name: UpdateReview :one
+UPDATE reviews
+SET
+  review = $3,
+  stars = $4,
+  recommended = $5
+WHERE isbn = $1 AND user_id = $2
+RETURNING *;
+
 -- name: DeleteReview :exec
 DELETE FROM reviews WHERE isbn = $1 AND user_id = $2;
 
