@@ -30,10 +30,14 @@ interface ReviewProps {
 }
 
 const ReviewCardWithImage: React.FC<ReviewProps> = ({ review }) => {
+    const coverImage = review.coverImageUrl && review.coverImageUrl.trim() !== ""
+        ? review.coverImageUrl
+        : "https://via.placeholder.com/120x180";
+
     return (
         <div className="mb-6 p-5 bg-fill rounded-xl shadow-md border border-stroke-weak w-full">
             <div className="flex flex-row">
-                <Image src={review.coverImageUrl} alt={`Cover art for ${review.bookTitle}`} width={120}
+                <Image src={coverImage} alt={`Cover art for ${review.bookTitle}`} width={120}
             height={120} className="rounded-lg" />
             <div className="flex flex-col w-full ml-8">
             <div className="flex flex-col gap-2 mb-4">

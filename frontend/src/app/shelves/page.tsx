@@ -60,8 +60,9 @@ const Shelves: React.FC = () => {
                               ) : (
                                   <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
                                       {shelf.books.slice(0, 8).map((book, index) => (
-                                          <div
+                                          <Link
                                               key={index}
+                                              href={`/book/${book.isbn}`}
                                               className="flex-shrink-0 group cursor-pointer"
                                           >
                                               <img
@@ -69,7 +70,7 @@ const Shelves: React.FC = () => {
                                                   alt={book.title || "Book cover"}
                                                   className="w-[140px] h-[210px] object-cover rounded-md shadow-lg transition-transform group-hover:scale-105"
                                               />
-                                          </div>
+                                          </Link>
                                       ))}
                                       {shelf.books.length > 8 && (
                                           <Link

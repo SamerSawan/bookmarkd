@@ -74,7 +74,5 @@ func insertBook(isbn string, cfg *ApiConfig, r *http.Request) error {
 	if err != nil {
 		return fmt.Errorf("Failed to create book and insert into database")
 	}
-	fmt.Println("Book successfully inserted into database")
-	fmt.Println("----------------------------------------")
 	return nil
 }

@@ -17,6 +17,7 @@ SELECT
   f.user_id,
   f.id,
   b.title,
+  b.author,
   b.cover_image_url,
   b.publish_date,
   b.pages,

@@ -75,6 +75,7 @@ SELECT
   f.user_id,
   f.id,
   b.title,
+  b.author,
   b.cover_image_url,
   b.publish_date,
   b.pages,
@@ -90,6 +91,7 @@ type GetFavouritesVerboseRow struct {
 	UserID        string
 	ID            uuid.UUID
 	Title         string
+	Author        string
 	CoverImageUrl string
 	PublishDate   sql.NullTime
 	Pages         int32
@@ -110,6 +112,7 @@ func (q *Queries) GetFavouritesVerbose(ctx context.Context, userID string) ([]Ge
 			&i.UserID,
 			&i.ID,
 			&i.Title,
+			&i.Author,
 			&i.CoverImageUrl,
 			&i.PublishDate,
 			&i.Pages,

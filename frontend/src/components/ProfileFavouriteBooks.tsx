@@ -11,28 +11,30 @@ interface Props {
 const ProfileFavouriteBooks: React.FC<Props> = ({favourites}) => {
     const [ showModal, setShowModal ] = useState(false)
     const getHighResImage = (url: string) => {
-      if (!url) return "https://via.placeholder.com/100x150";
+      if (!url || url.trim() === "") return "https://via.placeholder.com/100x150";
 
       return url
         .replace(/^http:/, "https:")
         .replace(/zoom=\d+/, "zoom=3");
     };
     const router = useRouter()
-    const handleClickOnBook = async (isbn: string) => {
+    const handleClickOnBook = (isbn: string) => {
       router.push(`/book/${isbn}`)
   }
 
     return (
         <div>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {favourites?.map((book) => (
+            {favourites?.map((book) => {
+              const imageUrl = getHighResImage(book.coverImageUrl);
+              return (
               <div
                 key={book.isbn}
                 className="relative group cursor-pointer"
                 onClick={() => handleClickOnBook(book.isbn)}
               >
                 <img
-                  src={getHighResImage(book.coverImageUrl)}
+                  src={imageUrl}
                   alt={book.title}
                   className="rounded-md object-cover w-full aspect-[2/3] shadow-lg transition-transform group-hover:scale-105"
                 />
@@ -40,7 +42,8 @@ const ProfileFavouriteBooks: React.FC<Props> = ({favourites}) => {
                   <p className="text-white text-sm font-semibold text-center line-clamp-3">{book.title}</p>
                 </div>
               </div>
-            ))}
+              );
+            })}
           </div>
           {showModal && (
             <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 text-secondary-strong z-50">

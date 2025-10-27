@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"time"
-
-	"github.com/samersawan/bookmarkd/backend/internal/database"
 )
 
 type BookResponse struct {
@@ -53,22 +51,26 @@ type Book struct {
 }
 
 type Review struct {
-	ID          string  `json:"id"`
-	Isbn        string  `json:"isbn"`
-	Stars       float64 `json:"stars"`
-	Recommended bool    `json:"recommended"`
-	Content     string  `json:"content"`
-	CreatedAt   string  `json:"createdAt"`
+	ID            string  `json:"id"`
+	Isbn          string  `json:"isbn"`
+	UserId        string  `json:"userId"`
+	Username      string  `json:"username"`
+	BookTitle     string  `json:"bookTitle"`
+	CoverImageUrl string  `json:"coverImageUrl"`
+	Stars         float64 `json:"stars"`
+	Recommended   bool    `json:"recommended"`
+	Content       string  `json:"content"`
+	CreatedAt     string  `json:"createdAt"`
 }
 
 type UserWithStats struct {
-	ID                     string                             `json:"id"`
-	Username               string                             `json:"username"`
-	Bio                    *string                            `json:"bio,omitempty"`
-	ProfileImageURL        *string                            `json:"profileImageUrl,omitempty"`
-	NumberOfBooksRead      int                                `json:"numberOfBooksRead"`
-	AvgRating              float64                            `json:"avgRating"`
-	NumberOfReviewsWritten int64                              `json:"numberOfReviewsWritten"`
-	Favourites             []database.GetFavouritesVerboseRow `json:"favourites"`
-	Reviews                []database.GetReviewsByUserRow     `json:"reviews"`
+	ID                     string   `json:"id"`
+	Username               string   `json:"username"`
+	Bio                    *string  `json:"bio,omitempty"`
+	ProfileImageURL        *string  `json:"profileImageUrl,omitempty"`
+	NumberOfBooksRead      int      `json:"numberOfBooksRead"`
+	AvgRating              float64  `json:"avgRating"`
+	NumberOfReviewsWritten int64    `json:"numberOfReviewsWritten"`
+	Favourites             []Book   `json:"favourites"`
+	Reviews                []Review `json:"reviews"`
 }

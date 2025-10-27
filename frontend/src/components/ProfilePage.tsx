@@ -28,7 +28,7 @@ const ProfilePage: React.FC<Props> = ({ user }) => {
           {/* Profile Image */}
           <div>
             <Image
-              src={user.profileImageUrl || "/default-avatar.jpg"}
+              src={user.profileImageUrl && user.profileImageUrl.trim() !== "" ? user.profileImageUrl : "/default-avatar.jpg"}
               alt={`${user.username}'s avatar`}
               width={140}
               height={140}

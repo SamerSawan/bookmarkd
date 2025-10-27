@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"strings"
 )
@@ -40,8 +39,6 @@ func (cfg *ApiConfig) GetCurrentlyReading(w http.ResponseWriter, r *http.Request
 		respondWithError(w, http.StatusNotFound, "No currently reading book found", err)
 		return
 	}
-
-	fmt.Println(books)
 
 	var response []CurrentlyReadingResponse
 	for _, book := range books {

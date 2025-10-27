@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
       },
       {
         hostname: 'covers.openlibrary.org'
+      },
+      {
+        hostname: 'via.placeholder.com'
       }
     ],
   },
