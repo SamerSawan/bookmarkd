@@ -169,169 +169,257 @@ export default function BookPage() {
         }
     }
 
+    const [activeTab, setActiveTab] = useState<'updates' | 'reviews'>('reviews');
+
+    // Calculate average rating
+    const avgRating = reviews && reviews.length > 0
+        ? (reviews.reduce((sum, r) => sum + r.stars, 0) / reviews.length).toFixed(1)
+        : null;
+
+    const hasProgressUpdates = progressUpdates && progressUpdates.length > 0;
+
     return (
         <div className="flex flex-col min-h-screen bg-back-base text-secondary-weak">
-            <div className="px-20 py-10">
-                <Navbar />
-            </div>
+            {book && shelves && progressUpdates ? (
+                <>
+                    {/* Hero Section with Navbar and Blurred Background */}
+                    <div className="relative w-full overflow-hidden">
+                        <div
+                            className="absolute inset-0 bg-cover bg-center blur-3xl opacity-20 scale-110"
+                            style={{ backgroundImage: `url(${getHighResImage(book.coverImageUrl)})` }}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-b from-back-base/80 via-back-base/60 to-back-base" />
 
-            {/* Main Content - Centered, Max Width */}
-            <div className="w-full max-w-[1400px] mx-auto px-20 pb-16">
-                {book && shelves && progressUpdates ? (
-                    <div className="flex flex-col gap-12">
-                        {/* Book Header Section */}
-                        <div className="flex gap-8">
-                            {/* Book Cover & Actions */}
-                            <div className="flex-shrink-0">
-                                <img
-                                    className="w-[200px] h-[300px] rounded-md shadow-lg object-cover"
-                                    src={getHighResImage(book.coverImageUrl)}
-                                    alt="Book cover"
-                                />
-                                <div className="mt-4 flex flex-col gap-2">
-                                    {userBook ? (
-                                        <>
-                                            <UpdateProgressButton
-                                                CoverImageURL={userBook.coverImageUrl}
-                                                isbn={book.isbn}
-                                                pages={book.pages}
-                                                onProgressUpdate={() => setRefreshTrigger(prev => prev + 1)}
-                                            />
-                                            <MarkAsFinishedButton
-                                                CoverImageURL={userBook.coverImageUrl}
-                                                isbn={book.isbn}
-                                                shelves={shelves}
-                                                triggerRefresh={TriggerRefresh}
-                                                isCurrentlyReading={true}
-                                                reviews={reviews || []}
-                                            />
-                                        </>
-                                    ) : (
-                                        <>
-                                            <ShelfDropdownButton shelves={shelves} onSelect={addToShelf}/>
-                                            <MarkAsFinishedButton
-                                                CoverImageURL={book.coverImageUrl}
-                                                isbn={book.isbn}
-                                                shelves={shelves}
-                                                triggerRefresh={TriggerRefresh}
-                                                isCurrentlyReading={false}
-                                                reviews={reviews || []}
-                                            />
-                                        </>
-                                    )}
-                                    {/* Add to Favourites Button */}
-                                    <button
-                                        onClick={toggleFavourite}
-                                        className={`w-full py-2 px-4 rounded my-2 transition ${
-                                            isFavourite
-                                                ? 'bg-amber-500 text-secondary-dark hover:opacity-80'
-                                                : 'bg-slate-700 text-secondary hover:bg-slate-600'
-                                        }`}
-                                    >
-                                        {isFavourite ? '★ Remove from Favourites' : '☆ Add to Favourites'}
-                                    </button>
-                                </div>
+                        <div className="relative z-10">
+                            {/* Navbar */}
+                            <div className="max-w-[1400px] mx-auto px-20 py-10">
+                                <Navbar />
                             </div>
 
-                            {/* Book Info */}
-                            <div className="flex-1">
-                                <h1 className="text-4xl font-bold text-white mb-2">
-                                    {book.title}
-                                </h1>
-                                <p className="text-xl text-secondary-weak mb-6">
-                                    by <span className="text-secondary italic">{book.author}</span>
-                                </p>
+                            {/* Hero Content */}
+                            <div className="max-w-[1400px] mx-auto px-20 pb-16 pt-8">
+                                <h1 className="text-5xl font-bold text-white mb-3">{book.title}</h1>
+                                <p className="text-2xl text-secondary mb-8">by {book.author}</p>
+                            </div>
+                        </div>
+                    </div>
 
-                                {/* Book Meta */}
-                                <div className="flex gap-4 text-sm text-secondary-weak mb-6">
-                                    <span>{book.pages} pages</span>
-                                    <span>
-                                        Published {book.publishDate
-                                            ? new Date(book.publishDate).getUTCFullYear()
-                                            : "Unknown"}
-                                    </span>
-                                </div>
+                    {/* Main Content - Two Column Layout */}
+                    <div className="w-full max-w-[1400px] mx-auto px-20 pb-16">
+                        <div className="flex gap-8">
+                            {/* Left Sidebar - Sticky */}
+                            <div className="w-80 flex-shrink-0">
+                                <div className="sticky top-8 flex flex-col gap-6">
+                                    {/* Book Cover */}
+                                    <div className="w-full aspect-[2/3] relative rounded-lg overflow-hidden shadow-2xl">
+                                        <img
+                                            className="w-full h-full object-cover"
+                                            src={getHighResImage(book.coverImageUrl)}
+                                            alt="Book cover"
+                                        />
+                                    </div>
 
-                                {/* Progress Bar (if currently reading) */}
-                                {userBook && (
-                                    <div className="mb-6">
-                                        <div className="flex justify-between text-sm text-secondary-weak mb-2">
-                                            <span>Your Progress</span>
-                                            <span>{Math.round((userBook.progress / userBook.pages) * 100)}%</span>
-                                        </div>
-                                        <div className="w-full bg-slate-700/50 rounded-full h-2">
-                                            <div
-                                                className="bg-gradient-to-r from-[#4C7BD9] to-primary h-2 rounded-full transition-all"
-                                                style={{ width: `${(userBook.progress / userBook.pages) * 100}%` }}
-                                            ></div>
+                                    {/* Stats Card */}
+                                    <div className="bg-back-raised border border-stroke-weak/50 rounded-lg p-4">
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="text-center">
+                                                <div className="text-2xl font-bold text-white">
+                                                    {avgRating || '—'}
+                                                </div>
+                                                <div className="text-xs text-secondary-weak">Avg Rating</div>
+                                            </div>
+                                            <div className="text-center">
+                                                <div className="text-2xl font-bold text-white">
+                                                    {reviews?.length || 0}
+                                                </div>
+                                                <div className="text-xs text-secondary-weak">Reviews</div>
+                                            </div>
+                                            <div className="text-center">
+                                                <div className="text-2xl font-bold text-white">{book.pages}</div>
+                                                <div className="text-xs text-secondary-weak">Pages</div>
+                                            </div>
+                                            <div className="text-center">
+                                                <div className="text-2xl font-bold text-white">
+                                                    {book.publishDate
+                                                        ? new Date(book.publishDate).getUTCFullYear()
+                                                        : '—'}
+                                                </div>
+                                                <div className="text-xs text-secondary-weak">Published</div>
+                                            </div>
                                         </div>
                                     </div>
-                                )}
 
-                                {/* Description */}
-                                <p className="text-secondary leading-relaxed">
-                                    {book.description}
-                                </p>
-                            </div>
-                        </div>
-
-                        {/* Divider */}
-                        <div className="border-t border-slate-700/30"></div>
-
-                        {/* Progress Updates Section */}
-                        {progressUpdates && progressUpdates.length > 0 && (
-                            <div>
-                                <h2 className="text-2xl font-semibold text-white mb-6">Progress Updates</h2>
-                                <div className="flex flex-col gap-4">
-                                    {progressUpdates.map((update, index) => (
-                                        <div key={index} className="bg-slate-800/30 border border-slate-700/30 rounded-lg p-4">
-                                            <div className="flex justify-between items-start mb-2">
-                                                <h4 className="text-white font-medium">
-                                                    {((update.progress / book.pages) * 100).toFixed(0)}% complete
-                                                </h4>
-                                                <span className="text-xs text-secondary-weak">
-                                                    {new Date(update.created_at).toLocaleDateString('en-US', {
-                                                        month: 'short',
-                                                        day: 'numeric',
-                                                        year: 'numeric'
-                                                    })}
+                                    {/* Progress (if reading) */}
+                                    {userBook && (
+                                        <div className="bg-back-raised border border-stroke-weak/50 rounded-lg p-4">
+                                            <div className="flex justify-between text-sm text-secondary-weak mb-2">
+                                                <span>Your Progress</span>
+                                                <span className="font-semibold text-primary">
+                                                    {Math.round((userBook.progress / userBook.pages) * 100)}%
                                                 </span>
                                             </div>
-                                            {update.comment && (
-                                                <p className="text-secondary">
-                                                    {update.comment}
-                                                </p>
-                                            )}
+                                            <div className="w-full bg-back-overlay rounded-full h-2 mb-2">
+                                                <div
+                                                    className="bg-gradient-to-r from-[#4C7BD9] to-primary h-2 rounded-full transition-all"
+                                                    style={{ width: `${(userBook.progress / userBook.pages) * 100}%` }}
+                                                />
+                                            </div>
+                                            <div className="text-xs text-secondary-weak text-center">
+                                                {userBook.progress} of {userBook.pages} pages
+                                            </div>
                                         </div>
-                                    ))}
+                                    )}
+
+                                    {/* Action Buttons */}
+                                    <div className="flex flex-col gap-2">
+                                        {userBook ? (
+                                            <>
+                                                <UpdateProgressButton
+                                                    CoverImageURL={userBook.coverImageUrl}
+                                                    isbn={book.isbn}
+                                                    pages={book.pages}
+                                                    onProgressUpdate={() => setRefreshTrigger(prev => prev + 1)}
+                                                />
+                                                <MarkAsFinishedButton
+                                                    CoverImageURL={userBook.coverImageUrl}
+                                                    isbn={book.isbn}
+                                                    shelves={shelves}
+                                                    triggerRefresh={TriggerRefresh}
+                                                    isCurrentlyReading={true}
+                                                    reviews={reviews || []}
+                                                />
+                                            </>
+                                        ) : (
+                                            <>
+                                                <ShelfDropdownButton shelves={shelves} onSelect={addToShelf}/>
+                                                <MarkAsFinishedButton
+                                                    CoverImageURL={book.coverImageUrl}
+                                                    isbn={book.isbn}
+                                                    shelves={shelves}
+                                                    triggerRefresh={TriggerRefresh}
+                                                    isCurrentlyReading={false}
+                                                    reviews={reviews || []}
+                                                />
+                                            </>
+                                        )}
+                                        <button
+                                            onClick={toggleFavourite}
+                                            className={`w-full py-2 px-4 rounded transition font-medium ${
+                                                isFavourite
+                                                    ? 'bg-amber-500 text-secondary-dark hover:bg-amber-600'
+                                                    : 'bg-back-overlay border border-stroke-weak text-secondary hover:border-primary'
+                                            }`}
+                                        >
+                                            {isFavourite ? '★ Remove from Favourites' : '☆ Add to Favourites'}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
-                        )}
 
-                        {/* Reviews Section */}
-                        <div>
-                            <h2 className="text-2xl font-semibold text-white mb-6">Reviews</h2>
-                            {reviews && reviews.length > 0 ? (
-                                <div className="flex flex-col gap-4">
-                                    {reviews.map((review, index) => (
-                                        <ReviewCard key={index} review={review} inBook={true} />
-                                    ))}
+                            {/* Right Content Area */}
+                            <div className="flex-1 flex flex-col gap-8">
+                                {/* Description Section */}
+                                <div className="bg-back-raised border border-stroke-weak/50 rounded-lg p-6">
+                                    <h2 className="text-xl font-semibold text-white mb-4">Description</h2>
+                                    <p className="text-secondary leading-relaxed">
+                                        {book.description}
+                                    </p>
                                 </div>
-                            ) : (
-                                <div className="flex items-center justify-center py-12 bg-slate-800/20 rounded-lg border border-slate-700/30">
-                                    <p className="text-secondary-weak">No reviews yet.</p>
+
+                                {/* Progress Updates & Reviews */}
+                                <div className="bg-back-raised border border-stroke-weak/50 rounded-lg overflow-hidden">
+                                    {/* Tab Headers */}
+                                    <div className="flex border-b border-stroke-weak/30">
+                                        <button
+                                            onClick={() => hasProgressUpdates && setActiveTab('reviews')}
+                                            disabled={!hasProgressUpdates}
+                                            className={`flex-1 px-6 py-4 font-medium text-center transition-colors ${
+                                                activeTab === 'reviews'
+                                                    ? 'bg-back-overlay text-primary border-b-2 border-primary'
+                                                    : 'text-secondary-weak hover:text-secondary'
+                                            } ${!hasProgressUpdates ? 'cursor-default' : 'cursor-pointer'}`}
+                                        >
+                                            Reviews ({reviews?.length || 0})
+                                        </button>
+                                        {hasProgressUpdates && (
+                                            <button
+                                                onClick={() => setActiveTab('updates')}
+                                                className={`flex-1 px-6 py-4 font-medium text-center transition-colors ${
+                                                    activeTab === 'updates'
+                                                        ? 'bg-back-overlay text-primary border-b-2 border-primary'
+                                                        : 'text-secondary-weak hover:text-secondary'
+                                                }`}
+                                            >
+                                                Progress Updates ({progressUpdates.length})
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    {/* Tab Content */}
+                                    <div className="p-6">
+                                        {activeTab === 'reviews' && (
+                                            <div>
+                                                {reviews && reviews.length > 0 ? (
+                                                    <div className="flex flex-col gap-4">
+                                                        {reviews.map((review, index) => (
+                                                            <ReviewCard key={index} review={review} inBook={true} />
+                                                        ))}
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center justify-center py-12">
+                                                        <p className="text-secondary-weak">No reviews yet. Be the first to review!</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {activeTab === 'updates' && (
+                                            <div className="flex flex-col gap-4">
+                                                {progressUpdates.map((update, index) => (
+                                                    <div key={index} className="bg-back-overlay border border-stroke-weak/30 rounded-lg p-4">
+                                                        <div className="flex justify-between items-start mb-2">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                                                                    <span className="text-primary font-bold">
+                                                                        {((update.progress / book.pages) * 100).toFixed(0)}%
+                                                                    </span>
+                                                                </div>
+                                                                <div>
+                                                                    <h4 className="text-white font-medium">
+                                                                        Page {update.progress} of {book.pages}
+                                                                    </h4>
+                                                                    <span className="text-xs text-secondary-weak">
+                                                                        {new Date(update.created_at).toLocaleDateString('en-US', {
+                                                                            month: 'short',
+                                                                            day: 'numeric',
+                                                                            year: 'numeric'
+                                                                        })}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {update.comment && (
+                                                            <p className="text-secondary mt-3 pl-15">
+                                                                &ldquo;{update.comment}&rdquo;
+                                                            </p>
+                                                        )}
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                            )}
+                            </div>
                         </div>
+                    </div>
 
-                        <ToastContainer theme="colored" />
-                    </div>
-                ) : (
-                    <div className="flex items-center justify-center min-h-[60vh]">
-                        <p className="text-xl text-secondary-weak">Loading...</p>
-                    </div>
-                )}
-            </div>
+                    <ToastContainer theme="colored" />
+                </>
+            ) : (
+                <div className="flex items-center justify-center min-h-[60vh]">
+                    <p className="text-xl text-secondary-weak">Loading...</p>
+                </div>
+            )}
         </div>
     );
 }

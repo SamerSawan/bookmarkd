@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Dialog, DialogPanel, DialogTitle, DialogBackdrop } from '@headlessui/react'
 import { IconThumbUp, IconThumbDown } from '@tabler/icons-react';
 import Image from 'next/image';
-import Button from './Button';
-import RedButton from './RedButton';
 import StarRating from './Rating';
 import { toast } from 'react-toastify';
 import axiosInstance from '@/utils/axiosInstance';
