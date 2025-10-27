@@ -6,6 +6,9 @@ import ReviewCardWithImage from "./util/ReviewCardWithImage";
 import ProfileFavouriteBooks from "./ProfileFavouriteBooks";
 import { useUser } from "@/app/context/UserContext";
 import Navbar from "./util/Navbar";
+import userService from "@/services/userService";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 interface Props {
   user: UserWithStats;
@@ -14,6 +17,26 @@ interface Props {
 const ProfilePage: React.FC<Props> = ({ user }) => {
   const { user: currentUser, loading } = useUser();
   const [showModal, setShowModal] = useState(false);
+  const [bio, setBio] = useState(user.bio || "");
+  const [profileImageUrl, setProfileImageUrl] = useState(user.profileImageUrl || "");
+  const [isSaving, setIsSaving] = useState(false);
+  const router = useRouter();
+
+  const handleSaveProfile = async () => {
+    setIsSaving(true);
+    try {
+      await userService.updateUserProfile(bio, profileImageUrl);
+      toast.success("Profile updated successfully!");
+      setShowModal(false);
+      router.refresh();
+    } catch (error) {
+      console.error("Failed to update profile:", error);
+      toast.error("Failed to update profile");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   if (loading) return null;
   return (
     <div className="min-h-screen bg-back-base text-secondary-weak flex flex-col">
@@ -106,27 +129,40 @@ const ProfilePage: React.FC<Props> = ({ user }) => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-back-overlay p-6 rounded-xl w-[90%] md:w-[400px] text-secondary-strong shadow-xl">
-            <h2 className="text-xl font-bold mb-4">Edit Profile (This feature is not yet complete)</h2>
+            <h2 className="text-xl font-bold mb-4">Edit Profile</h2>
 
             <label className="block mb-2">Bio</label>
             <textarea
-              className="w-full p-2 rounded bg-back-raised border border-stroke-weak mb-4"
+              className="w-full p-2 rounded bg-back-raised border border-stroke-weak mb-4 text-secondary-strong"
               placeholder="Update your bio..."
               rows={3}
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
             />
 
-            <label className="block mb-2">Profile Picture</label>
-            <input type="file" accept="image/*" className="mb-4" />
+            <label className="block mb-2">Profile Picture URL</label>
+            <input
+              type="text"
+              className="w-full p-2 rounded bg-back-raised border border-stroke-weak mb-4 text-secondary-strong"
+              placeholder="Enter image URL..."
+              value={profileImageUrl}
+              onChange={(e) => setProfileImageUrl(e.target.value)}
+            />
 
             <div className="flex justify-end gap-4">
               <button
                 className="px-4 py-2 text-sm bg-stroke-weak rounded hover:bg-stroke"
                 onClick={() => setShowModal(false)}
+                disabled={isSaving}
               >
                 Cancel
               </button>
-              <button className="px-4 py-2 text-sm bg-primary text-white rounded hover:bg-primary-dark">
-                Save
+              <button
+                className="px-4 py-2 text-sm bg-primary text-white rounded hover:bg-primary-light disabled:opacity-50"
+                onClick={handleSaveProfile}
+                disabled={isSaving}
+              >
+                {isSaving ? "Saving..." : "Save"}
               </button>
             </div>
           </div>

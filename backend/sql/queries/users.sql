@@ -109,5 +109,13 @@ SELECT
 FROM users
 WHERE username = $1;
 
+-- name: UpdateUserProfile :one
+UPDATE users
+SET
+  bio = COALESCE($2, bio),
+  profile_image_url = COALESCE($3, profile_image_url)
+WHERE id = $1
+RETURNING id, username, email, bio, profile_image_url, created_at, updated_at;
+
 -- name: ResetUsers :exec
 DELETE FROM users;

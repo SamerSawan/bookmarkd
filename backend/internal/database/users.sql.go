@@ -8,6 +8,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"time"
 
 	"github.com/google/uuid"
 )
@@ -405,6 +406,46 @@ func (q *Queries) UpdateBookStatus(ctx context.Context, arg UpdateBookStatusPara
 		&i.StartedAt,
 		&i.FinishedAt,
 		&i.LentTo,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const updateUserProfile = `-- name: UpdateUserProfile :one
+UPDATE users
+SET
+  bio = COALESCE($2, bio),
+  profile_image_url = COALESCE($3, profile_image_url)
+WHERE id = $1
+RETURNING id, username, email, bio, profile_image_url, created_at, updated_at
+`
+
+type UpdateUserProfileParams struct {
+	ID              string
+	Bio             sql.NullString
+	ProfileImageUrl sql.NullString
+}
+
+type UpdateUserProfileRow struct {
+	ID              string
+	Username        string
+	Email           string
+	Bio             sql.NullString
+	ProfileImageUrl sql.NullString
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
+}
+
+func (q *Queries) UpdateUserProfile(ctx context.Context, arg UpdateUserProfileParams) (UpdateUserProfileRow, error) {
+	row := q.db.QueryRowContext(ctx, updateUserProfile, arg.ID, arg.Bio, arg.ProfileImageUrl)
+	var i UpdateUserProfileRow
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Bio,
+		&i.ProfileImageUrl,
+		&i.CreatedAt,
 		&i.UpdatedAt,
 	)
 	return i, err

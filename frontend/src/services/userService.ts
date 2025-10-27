@@ -44,8 +44,8 @@ class UserService {
 
     /**
      * Updates current user's profile
-     * @param data 
-     * @returns 
+     * @param data
+     * @returns
      */
     async updateUser(data: Partial<User>): Promise<User> {
         try {
@@ -55,6 +55,26 @@ class UserService {
         } catch (error) {
             console.error(error)
             throw new Error('Failed to update user data')
+        }
+    }
+
+    /**
+     * Updates current user's profile (bio and profile image)
+     * @param bio
+     * @param profileImageUrl
+     * @returns
+     */
+    async updateUserProfile(bio?: string, profileImageUrl?: string): Promise<User> {
+        try {
+            const headers = await this.getAuthHeaders()
+            const res = await axiosInstance.put('/users/me/profile', {
+                bio: bio || "",
+                profileImageUrl: profileImageUrl || ""
+            }, { headers })
+            return res.data
+        } catch (error) {
+            console.error(error)
+            throw new Error('Failed to update user profile')
         }
     }
 
