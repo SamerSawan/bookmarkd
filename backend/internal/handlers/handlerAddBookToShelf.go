@@ -41,13 +41,30 @@ func (cfg *ApiConfig) AddBookToShelf(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if book already exists in this shelf
+	_, err = cfg.Db.GetBookFromShelf(r.Context(), database.GetBookFromShelfParams{
+		ShelfID:  shelf_uuid,
+		BookIsbn: params.ISBN,
+	})
+
+	if err == nil {
+		// Book already exists in this shelf
+		respondWithError(w, http.StatusConflict, "Book already exists in this shelf", nil)
+		return
+	}
+
 	// Add book to shelf_books
 	book_shelf, err := cfg.Db.AddBookToShelf(r.Context(), database.AddBookToShelfParams{
 		ShelfID:  shelf_uuid,
 		BookIsbn: params.ISBN,
 	})
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to create book-shelf relationship", err)
+		// Check if error is due to unique constraint violation
+		if strings.Contains(err.Error(), "unique_shelf_book") || strings.Contains(err.Error(), "duplicate key") {
+			respondWithError(w, http.StatusConflict, "Book already exists in this shelf", err)
+		} else {
+			respondWithError(w, http.StatusInternalServerError, "Failed to create book-shelf relationship", err)
+		}
 		return
 	}
 

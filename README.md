@@ -118,7 +118,7 @@ To run the app using Docker:
 
 1. **Build the Docker Image:**
    ```bash
-   GOOS=linux GOARCH=amd64 go build -o bookmarkd
+   cd backend
    docker build -t bookmarkd .
    ```
 

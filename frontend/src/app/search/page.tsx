@@ -12,6 +12,7 @@ import Navbar from '@/components/util/Navbar';
 import { useRouter } from 'next/navigation'
 import { BookItem, Book, IndustryIdentifier } from '@/utils/models';
 import BookCardSkeleton from '@/components/util/BookCardSkeleton';
+import shelfService from '@/services/shelfService';
 
 const Search: React.FC = () => {
   const [query, setQuery] = useState<string>("");
@@ -21,6 +22,7 @@ const Search: React.FC = () => {
   const [error, setError] = useState<string>("");
   const [showModal, setShowModal] = useState<boolean>(false);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [bookShelfMapping, setBookShelfMapping] = useState<Record<string, string[]>>({});
 
   const router = useRouter()
 
@@ -87,6 +89,30 @@ const Search: React.FC = () => {
       }
     };
   }, [query]);
+
+  useEffect(() => {
+    const fetchShelvesForBooks = async () => {
+      const mapping: Record<string, string[]> = {};
+
+      for (const book of books) {
+        if (book.isbn) {
+          try {
+            const shelfIDs = await shelfService.getShelvesContainingBook(book.isbn);
+            mapping[book.isbn] = shelfIDs;
+          } catch (error) {
+            console.error(`Error fetching shelves for book ${book.isbn}:`, error);
+            mapping[book.isbn] = [];
+          }
+        }
+      }
+
+      setBookShelfMapping(mapping);
+    };
+
+    if (books.length > 0) {
+      fetchShelvesForBooks();
+    }
+  }, [books, shelves]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -328,7 +354,11 @@ const Search: React.FC = () => {
               </button>
 
               <div onClick={(e) => e.stopPropagation()}>
-                <ShelfDropdownCircular shelves={shelves} onSelect={(shelfID: string, shelfName: string) => addToShelf(book, shelfID, shelfName)} />
+                <ShelfDropdownCircular
+                  shelves={shelves}
+                  onSelect={(shelfID: string, shelfName: string) => addToShelf(book, shelfID, shelfName)}
+                  shelfIDsContainingBook={bookShelfMapping[book.isbn] || []}
+                />
               </div>
             </div>
           </motion.div>

@@ -25,3 +25,12 @@ VALUES (
 
 -- name: RemoveBookFromShelf :exec
 DELETE FROM shelf_books WHERE shelf_id = $1 AND book_isbn = $2;
+
+-- name: GetBookFromShelf :one
+SELECT * FROM shelf_books WHERE shelf_id = $1 AND book_isbn = $2;
+
+-- name: GetShelvesContainingBook :many
+SELECT sb.shelf_id
+FROM shelf_books sb
+INNER JOIN user_shelves us ON sb.shelf_id = us.shelf_id
+WHERE sb.book_isbn = $1 AND us.user_id = $2;

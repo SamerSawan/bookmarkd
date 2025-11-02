@@ -77,6 +77,7 @@ func main() {
 	serveMux.HandleFunc("POST /api/users/me/favourites", apiCfg.AddFavourite)
 	serveMux.HandleFunc("DELETE /api/users/me/favourites", apiCfg.RemoveFavourite)
 	serveMux.HandleFunc("GET /api/shelves/{shelf_id}/exists", apiCfg.CheckBookExistsInShelf)
+	serveMux.HandleFunc("GET /api/shelves/containing-book", apiCfg.GetShelvesContainingBook)
 	serveMux.HandleFunc("DELETE /api/shelves/{shelf_id}/books", apiCfg.RemoveBookFromShelf)
 	serveMux.HandleFunc("GET /api/users/me/books/{isbn}/progress", apiCfg.GetBookProgressUpdate)
 	serveMux.HandleFunc("POST /api/reviews", apiCfg.CreateReview)

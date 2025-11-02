@@ -6,6 +6,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import { CurrentlyReadingBook, FetchedBook, ProgressUpdates } from "@/utils/models";
 import { Review } from "@/types/review"
 import reviewService from "@/services/reviewService";
+import shelfService from "@/services/shelfService";
 import ShelfDropdownButton from "@/components/ShelfDropdownButton";
 import { useUser } from "@/app/context/UserContext";
 import { toast, ToastContainer } from "react-toastify";
@@ -24,10 +25,11 @@ export default function BookPage() {
     const [book, setBook] = useState<FetchedBook | null>(null);
     const [reviews, setReviews] = useState<Review[] | null>(null);
     const [progressUpdates, setProgressUpdates] = useState<ProgressUpdates[]>([]);
-    
+
     const [refreshTrigger, setRefreshTrigger] = useState<number>(0);
 
     const [userBook, setUserBook] = useState<CurrentlyReadingBook | null>(null);
+    const [shelfIDsContainingBook, setShelfIDsContainingBook] = useState<string[]>([]);
 
     useEffect(() => {
         const foundBook = currentlyReading?.find(
@@ -35,6 +37,19 @@ export default function BookPage() {
         );
         setUserBook(foundBook ?? null);
     }, [isbn, currentlyReading, shelves])
+
+    useEffect(() => {
+        const fetchShelvesContainingBook = async () => {
+            try {
+                const shelfIDs = await shelfService.getShelvesContainingBook(isbn);
+                setShelfIDsContainingBook(shelfIDs);
+            } catch (error) {
+                console.error("Error fetching shelves containing book:", error);
+                setShelfIDsContainingBook([]);
+            }
+        };
+        fetchShelvesContainingBook();
+    }, [isbn, shelves]);
 
     useEffect(() => {
         const fetchBook = async () => {
@@ -291,7 +306,7 @@ export default function BookPage() {
                                             </>
                                         ) : (
                                             <>
-                                                <ShelfDropdownButton shelves={shelves} onSelect={addToShelf}/>
+                                                <ShelfDropdownButton shelves={shelves} onSelect={addToShelf} shelfIDsContainingBook={shelfIDsContainingBook}/>
                                                 <MarkAsFinishedButton
                                                     CoverImageURL={book.coverImageUrl}
                                                     isbn={book.isbn}

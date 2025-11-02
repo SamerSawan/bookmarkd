@@ -62,6 +62,28 @@ func (q *Queries) CreateShelf(ctx context.Context, name string) (Shelf, error) {
 	return i, err
 }
 
+const getBookFromShelf = `-- name: GetBookFromShelf :one
+SELECT id, created_at, updated_at, shelf_id, book_isbn FROM shelf_books WHERE shelf_id = $1 AND book_isbn = $2
+`
+
+type GetBookFromShelfParams struct {
+	ShelfID  uuid.UUID
+	BookIsbn string
+}
+
+func (q *Queries) GetBookFromShelf(ctx context.Context, arg GetBookFromShelfParams) (ShelfBook, error) {
+	row := q.db.QueryRowContext(ctx, getBookFromShelf, arg.ShelfID, arg.BookIsbn)
+	var i ShelfBook
+	err := row.Scan(
+		&i.ID,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ShelfID,
+		&i.BookIsbn,
+	)
+	return i, err
+}
+
 const getShelf = `-- name: GetShelf :one
 SELECT id, created_at, updated_at, name FROM shelves WHERE id = $1
 `
@@ -76,6 +98,41 @@ func (q *Queries) GetShelf(ctx context.Context, id uuid.UUID) (Shelf, error) {
 		&i.Name,
 	)
 	return i, err
+}
+
+const getShelvesContainingBook = `-- name: GetShelvesContainingBook :many
+SELECT sb.shelf_id
+FROM shelf_books sb
+INNER JOIN user_shelves us ON sb.shelf_id = us.shelf_id
+WHERE sb.book_isbn = $1 AND us.user_id = $2
+`
+
+type GetShelvesContainingBookParams struct {
+	BookIsbn string
+	UserID   string
+}
+
+func (q *Queries) GetShelvesContainingBook(ctx context.Context, arg GetShelvesContainingBookParams) ([]uuid.UUID, error) {
+	rows, err := q.db.QueryContext(ctx, getShelvesContainingBook, arg.BookIsbn, arg.UserID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []uuid.UUID
+	for rows.Next() {
+		var shelf_id uuid.UUID
+		if err := rows.Scan(&shelf_id); err != nil {
+			return nil, err
+		}
+		items = append(items, shelf_id)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUsersShelves = `-- name: GetUsersShelves :many
