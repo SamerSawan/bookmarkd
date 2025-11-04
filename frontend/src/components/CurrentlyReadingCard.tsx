@@ -8,7 +8,7 @@ import MarkAsFinishedButton from "./util/MarkAsFinishedButton";
 
 
 const CurrentlyReadingCard: React.FC = () => {
-  const { currentlyReading, fetchCurrentlyReading, refreshShelves, shelves, loading } = useUser();
+  const { currentlyReading, fetchCurrentlyReading, refreshShelves, loading } = useUser();
 
   const [newProgress, setNewProgress] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
