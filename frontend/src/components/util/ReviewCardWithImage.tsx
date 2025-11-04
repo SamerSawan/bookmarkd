@@ -61,7 +61,7 @@ const ReviewCardWithImage: React.FC<ReviewProps> = ({ review }) => {
 
             </div>
                         <p className="text-base text-secondary-strong mb-4">
-                            &ldquo;{review.content}&rdquo;
+                            {review.content}
                         </p>
                         <p className="text-xs text-secondary-weak text-right">
                             {new Date(review.createdAt).toLocaleDateString('en-CA')}

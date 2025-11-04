@@ -4,10 +4,7 @@ import { IconThumbUp, IconThumbDown } from '@tabler/icons-react';
 import Image from 'next/image';
 import StarRating from './Rating';
 import { toast } from 'react-toastify';
-import axiosInstance from '@/utils/axiosInstance';
 import { auth } from '../../../firebase';
-import { Shelf } from '@/utils/models';
-import { getShelfIdByName } from '@/utils/helpers';
 import reviewService from '@/services/reviewService';
 import { Review } from '@/types/review';
 import { useUser } from '@/app/context/UserContext';
@@ -15,14 +12,13 @@ import { useUser } from '@/app/context/UserContext';
 interface ModalProps {
     CoverImageURL: string
     isbn: string
-    shelves: Shelf[];
     triggerRefresh: () => void;
     isCurrentlyReading: boolean;
     reviews: Review[];
 }
 
 
-const MarkAsFinishedButton: React.FC<ModalProps> = ({ CoverImageURL, isbn, shelves, triggerRefresh, isCurrentlyReading, reviews }) => {
+const MarkAsFinishedButton: React.FC<ModalProps> = ({ CoverImageURL, isbn, triggerRefresh, isCurrentlyReading, reviews }) => {
     const { user } = useUser();
 
     const [isOpen, setIsOpen] = useState(false);
@@ -72,7 +68,6 @@ const MarkAsFinishedButton: React.FC<ModalProps> = ({ CoverImageURL, isbn, shelv
         }
 
         try {
-          const idToken = await currentUser.getIdToken();
           let isRecommended = false;
 
           if (recommended == "Yes") {

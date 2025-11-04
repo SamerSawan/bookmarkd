@@ -189,7 +189,7 @@ const CurrentlyReadingCard: React.FC = () => {
 
           {/* Mark as Finished Button */}
           {isFinished && !isEditing && (
-            <MarkAsFinishedButton CoverImageURL={book.coverImageUrl} isbn={book.isbn} shelves={shelves} triggerRefresh={refreshShelves} isCurrentlyReading={true} reviews={[]}/>
+            <MarkAsFinishedButton CoverImageURL={book.coverImageUrl} isbn={book.isbn} triggerRefresh={refreshShelves} isCurrentlyReading={true} reviews={[]}/>
           )}
 
           {/* Navigation for multiple books */}

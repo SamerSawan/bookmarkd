@@ -298,7 +298,6 @@ export default function BookPage() {
                                                 <MarkAsFinishedButton
                                                     CoverImageURL={userBook.coverImageUrl}
                                                     isbn={book.isbn}
-                                                    shelves={shelves}
                                                     triggerRefresh={TriggerRefresh}
                                                     isCurrentlyReading={true}
                                                     reviews={reviews || []}
@@ -310,7 +309,6 @@ export default function BookPage() {
                                                 <MarkAsFinishedButton
                                                     CoverImageURL={book.coverImageUrl}
                                                     isbn={book.isbn}
-                                                    shelves={shelves}
                                                     triggerRefresh={TriggerRefresh}
                                                     isCurrentlyReading={false}
                                                     reviews={reviews || []}
