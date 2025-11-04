@@ -86,18 +86,6 @@ const MarkAsFinishedButton: React.FC<ModalProps> = ({ CoverImageURL, isbn, shelv
             await reviewService.updateReview(isbn, review, rating, isRecommended);
             toast.success("Review updated!");
           } else {
-            // Create new review and move to read shelf
-            const readShelf = getShelfIdByName(shelves, "Read");
-            await axiosInstance.post(`/shelves/${readShelf}`, {
-                isbn: isbn,
-            },
-            {
-                headers: {
-                Authorization: `Bearer ${idToken}`,
-                },
-            });
-            toast.success("Moved book to read shelf");
-
             await reviewService.createReview(isbn, review || null, rating, isRecommended);
             toast.success("Review logged!");
           }

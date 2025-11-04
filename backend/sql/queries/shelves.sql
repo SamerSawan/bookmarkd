@@ -34,3 +34,6 @@ SELECT sb.shelf_id
 FROM shelf_books sb
 INNER JOIN user_shelves us ON sb.shelf_id = us.shelf_id
 WHERE sb.book_isbn = $1 AND us.user_id = $2;
+
+-- name: GetReadShelf :one
+select shelves.id as shelf_id from user_shelves JOIN users on users.id = user_shelves.user_id JOIN shelves on shelves.id = user_shelves.shelf_id WHERE shelves.name = 'Read' AND users.id = $1;

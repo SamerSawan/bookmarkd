@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/samersawan/bookmarkd/backend/internal/database"
@@ -74,5 +75,65 @@ func insertBook(isbn string, cfg *ApiConfig, r *http.Request) error {
 	if err != nil {
 		return fmt.Errorf("Failed to create book and insert into database")
 	}
+	return nil
+}
+
+func (cfg *ApiConfig) Authenticate(r *http.Request) (string, int, string, error) {
+	client, err := cfg.Firebase.Auth(r.Context())
+	if err != nil {
+		return "", http.StatusInternalServerError, "Failed to initialize Firebase Auth Client", err
+	}
+
+	authHeader := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
+	token, err := client.VerifyIDToken(r.Context(), authHeader)
+
+	if err != nil {
+		return "", http.StatusUnauthorized, "Invalid Firebase ID Token", err
+	}
+
+	return token.UID, http.StatusOK, "", nil
+}
+
+func (cfg *ApiConfig) MoveToReadShelf(r *http.Request, userID, isbn string) error {
+	shelves, err := cfg.Db.GetShelvesContainingBook(r.Context(), database.GetShelvesContainingBookParams{BookIsbn: isbn, UserID: userID})
+	if err != nil {
+		return err
+	}
+
+	inReadShelf := false
+	for _, value := range shelves {
+		shelf, err := cfg.Db.GetShelf(r.Context(), value)
+		if err != nil {
+			return err
+		}
+		if shelf.Name == "Read" {
+			inReadShelf = true
+			continue
+		}
+		err = cfg.Db.RemoveBookFromShelf(r.Context(), database.RemoveBookFromShelfParams{ShelfID: shelf.ID, BookIsbn: isbn})
+		if err != nil {
+			fmt.Printf("[WARNING] Failed to remove book: %s from shelf: %s. Error: %s\n", isbn, shelf.ID, err.Error())
+		}
+	}
+
+	if !inReadShelf {
+		shelf, err := cfg.Db.GetReadShelf(r.Context(), userID)
+		if err != nil {
+			return err
+		}
+
+		_, err = cfg.Db.GetBook(r.Context(), isbn)
+		if err != nil {
+			err = insertBook(isbn, cfg, r)
+			if err != nil {
+				return err
+			}
+		}
+		_, err = cfg.Db.AddBookToShelf(r.Context(), database.AddBookToShelfParams{ShelfID: shelf, BookIsbn: isbn})
+		if err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

@@ -84,6 +84,17 @@ func (q *Queries) GetBookFromShelf(ctx context.Context, arg GetBookFromShelfPara
 	return i, err
 }
 
+const getReadShelf = `-- name: GetReadShelf :one
+select shelves.id as shelf_id from user_shelves JOIN users on users.id = user_shelves.user_id JOIN shelves on shelves.id = user_shelves.shelf_id WHERE shelves.name = 'Read' AND users.id = $1
+`
+
+func (q *Queries) GetReadShelf(ctx context.Context, id string) (uuid.UUID, error) {
+	row := q.db.QueryRowContext(ctx, getReadShelf, id)
+	var shelf_id uuid.UUID
+	err := row.Scan(&shelf_id)
+	return shelf_id, err
+}
+
 const getShelf = `-- name: GetShelf :one
 SELECT id, created_at, updated_at, name FROM shelves WHERE id = $1
 `

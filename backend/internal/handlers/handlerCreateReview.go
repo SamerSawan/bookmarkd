@@ -4,26 +4,16 @@ import (
 	"database/sql"
 	"encoding/json"
 	"net/http"
-	"strings"
 
 	"github.com/samersawan/bookmarkd/backend/internal/database"
 )
 
 func (cfg *ApiConfig) CreateReview(w http.ResponseWriter, r *http.Request) {
-	client, err := cfg.Firebase.Auth(r.Context())
+	userID, status, msg, err := cfg.Authenticate(r)
 	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, "Failed to initialize Firebase Auth client", err)
+		respondWithError(w, status, msg, err)
 		return
 	}
-
-	authHeader := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	token, err := client.VerifyIDToken(r.Context(), authHeader)
-	if err != nil {
-		respondWithError(w, http.StatusUnauthorized, "Invalid Firebase ID token", err)
-		return
-	}
-
-	userID := token.UID
 
 	type parameters struct {
 		ISBN        string  `json:"isbn"`
@@ -38,7 +28,17 @@ func (cfg *ApiConfig) CreateReview(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	err = cfg.MoveToReadShelf(r, userID, params.ISBN)
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to move book to read shelf", err)
+		return
+	}
+
 	_, err = cfg.Db.UpdateBookStatus(r.Context(), database.UpdateBookStatusParams{UserID: userID, Isbn: params.ISBN, Status: "Read"})
+	if err != nil {
+		respondWithError(w, http.StatusInternalServerError, "Failed to update book status to read", err)
+		return
+	}
 
 	review, err := cfg.Db.CreateReview(r.Context(), database.CreateReviewParams{
 		Isbn:   params.ISBN,
